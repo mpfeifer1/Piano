@@ -6,8 +6,10 @@ from lark import Lark
 import unittest
 import sys
 
+#TODO add more instruments
 grammar = r'''
     start: compose
+        | lhs "=" rhs
     digit: "0"
         | "1"
         | "2"
@@ -22,9 +24,62 @@ grammar = r'''
     compose: digit | accidental | comment | number | notename
     notename: ("a".."g" | "A".."G") accidental? number
     comment: "//"
+    rest: "--"
     lhs: NAME
         | compose
     number: digit+
+    instrument: "trumpet" | "piano" | "tuba"
+    division: number "/" number
+    chord: "(" notename+ ")" | lhs
+    tuple: "tuplet(" (chord|note)+ ")"
+
+    note: division notename
+        | division chord
+        | division tuple
+        | division rest
+        | lhs
+
+    inlinedynamic: "mf"
+        | "mp"
+        | "f"+
+        | "p"+
+        | lhs
+
+    dynamic: "Dynamic(" inlinedynamic ")"
+
+    noteitem: note ";"
+        | inlinedynamic ";"
+
+    instrumentation: (instrument | lhs) "{" noteitem+ "}"
+        | lhs
+
+    measure: "Measure" "{" instrumentation* "}"
+        | lhs
+
+    tempo: "Tempo(" number ")"
+        | lhs
+
+    timesig: "Timesig(" division ")"
+        | lhs
+
+    repeat: "Repeat" composeitems+ "Endr"
+
+    composeitems: tempo
+        | timesig
+        | dynamic
+        | measure
+        | repeat
+
+    rhs: composeitems
+        | instrument
+        | instrumentation
+        | note
+        | tuple
+        | chord
+        | tempo
+        | timesig
+        | inlinedynamic
+        | dynamic
 
     %import common.CNAME -> NAME
     %import common.WS_INLINE
@@ -33,17 +88,6 @@ grammar = r'''
 '''
 
 '''
-    start: lhs "=" rhs
-    rhs: composeitems
-        | instrument
-        | instrumentation
-        | note
-        | tuplet
-        | chord
-        | tempo
-        | timesig
-        | inlinedynamic
-        | dynamic
 '''
 # Try a sample grammar recognition
 l = lark.Lark(grammar)
@@ -59,8 +103,7 @@ goodstrs = [
     "\t67",
     "// hello",
     "A#2",
-    "ab3",
-    "// hello"
+    "ab3"
 ]
 
 badstrs = [
@@ -70,20 +113,17 @@ badstrs = [
 
 print("~~~~~~~GOOD~~~~~~~~")
 for i in goodstrs:
-    print(i)
     try:
         l.parse(i)
-        print("correct")
     except:
-        print("INCORRECT - didn't accept")
-    print()
+        print("INCORRECT - didn't accept", i)
+
+print()
 
 print("~~~~~~~BAD~~~~~~~~")
 for i in badstrs:
-    print(i)
     try:
         l.parse(i)
-        print("INCORRECT - accepted")
+        print("INCORRECT - accepted", i)
     except:
-        print("correct")
-    print()
+        pass
