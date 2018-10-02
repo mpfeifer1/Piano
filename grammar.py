@@ -21,7 +21,7 @@ grammar = r'''
         | "8"
         | "9"
     accidental: "#" | "b"
-    compose: digit | accidental | comment | number | notename
+    compose: "Compose" "{" composeitems* "}"
     notename: ("a".."g" | "A".."G") accidental? number
     comment: "//"
     rest: "--"
@@ -87,23 +87,13 @@ grammar = r'''
     %ignore WS_INLINE
 '''
 
-'''
-'''
 # Try a sample grammar recognition
 l = lark.Lark(grammar)
 
 print("BUILT GRAMMAR")
 
 goodstrs = [
-    "5",
-    "5\t5",
-    "1 2",
-    "1 ",
-    " 1",
-    "\t67",
-    "// hello",
-    "A#2",
-    "ab3"
+    "Compose{}"
 ]
 
 badstrs = [
