@@ -10,6 +10,8 @@ import sys
 grammar = r'''
     start: compose
         | lhs "=" rhs
+        | "A"
+
     digit: "0"
         | "1"
         | "2"
@@ -20,17 +22,26 @@ grammar = r'''
         | "7"
         | "8"
         | "9"
+
     accidental: "#" | "b"
+
     compose: "Compose" "{" composeitems* "}"
+
     notename: ("a".."g" | "A".."G") accidental? number
-    comment: "//"
+
     rest: "--"
+
     lhs: NAME
         | compose
+
     number: digit+
+
     instrument: "trumpet" | "piano" | "tuba"
+
     division: number "/" number
+
     chord: "(" notename+ ")" | lhs
+
     tuple: "tuplet(" (chord|note)+ ")"
 
     note: division notename
@@ -81,10 +92,15 @@ grammar = r'''
         | inlinedynamic
         | dynamic
 
-    %import common.CNAME -> NAME
-    %import common.WS_INLINE
+    COMMENT: "//" /[^\n]/*
+    WHITESPACE: " " | "\t" | "\n"
 
-    %ignore WS_INLINE
+    %import common.CNAME -> NAME
+
+    %ignore COMMENT
+    %ignore WHITESPACE
+'''
+'''
 '''
 
 # Try a sample grammar recognition
@@ -93,7 +109,31 @@ l = lark.Lark(grammar)
 print("BUILT GRAMMAR")
 
 goodstrs = [
-    "Compose{}"
+    """
+    Compose{
+        // Nathan is a nerd
+    }
+    """,
+    """
+    Compose{
+        //Nerd
+    }
+    """,
+    """
+    Compose{
+        // Nerd Nerd Nerd
+    }
+    """,
+    """
+    Compose{
+    }
+    """,
+    """
+    nathan = a5
+    """,
+    """
+    A
+    """
 ]
 
 badstrs = [
@@ -105,6 +145,7 @@ print("~~~~~~~GOOD~~~~~~~~")
 for i in goodstrs:
     try:
         l.parse(i)
+        print(l.parse(i).pretty())
     except:
         print("INCORRECT - didn't accept", i)
 
