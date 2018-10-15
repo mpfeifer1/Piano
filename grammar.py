@@ -9,9 +9,25 @@ import unittest
 import sys
 
 #TODO add more instruments
-grammar = r'''
-    start: compose
-        | lhs "=" rhs compose
+grammar = r'''    
+    forbidden: notename
+        | "compose"i
+        | "--"
+        | instrument
+        | "tuplet"i
+        | "tuplet("i
+        | "dynamic"i
+        | "dynamic("i
+        | "measure"i
+        | "measure("i
+        | "tempo"i
+        | "tempo("i
+        | "timesig"i
+        | "timesig("i
+        | "repeat"i
+        | "endr"i
+        
+    start: (id "=" rhs)* compose
 
     digit: "0"
         | "1"
@@ -38,73 +54,70 @@ grammar = r'''
 
     division: number "/" number
 
-    chord: "(" notename+ ")" | lhs
+    chord: "(" notename+ ")"
 
-    tuple: "tuplet("i (chord|note)+ ")"
+    tuple: "tuplet("i (chord|note|id)+ ")"
 
     note: division notename
-        | division chord
-        | division tuple
+        | division (chord | id)
+        | division (tuple | id)
         | division rest
-        | lhs
 
     inlinedynamic: "mf"i
         | "mp"i
         | "f"i+
         | "p"i+
-        | lhs
 
-    dynamic: "Dynamic("i inlinedynamic ")"
+    dynamic: "Dynamic("i (inlinedynamic | id) ")"
 
-    noteitem: note ";"
+    noteitem: (note|id) ";"
         | inlinedynamic ";"
 
-    instrumentation: (instrument | lhs) "{" noteitem+ "}"
-        | lhs
+    instrumentation: (instrument | id) "{" noteitem+ "}"
 
-    measure: "Measure"i "{" instrumentation* "}"
-        | lhs
+    measure: "Measure"i "{" (instrumentation | id)* "}"
 
     tempo: "Tempo("i number ")"
-        | lhs
 
     timesig: "Timesig("i division ")"
-        | lhs
 
     repeat: "Repeat"i composeitems+ "Endr"i
 
-    composeitems: tempo
+    composeitems: id
+        | tempo
         | timesig
         | dynamic
         | measure
         | repeat
 
-    lhs: "$" NAME
+    id: /[$][a-zA-Z]+[a-zA-Z0-9_\-]*/
 
-    rhs: composeitems
-        | instrument
+    rhs: instrument
+        | tempo
+        | timesig
+        | dynamic
+        | measure
+        | repeat
         | instrumentation
         | note
         | tuple
         | chord
-        | tempo
-        | timesig
         | inlinedynamic
-        | dynamic
+        | id
 
-    COMMENT: "//" /[^\n]/*
+    INLINECOMMENT: "//" /[^\n]/*
+    COMMENTBLOCK: "/*" /(.*[\n])*.*/ "*/"
     WHITESPACE: " " | "\t" | "\n"
 
-    %import common.CNAME -> NAME
-
-    %ignore COMMENT
+    %ignore INLINECOMMENT
+    %ignore COMMENTBLOCK
     %ignore WHITESPACE
 '''
 '''
 '''
 
 # Try a sample grammar recognition
-l = lark.Lark(grammar)
+l = lark.Lark(grammar, parser='lalr', lexer="contextual")
 
 print("BUILT GRAMMAR")
 
@@ -117,6 +130,9 @@ goodstrs = [
 
 
     """
+    /*
+    * Testing comment block!
+    */
     Compose {
         Measure {
             acousticgrandpiano {
@@ -142,8 +158,13 @@ goodstrs = [
 
 
     """
-    $gp = acousticgrandpiano
+    $gp = Measure {
+            acousticgrandpiano {
+                1/4 a#6;
+            }
+        }
     Compose{
+        $gp
     }
     """,
 
@@ -185,7 +206,10 @@ badstrs = [
 print("~~~~~~~GOOD~~~~~~~~")
 for i in goodstrs:
     try:
-        l.parse(i)
+        x = l.parse(i)
+        #print()
+        #print(x)
+        #print()
     except:
         print("INCORRECT - didn't accept", i)
 
