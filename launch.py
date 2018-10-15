@@ -11,4 +11,4 @@ import sys
 import grammar
 import ourtests
 
-l = lark.Lark(grammar.getgrammar())
+l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
