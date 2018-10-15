@@ -1,200 +1,92 @@
-#!/usr/bin/env python3
+def getgrammar():
+    return r'''
+        start: compose
+            | lhs "=" rhs compose
 
-from mido import Message, MidiFile, MidiTrack
+        digit: "0"
+            | "1"
+            | "2"
+            | "3"
+            | "4"
+            | "5"
+            | "6"
+            | "7"
+            | "8"
+            | "9"
 
-import lark
-from argparse import ArgumentParser
-from lark import Lark
-import unittest
-import sys
+        accidental: "#" | "b"
 
-#TODO add more instruments
-grammar = r'''
-    start: compose
-        | lhs "=" rhs compose
+        compose: "compose"i "{" composeitems* "}"
 
-    digit: "0"
-        | "1"
-        | "2"
-        | "3"
-        | "4"
-        | "5"
-        | "6"
-        | "7"
-        | "8"
-        | "9"
+        notename: ("a".."g" | "A".."G") accidental? number
 
-    accidental: "#" | "b"
+        rest: "--"
 
-    compose: "compose"i "{" composeitems* "}"
+        number: digit+
 
-    notename: ("a".."g" | "A".."G") accidental? number
+        instrument: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
 
-    rest: "--"
+        division: number "/" number
 
-    number: digit+
+        chord: "(" notename+ ")" | lhs
 
-    instrument: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
+        tuple: "tuplet("i (chord|note)+ ")"
 
-    division: number "/" number
+        note: division notename
+            | division chord
+            | division tuple
+            | division rest
+            | lhs
 
-    chord: "(" notename+ ")" | lhs
+        inlinedynamic: "mf"i
+            | "mp"i
+            | "f"i+
+            | "p"i+
+            | lhs
 
-    tuple: "tuplet("i (chord|note)+ ")"
+        dynamic: "Dynamic("i inlinedynamic ")"
 
-    note: division notename
-        | division chord
-        | division tuple
-        | division rest
-        | lhs
+        noteitem: note ";"
+            | inlinedynamic ";"
 
-    inlinedynamic: "mf"i
-        | "mp"i
-        | "f"i+
-        | "p"i+
-        | lhs
+        instrumentation: (instrument | lhs) "{" noteitem+ "}"
+            | lhs
 
-    dynamic: "Dynamic("i inlinedynamic ")"
+        measure: "Measure"i "{" instrumentation* "}"
+            | lhs
 
-    noteitem: note ";"
-        | inlinedynamic ";"
+        tempo: "Tempo("i number ")"
+            | lhs
 
-    instrumentation: (instrument | lhs) "{" noteitem+ "}"
-        | lhs
+        timesig: "Timesig("i division ")"
+            | lhs
 
-    measure: "Measure"i "{" instrumentation* "}"
-        | lhs
+        repeat: "Repeat"i composeitems+ "Endr"i
 
-    tempo: "Tempo("i number ")"
-        | lhs
+        composeitems: tempo
+            | timesig
+            | dynamic
+            | measure
+            | repeat
 
-    timesig: "Timesig("i division ")"
-        | lhs
+        lhs: "$" NAME
 
-    repeat: "Repeat"i composeitems+ "Endr"i
+        rhs: composeitems
+            | instrument
+            | instrumentation
+            | note
+            | tuple
+            | chord
+            | tempo
+            | timesig
+            | inlinedynamic
+            | dynamic
 
-    composeitems: tempo
-        | timesig
-        | dynamic
-        | measure
-        | repeat
+        COMMENT: "//" /[^\n]/*
+        WHITESPACE: " " | "\t" | "\n"
 
-    lhs: "$" NAME
+        %import common.CNAME -> NAME
 
-    rhs: composeitems
-        | instrument
-        | instrumentation
-        | note
-        | tuple
-        | chord
-        | tempo
-        | timesig
-        | inlinedynamic
-        | dynamic
-
-    COMMENT: "//" /[^\n]/*
-    WHITESPACE: " " | "\t" | "\n"
-
-    %import common.CNAME -> NAME
-
-    %ignore COMMENT
-    %ignore WHITESPACE
-'''
-'''
-'''
-
-# Try a sample grammar recognition
-l = lark.Lark(grammar)
-
-print("BUILT GRAMMAR")
-
-goodstrs = [
-    """
-    Compose{
-        // Nathan is a nerd
-    }
-    """,
-
-
-    """
-    Compose {
-        Measure {
-            acousticgrandpiano {
-                1/4 C4; 1/4 C4; 1/4 G4; 1/4 G4;
-            }
-            acousticgrandpiano {
-                1/4 C4; 1/4 --; 1/4 G4; 1/4 --;
-            }
-        }
-    }
-    """,
-
-
-
-    """
-    Compose{
-        // Nerd Nerd Nerd
-        Tempo(60)
-        Timesig(4/4)
-    }
-    """,
-
-
-
-    """
-    $gp = acousticgrandpiano
-    Compose{
-    }
-    """,
-
-    """
-    compose {
-        measure {
-
-        }
-    }
-    """,
-
-
-    """
-    Compose {
-        Measure {
-
-        }
-    }
-    """
-
-]
-
-badstrs = [
-    "INVALID%$&",
-    "h#4",
-    """
-    nathan = a5
-    """,
-    """
-    A
-    """,
-    """
-    $    gp = acousticgrandpiano
-    Compose{
-    }
-    """
-]
-
-print("~~~~~~~GOOD~~~~~~~~")
-for i in goodstrs:
-    try:
-        l.parse(i)
-    except:
-        print("INCORRECT - didn't accept", i)
-
-print()
-
-print("~~~~~~~BAD~~~~~~~~")
-for i in badstrs:
-    try:
-        l.parse(i)
-        print("INCORRECT - accepted", i)
-    except:
-        pass
+        %ignore COMMENT
+        %ignore WHITESPACE
+    '''
