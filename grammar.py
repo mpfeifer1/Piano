@@ -26,7 +26,7 @@ grammar = r'''
 
     accidental: "#" | "b"
 
-    compose: "Compose" "{" composeitems* "}"
+    compose: "compose"i "{" composeitems* "}"
 
     notename: ("a".."g" | "A".."G") accidental? number
 
@@ -34,13 +34,13 @@ grammar = r'''
 
     number: digit+
 
-    instrument: "trumpet" | "piano" | "tuba" | "acousticgrandpiano"
+    instrument: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
 
     division: number "/" number
 
     chord: "(" notename+ ")" | lhs
 
-    tuple: "tuplet(" (chord|note)+ ")"
+    tuple: "tuplet("i (chord|note)+ ")"
 
     note: division notename
         | division chord
@@ -48,13 +48,13 @@ grammar = r'''
         | division rest
         | lhs
 
-    inlinedynamic: "mf"
-        | "mp"
-        | "f"+
-        | "p"+
+    inlinedynamic: "mf"i
+        | "mp"i
+        | "f"i+
+        | "p"i+
         | lhs
 
-    dynamic: "Dynamic(" inlinedynamic ")"
+    dynamic: "Dynamic("i inlinedynamic ")"
 
     noteitem: note ";"
         | inlinedynamic ";"
@@ -62,16 +62,16 @@ grammar = r'''
     instrumentation: (instrument | lhs) "{" noteitem+ "}"
         | lhs
 
-    measure: ("measure" | "Measure") "{" instrumentation* "}"
+    measure: "Measure"i "{" instrumentation* "}"
         | lhs
 
-    tempo: "Tempo(" number ")"
+    tempo: "Tempo("i number ")"
         | lhs
 
-    timesig: "Timesig(" division ")"
+    timesig: "Timesig("i division ")"
         | lhs
 
-    repeat: "Repeat" composeitems+ "Endr"
+    repeat: "Repeat"i composeitems+ "Endr"i
 
     composeitems: tempo
         | timesig
@@ -79,7 +79,7 @@ grammar = r'''
         | measure
         | repeat
 
-    lhs: "$"NAME
+    lhs: "$" /[^\t\n\f\r]+/ NAME
 
     rhs: composeitems
         | instrument
@@ -139,10 +139,28 @@ goodstrs = [
 
 
     """
-    $    gp = acousticgrandpiano
+    $gp = acousticgrandpiano
     Compose{
     }
+    """,
+
     """
+    compose {
+        measure {
+
+        }
+    }
+    """,
+
+
+    """
+    Compose {
+        Measure {
+
+        }
+    }
+    """
+
 ]
 
 badstrs = [
@@ -153,6 +171,11 @@ badstrs = [
     """,
     """
     A
+    """,
+    """
+    $    gp = acousticgrandpiano
+    Compose{
+    }
     """
 ]
 
