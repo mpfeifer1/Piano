@@ -6,7 +6,7 @@ from lark import Tree
 
 class TestGrammar(unittest.TestCase):
     def setUp(self):
-        self.l = lark.Lark(grammar.getgrammar())
+        self.l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
 
     def test_comment(self):
         ''' Arrange '''
