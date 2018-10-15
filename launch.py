@@ -12,5 +12,3 @@ import grammar
 import ourtests
 
 l = lark.Lark(grammar.getgrammar())
-ourtests.runtests()
-
