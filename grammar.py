@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from mido import Message, MidiFile, MidiTrack
 
 import lark
