@@ -11,8 +11,7 @@ import sys
 #TODO add more instruments
 grammar = r'''
     start: compose
-        | lhs "=" rhs
-        | "A"
+        | lhs "=" rhs compose
 
     digit: "0"
         | "1"
@@ -33,12 +32,9 @@ grammar = r'''
 
     rest: "--"
 
-    lhs: NAME
-        | compose
-
     number: digit+
 
-    instrument: "trumpet" | "piano" | "tuba"
+    instrument: "trumpet" | "piano" | "tuba" | "acousticgrandpiano"
 
     division: number "/" number
 
@@ -66,7 +62,7 @@ grammar = r'''
     instrumentation: (instrument | lhs) "{" noteitem+ "}"
         | lhs
 
-    measure: "Measure" "{" instrumentation* "}"
+    measure: ("measure" | "Measure") "{" instrumentation* "}"
         | lhs
 
     tempo: "Tempo(" number ")"
@@ -82,6 +78,8 @@ grammar = r'''
         | dynamic
         | measure
         | repeat
+
+    lhs: "$"NAME
 
     rhs: composeitems
         | instrument
@@ -116,31 +114,46 @@ goodstrs = [
         // Nathan is a nerd
     }
     """,
+
+
     """
-    Compose{
-        //Nerd
+    Compose {
+        Measure {
+            acousticgrandpiano {
+                1/4 C4; 1/4 C4; 1/4 G4; 1/4 G4;
+            }
+        }
     }
     """,
+
+
+
     """
     Compose{
         // Nerd Nerd Nerd
+        Tempo(60)
+        Timesig(4/4)
     }
     """,
+
+
+
     """
+    $    gp = acousticgrandpiano
     Compose{
     }
-    """,
+    """
+]
+
+badstrs = [
+    "INVALID%$&",
+    "h#4",
     """
     nathan = a5
     """,
     """
     A
     """
-]
-
-badstrs = [
-    "INVALID%$&",
-    "h#4"
 ]
 
 print("~~~~~~~GOOD~~~~~~~~")
