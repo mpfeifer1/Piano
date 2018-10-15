@@ -1,14 +1,30 @@
+import unittest
 import grammar
+
 import lark
+from lark import Tree
 
-goodstrs = [
-    """
-    Compose{
-        // Nathan is a nerd
-    }
-    """,
+class TestGrammar(unittest.TestCase):
+    def setUp(self):
+        self.l = lark.Lark(grammar.getgrammar())
+
+    def test_comment(self):
+        ''' Arrange '''
+        test = """
+        Compose{
+            // Nathan is a nerd
+        }
+        """
+        expected = Tree('start', [Tree('compose', [])])
+
+        ''' Act '''
+        actual = self.l.parse(test)
+
+        ''' Assert '''
+        self.assertEqual(actual, expected)
 
 
+'''
     """
     Compose {
         Measure {
@@ -93,3 +109,7 @@ def runtests():
             print("INCORRECT - accepted", i)
         except:
             pass
+'''
+
+if __name__ == '__main__':
+    unittest.main()
