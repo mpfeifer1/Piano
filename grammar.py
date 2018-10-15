@@ -79,7 +79,7 @@ grammar = r'''
         | measure
         | repeat
 
-    lhs: "$" /[^\t\n\f\r]+/ NAME
+    lhs: "$" NAME
 
     rhs: composeitems
         | instrument
@@ -121,6 +121,9 @@ goodstrs = [
         Measure {
             acousticgrandpiano {
                 1/4 C4; 1/4 C4; 1/4 G4; 1/4 G4;
+            }
+            acousticgrandpiano {
+                1/4 C4; 1/4 --; 1/4 G4; 1/4 --;
             }
         }
     }
@@ -183,7 +186,6 @@ print("~~~~~~~GOOD~~~~~~~~")
 for i in goodstrs:
     try:
         l.parse(i)
-        print(l.parse(i).pretty())
     except:
         print("INCORRECT - didn't accept", i)
 
