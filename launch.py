@@ -18,6 +18,8 @@ inputflags = flags.getcommandlineargs()
 with open(inputflags['piano_file'], 'r') as inputfile:
     data = inputfile.read()
 
-l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
-tree = l.parse(data);
-result = semantic.analyze(tree)
+parser = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
+tree = parser.parse(data);
+
+analyzer = semantic.Semantic(tree)
+result = analyzer.analyze()
