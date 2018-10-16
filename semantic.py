@@ -21,14 +21,18 @@ class Semantic:
         # this should keep track of global time, and send that in
         # to each measure
 
-        # Check that the data has a start symbol
-        if self.tree.data != 'start':
+        if not self.is_valid_tree(self.tree):
             #TODO throw real exception
             print('hey man theres no start')
+
 
         # Print children
         for i in self.tree.children:
             print(i.pretty())
+
+    # Check that the data has a start symbol
+    def is_valid_tree(self, tree):
+        return tree.data == 'start'
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
