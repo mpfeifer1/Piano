@@ -35,7 +35,7 @@ class TestGrammar(unittest.TestCase):
         # the comment out
 
         #expected = Tree('start', [Tree('compose', [Tree('measure', [])])])
-        
+
         #actual = self.l.parse(test)
 
         #self.assertEqual(actual, expected)
@@ -46,16 +46,16 @@ class TestGrammar(unittest.TestCase):
         test = """
         Compose{
             Measure{
-                acousticgrandpiano{ 
+                acousticgrandpiano{
                     1/4 C4;
                 }
-            }    
-        }    
+            }
+        }
         """
         #expected = Tree('start', [Tree('compose', [Tree('measure', [Tree('acousticgrandpiano', [])])])])
         #print(self.l.parse(test).pretty)
         #actual = self.l.parse(test)
-        
+
         #self.assertEqual(actual, expected)
 """ Other tests:
     Instrument
