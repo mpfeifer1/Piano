@@ -1,12 +1,18 @@
 import unittest
 import grammar
+from testhelper import TestHelp
 
 import lark
 from lark import Tree
+from lark import lexer
+
+Token = lexer.Token
+
 
 class TestGrammar(unittest.TestCase):
     def setUp(self):
         self.l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
+
 
     def test_comment(self):
         ''' Arrange '''
@@ -19,27 +25,49 @@ class TestGrammar(unittest.TestCase):
 
         ''' Act '''
         actual = self.l.parse(test)
+        #print(actual)
 
         ''' Assert '''
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual, expected, 'Comments not parsed correctly')
 
 
-'''
-    """
-    Compose {
-        Measure {
-            acousticgrandpiano {
-                1/4 C4; 1/4 C4; 1/4 G4; 1/4 G4;
-            }
-            acousticgrandpiano {
-                1/4 C4; 1/4 --; 1/4 G4; 1/4 --;
+    def test_basicMeasure(self):
+        test="""
+        Compose {
+            Measure {
+                acousticgrandpiano {
+                    1/4 Bb4;
+                }
             }
         }
-    }
-    """,
+        """
+        
+        accept = '''
+        start
+          compose
+            composeitems
+              measure
+                instrumentation
+                  acousticgrandpiano
+                  noteitem
+                    note
+                      division
+                        number 1
+                        number 4
+                      notename
+                        B
+                        accidental b
+                        number 4
 
+        '''
+        testtree = self.l.parse(test).pretty()
+        
+        x = TestHelp()
+        res = x.prettyTreeComp(testtree, accept)
+        
+        self.assertTrue(res, 'Basic Measure syntax parsed incorrectly')
 
-
+'''
     """
     Compose{
         // Nerd Nerd Nerd
