@@ -5,7 +5,7 @@ def getgrammar():
         digit: /[0-9]/
 
         accidental: /[#|b]/
-        
+
         compose: "compose"i "{" composeitems* "}"
 
         notename: ("a".."g" | "A".."G") accidental? number

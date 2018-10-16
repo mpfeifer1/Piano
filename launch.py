@@ -14,7 +14,6 @@ import ourtests
 import flags
 
 inputflags = flags.getcommandlineargs()
-print(inputflags)
 
 with open(inputflags['piano_file'], 'r') as inputfile:
     data = inputfile.read()
