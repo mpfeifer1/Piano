@@ -1,12 +1,15 @@
 class Semantic:
-    # Keep track of current 'state' of song
-    self.dynamic = 'mf'
-    self.tempo = 120
-    self.timesig = (4,4)
-
     # Take in the tree from the user
     def __init__(self, tree):
+        # Save the tree the user passed in
         self.tree = tree
+
+        # Keep track of current 'state' of song
+        self.dynamic = 'mf'
+        self.tempo = 120
+        self.timesig = (4,4)
+        self.timestamp = 0
+        self.variables = {}
 
     # Take the tree, and convert it into a list of signals
     def analyze(self):
@@ -17,7 +20,15 @@ class Semantic:
         # it should return nice errors, yeah
         # this should keep track of global time, and send that in
         # to each measure
-        pass
+
+        # Check that the data has a start symbol
+        if self.tree.data != 'start':
+            #TODO throw real exception
+            print('hey man theres no start')
+
+        # Print children
+        for i in self.tree.children:
+            print(i.pretty())
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
