@@ -1,10 +1,14 @@
 class Semantic:
-    #in this file, we may want a global state object
-    # That, or make this a class like normal people
+    # Keep track of current 'state' of song
+    self.dynamic = 'mf'
+    self.tempo = 120
+    self.timesig = (4,4)
 
+    # Take in the tree from the user
     def __init__(self, tree):
         self.tree = tree
 
+    # Take the tree, and convert it into a list of signals
     def analyze(self):
         # so basically here, we're gonna wanna loop through
         # every command in the program, check if it's valid
