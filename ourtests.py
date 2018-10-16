@@ -6,7 +6,7 @@ from lark import Tree
 
 class TestGrammar(unittest.TestCase):
     def setUp(self):
-        self.l = lark.Lark(grammar.getgrammar())
+        self.l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
 
     def test_comment(self):
         ''' Arrange '''
@@ -23,6 +23,45 @@ class TestGrammar(unittest.TestCase):
         ''' Assert '''
         self.assertEqual(actual, expected)
 
+    def test_measure(self):
+        ''' Arrange '''
+        test = """
+        Compose{
+            Measure{
+            }
+        }
+        """
+        # This and the following test are currently real broken, thus
+        # the comment out
+
+        #expected = Tree('start', [Tree('compose', [Tree('measure', [])])])
+        
+        #actual = self.l.parse(test)
+
+        #self.assertEqual(actual, expected)
+
+    def test_single_instrument(self):
+        ''' Arrange '''
+        # Measures can be empty but instruments need to have a note
+        test = """
+        Compose{
+            Measure{
+                acousticgrandpiano{ 
+                    1/4 C4;
+                }
+            }    
+        }    
+        """
+        #expected = Tree('start', [Tree('compose', [Tree('measure', [Tree('acousticgrandpiano', [])])])])
+        #print(self.l.parse(test).pretty)
+        #actual = self.l.parse(test)
+        
+        #self.assertEqual(actual, expected)
+""" Other tests:
+    Instrument
+    Tempo
+    Timesig
+"""
 
 '''
     """

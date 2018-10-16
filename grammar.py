@@ -2,28 +2,19 @@ def getgrammar():
     return r'''
         start: (id "=" rhs)* compose
 
-        digit: "0"
-            | "1"
-            | "2"
-            | "3"
-            | "4"
-            | "5"
-            | "6"
-            | "7"
-            | "8"
-            | "9"
+        digit: /[0-9]/
 
-        accidental: "#" | "b"
+        accidental: /[#|b]/
         
         compose: "compose"i "{" composeitems* "}"
 
         notename: ("a".."g" | "A".."G") accidental? number
 
-        rest: "--"
+        REST: "--"
 
         number: digit+
 
-        instrument: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
+        INSTRUMENT: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
 
         division: number "/" number
 
@@ -34,19 +25,16 @@ def getgrammar():
         note: division notename
             | division (chord | id)
             | division (tuple | id)
-            | division rest
+            | division REST
 
-        inlinedynamic: "mf"i
-            | "mp"i
-            | "f"i+
-            | "p"i+
+        inlinedynamic: /([mM][pPfF]|[pP]+|[fF]+)/
 
         dynamic: "Dynamic("i (inlinedynamic | id) ")"
 
         noteitem: (note|id) ";"
             | inlinedynamic ";"
 
-        instrumentation: (instrument | id) "{" noteitem+ "}"
+        instrumentation: (INSTRUMENT | id) "{" noteitem+ "}"
 
         measure: "Measure"i "{" (instrumentation | id)* "}"
 
@@ -65,7 +53,7 @@ def getgrammar():
 
         id: /[$][a-zA-Z]+[a-zA-Z0-9_\-]*/
 
-        rhs: instrument
+        rhs: INSTRUMENT
             | tempo
             | timesig
             | dynamic
