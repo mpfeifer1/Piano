@@ -25,7 +25,6 @@ class Semantic:
             #TODO throw real exception
             print('hey man theres no start')
 
-
         # Print children
         for i in self.tree.children:
             print(i.pretty())
