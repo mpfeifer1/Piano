@@ -105,6 +105,10 @@ class Semantic:
         return tree.data == 'start'
 
     # check that the measure is valid
+    def is_valid_repeat(self, tree):
+        pass
+
+    # check that the measure is valid
     def is_valid_measure(self, tree):
         pass
 
