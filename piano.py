@@ -27,15 +27,11 @@ with open(inputflags['piano_file'], 'r') as inputfile:
 parser = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
 tree = parser.parse(data);
 
-# Debugging print statements
-print(tree)
-print()
-print(tree.pretty())
-
 # Convert the parse tree into a list of sound signals
 analyzer = semantic.Semantic(tree)
 signals = analyzer.analyze()
 
 # Pass the sound signals to Mido, and build a MIDI file
-midifile = midigenerator.generate(signals)
+generator = midigenerator.MidiGenerator(signals)
+midifile = generator.generate()
 
