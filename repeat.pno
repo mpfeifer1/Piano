@@ -1,0 +1,9 @@
+Compose {
+    Repeat
+        Measure {
+            acousticgrandpiano {
+                1/2 C4;
+            }
+        }
+    Endr
+}
