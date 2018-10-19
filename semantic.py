@@ -43,19 +43,40 @@ class Semantic:
     # return a list of signals
     def process_compose(self, trees):
         for tree in trees:
-            # Strip out the 'composeitems' tree
-            tree = tree.children[0]
+            self.process_composeitems(tree)
 
-            # Composeitems can be any of the following:
-            #   tempo
-            #   timesig
-            #   dynamic
-            #   measure
-            #   repeat
+    def process_composeitems(self, tree):
+        # Strip out the 'composeitems' tree
+        tree = tree.children[0]
 
-            print(tree)
-            print()
-        pass
+        # Tempo
+        if tree.data == 'tempo':
+            if self.is_valid_tempo(tree):
+                self.apply_tempo()
+
+        # Timesig
+        if tree.data == 'timesig':
+            if self.is_valid_timesig(tree):
+                self.apply_timesig()
+
+        # Dynamic
+        if tree.data == 'dynamic':
+            if self.is_valid_dynamic(tree):
+                self.apply_dynamic()
+
+        # Measure
+        if tree.data == 'measure':
+            if self.is_valid_measure(tree):
+                self.measure_to_signal(tree)
+
+        # Repeat
+        if tree.data == 'repeat':
+            if self.is_valid_repeat(tree):
+                tree = self.expand_repeat(tree)
+                self.process_composeitems(tree)
+
+        print(tree)
+        print()
 
 
 
@@ -83,6 +104,14 @@ class Semantic:
     def is_valid_tree(self, tree):
         return tree.data == 'start'
 
+    # check that the measure is valid
+    def is_valid_measure(self, tree):
+        pass
+
+    # check that the tempo is valid
+    def is_valid_tempo(self, tree):
+        pass
+
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
         pass
@@ -100,16 +129,16 @@ class Semantic:
         pass
 
     # Takes in a measure, builds a list of signals
-    def measure_to_signal(self, tree, time):
+    def measure_to_signal(self, tree):
         pass
 
-    def chord_to_signal(self, tree, time):
+    def chord_to_signal(self, tree):
         pass
 
-    def tuple_to_signal(self, tree, time):
+    def tuple_to_signal(self, tree):
         pass
 
-    def note_to_signal(self, tree, time):
+    def note_to_signal(self, tree):
         pass
 
     # given a tree that represents a dynamic, set the new volume
