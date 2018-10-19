@@ -111,7 +111,6 @@ class Semantic:
 
         return commands
 
-
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
         return tree.data == 'start'
@@ -172,7 +171,7 @@ class Semantic:
     # given a tree that represents a time signature, set the timesig
     def apply_timesig(self, tree):
         pass
-
+      
     def throw():
         # TODO find a way to throw an exception here
         pass

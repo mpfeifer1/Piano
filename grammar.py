@@ -2,8 +2,6 @@ def getgrammar():
     return r'''
         start: (id "=" rhs)* compose
 
-        digit: /[0-9]/
-
         accidental: /[#|b]/
 
         compose: "compose"i "{" composeitems* "}"
@@ -12,7 +10,7 @@ def getgrammar():
 
         REST: "--"
 
-        number: digit+
+        number: /[0-9]+/
 
         INSTRUMENT: "trumpet"i | "piano"i | "tuba"i | "acousticgrandpiano"i
 
