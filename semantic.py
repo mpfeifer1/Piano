@@ -31,9 +31,11 @@ class Semantic:
 
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
-        print(tree.pretty()) 
-
-        return tree.data == 'start'
+        if tree.data != 'start':
+            return False
+        if 'compose' not in [(x.data if str(type(x)) == "<class 'lark.tree.Tree'>" else x.value) for x in tree.children]:
+            return False 
+        return True
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
