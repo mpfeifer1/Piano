@@ -46,7 +46,24 @@ class Semantic:
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
-        print(tree.pretty())
+        
+        if not tree.data == 'division':
+            return False
+	
+        if not tree.children[0].data == 'number':
+            return False
+
+        if not tree.children[0].data == 'number':
+            return False
+        
+        if not int(tree.children[0].children[0].value) > 0:
+            return False
+
+        denom = int(tree.children[1].children[0].value)
+        if not (denom  == 1 or denom == 2 or denom == 4 or denom == 8 or denom == 16 or denom == 32 or denom == 64 or denom == 128):
+            return False
+
+        return True 
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):

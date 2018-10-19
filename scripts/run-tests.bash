@@ -11,4 +11,5 @@ cd "${0%/*}/.."
 echo "Running tests"
 echo "............................" 
 
-python ourtests.py
+python3 ourtests.py
+python3 semantictests.py

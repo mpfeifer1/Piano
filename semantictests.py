@@ -14,7 +14,7 @@ class TestSemantics(unittest.TestCase):
 
 
     def test_validDivision(self):
-        division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])]) 
+        division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
         self.semantic.is_valid_division(division)
         self.assertTrue(True)
 
