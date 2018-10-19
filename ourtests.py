@@ -24,8 +24,14 @@ class TestGrammar(unittest.TestCase):
 
         }
         '''
-        print(self.l.parse(test))
-
+        accept = '''
+        start
+            id $gp
+            compose
+        '''
+        res = self.l.parse(test).pretty()
+        #TODO: Fix this test case
+        #self.assertEqual(accept, res, 'Variable declaration not properly parsed')
 
     def test_comment(self):
         ''' Arrange '''
@@ -72,6 +78,7 @@ class TestGrammar(unittest.TestCase):
         '''
         
         testtree = self.l.parse(test).pretty()
+        print(self.l.parse(test))
         self.assertTrue(self.help.prettyTreeComp(testtree, accept), 'Basic Measure syntax parsed incorrectly')
 
     def test_repeat(self):

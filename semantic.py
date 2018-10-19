@@ -63,7 +63,12 @@ class Semantic:
         if not (denom  == 1 or denom == 2 or denom == 4 or denom == 8 or denom == 16 or denom == 32 or denom == 64 or denom == 128):
             return False
 
-        return True 
+        return True
+
+
+    def is_valid_noteitem(self):
+        pass
+ 
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):
@@ -74,7 +79,15 @@ class Semantic:
         pass
 
     def is_valid_instrumentation(self, tree):
-        pass
+        if tree.data != 'instrumentation':
+            return False
+        child = tree.children
+        if child[0].type != 'INSTRUMENT':
+            return False
+        for x in child[1:]:
+            if not is_valid_noteitem:
+                return False
+        return True
 
     # sets a variable in our memory to its tree
     def set_variable(self, tree):
