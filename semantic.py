@@ -21,13 +21,48 @@ class Semantic:
         # this should keep track of global time, and send that in
         # to each measure
 
+        # Check that the tree is valid
         if not self.is_valid_tree(self.tree):
-            #TODO throw real exception
-            print('hey man theres no start')
+            throw()
 
-        # Print children
+        # Split up the tree into a list of commands
+        commands = self.split_into_commands(self.tree)
+
+        # Process each command in the language
+        for command in commands:
+            # If it's an assignment, do that
+            if command[0] == 'assignment':
+                self.set_variable(command[1], command[2], self.variables)
+            # If it's a compose, do that
+            if command[0] == 'compose':
+                signals = self.processcompose(command[1])
+
+        return signals
+
+    # Take in a tree representing the compose to use,
+    # return a list of signals
+    def processcompose(self, tree):
+        pass
+
+    # Take the tree, and split it up into a list of commands
+    def split_into_commands(self, tree):
+        commands = []
+        # For each child
         for i in self.tree.children:
-            print(i.pretty())
+            # If it's an identifier, add a new command, add the lhs to it
+            if i.data == 'id':
+                commands.append(['assignment'])
+                commands[-1].append(i.children)
+            # If it's a rhs, there must already be a command, attach this to it
+            if i.data == 'rhs':
+                commands[-1].append(i.children)
+            # Otherwise, if it's a compose, add this to the list of commands
+            if i.data == 'compose':
+                commands.append(['compose'])
+                commands[-1].append(i.children)
+
+        return commands
+
 
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
@@ -42,7 +77,7 @@ class Semantic:
         pass
 
     # sets a variable in our memory to its tree
-    def set_variable(self, tree):
+    def set_variable(self, lhs, rhs, variables):
         pass
 
     # Check if it has a 'start', and one compose
@@ -78,3 +113,6 @@ class Semantic:
     def apply_timesig(self, tree):
         pass
 
+    def throw():
+        # TODO find a way to throw an exception here
+        pass
