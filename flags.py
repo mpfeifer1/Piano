@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from argparse import ArgumentParser
 import argparse
 import sys
@@ -15,16 +13,17 @@ def midi_type(path):
         raise argparse.ArgumentTypeError('A .midi or .mid file is required for the output name')
     return path
 
-# Take in compilation arguments
-parser = ArgumentParser(description='Compile a .pno file to a .midi file')
-parser.add_argument('-p', type=pno_type, required=True, help='A .pno file is needed for input')
-parser.add_argument('-o', default='song.midi', type=midi_type, help='A .midi or .mid file is optional for output')
+def getcommandlineargs():
+    # Take in compilation arguments
+    parser = ArgumentParser(description='Compile a .pno file to a .midi file')
+    parser.add_argument('-p', type=pno_type, required=True, help='A .pno file is needed for input')
+    parser.add_argument('-o', default='song.midi', type=midi_type, help='A .midi or .mid file is optional for output')
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-midi_file = args.o
-piano_file = args.p
+    midi_file = args.o
+    piano_file = args.p
 
+    returnvals = {"midi_file": midi_file, "piano_file": piano_file}
 
-print('\n--- Outputting to a file called: ', midi_file, '---\n')
-
+    return returnvals

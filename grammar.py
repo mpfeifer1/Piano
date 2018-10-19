@@ -3,7 +3,7 @@ def getgrammar():
         start: (id "=" rhs)* compose
 
         accidental: /[#|b]/
-        
+
         compose: "compose"i "{" composeitems* "}"
 
         notename: ("a".."g" | "A".."G") accidental? number

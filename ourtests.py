@@ -42,7 +42,7 @@ class TestGrammar(unittest.TestCase):
             }
         }
         """
-        
+
         accept = '''
         start
           compose
@@ -63,7 +63,6 @@ class TestGrammar(unittest.TestCase):
         
         testtree = self.l.parse(test).pretty()
         self.assertTrue(self.help.prettyTreeComp(testtree, accept), 'Basic Measure syntax parsed incorrectly')
-
 
     def test_repeat(self):
         test='''
