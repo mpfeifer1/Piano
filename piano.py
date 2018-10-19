@@ -27,6 +27,8 @@ with open(inputflags['piano_file'], 'r') as inputfile:
 parser = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
 tree = parser.parse(data);
 
+print(tree.pretty())
+
 # Convert the parse tree into a list of sound signals
 analyzer = semantic.Semantic(tree)
 signals = analyzer.analyze()

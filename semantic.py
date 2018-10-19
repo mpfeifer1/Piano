@@ -35,14 +35,29 @@ class Semantic:
                 self.set_variable(command[1], command[2], self.variables)
             # If it's a compose, do that
             if command[0] == 'compose':
-                signals = self.processcompose(command[1])
+                signals = self.process_compose(command[1])
 
         return signals
 
-    # Take in a tree representing the compose to use,
+    # Take in a list of trees with composeitems at their root
     # return a list of signals
-    def processcompose(self, tree):
+    def process_compose(self, trees):
+        for tree in trees:
+            # Strip out the 'composeitems' tree
+            tree = tree.children[0]
+
+            # Composeitems can be any of the following:
+            #   tempo
+            #   timesig
+            #   dynamic
+            #   measure
+            #   repeat
+
+            print(tree)
+            print()
         pass
+
+
 
     # Take the tree, and split it up into a list of commands
     def split_into_commands(self, tree):
@@ -52,10 +67,10 @@ class Semantic:
             # If it's an identifier, add a new command, add the lhs to it
             if i.data == 'id':
                 commands.append(['assignment'])
-                commands[-1].append(i.children)
+                commands[-1].append(i.children[0])
             # If it's a rhs, there must already be a command, attach this to it
             if i.data == 'rhs':
-                commands[-1].append(i.children)
+                commands[-1].append(i.children[0])
             # Otherwise, if it's a compose, add this to the list of commands
             if i.data == 'compose':
                 commands.append(['compose'])
