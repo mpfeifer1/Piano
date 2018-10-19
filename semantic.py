@@ -31,14 +31,23 @@ class Semantic:
 
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
+        print(tree.pretty()) 
+
         return tree.data == 'start'
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
-        pass
+        print(tree.pretty())
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):
+        pass
+
+    
+    def is_valid_measure(self, tree):
+        pass
+
+    def is_valid_instrumentation(self, tree):
         pass
 
     # sets a variable in our memory to its tree
