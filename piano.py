@@ -25,7 +25,7 @@ with open(inputflags['piano_file'], 'r') as inputfile:
 
 # Build the parse tree using the grammar
 parser = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
-tree = parser.parse(data);
+tree = parser.parse(data)
 
 # Debugging print statements
 print(tree.pretty())
