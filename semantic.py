@@ -42,12 +42,23 @@ class Semantic:
     # Take in a list of trees with composeitems at their root
     # return a list of signals
     def process_compose(self, trees):
-        for tree in trees:
-            self.process_composeitems(tree)
+        # Define the signals
+        signals = []
 
+        # For each tree, add its signals to the list
+        for tree in trees:
+            signals += self.process_composeitems(tree)
+
+        return signals
+
+    # Take in a list of trees with a single composeitem
+    # return a list of signals
     def process_composeitems(self, tree):
         # Strip out the 'composeitems' tree
         tree = tree.children[0]
+
+        # Define the list of signals
+        signals = []
 
         # Tempo
         if tree.data == 'tempo':
@@ -67,16 +78,17 @@ class Semantic:
         # Measure
         if tree.data == 'measure':
             if self.is_valid_measure(tree):
-                self.measure_to_signal(tree)
+                signals += self.measure_to_signal(tree)
 
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
                 tree = self.expand_repeat(tree)
-                self.process_composeitems(tree)
+                signals += self.process_composeitems(tree)
 
         print(tree)
         print()
+        return signals
 
 
 
