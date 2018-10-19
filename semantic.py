@@ -39,47 +39,24 @@ class Semantic:
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
-        print(tree.pretty())
-        print('============')
-        print (tree.data)
-        if tree.data == 'division':
-            print('You got a division!')
-        else:
+        
+        if not tree.data == 'division':
             return False
-        print('============')
 	
-        print( tree.children[0].data)
-        if tree.children[0].data == 'number':
-            print('The first value is a number!')
-        else:
-            return False
-        print('============')
-
-        print (tree.children[1].data)
-        if tree.children[0].data == 'number':
-            print('The second value is a number!')
-        else:
-            return False
-        print('============')
-
-        print (tree.children[0].children[0].value)
-        if int(tree.children[0].children[0].value) > 0:
-            print('The numerator is above 0!')
-        else:
+        if not tree.children[0].data == 'number':
             return False
 
-        print (tree.children[1].children[0].value)
+        if not tree.children[0].data == 'number':
+            return False
+        
+        if not int(tree.children[0].children[0].value) > 0:
+            return False
+
         denom = int(tree.children[1].children[0].value)
-
-        if demom  == 1 or denom == 2 or denom == 4 or denom == 8 or denom == 16 or denom == 32 or denom == 64 or denom == 128:
-            print('The denominator is 1,2,4,8,16,32,64,or 128!')
-        else:
+        if not denom  == 1 or denom == 2 or denom == 4 or denom == 8 or denom == 16 or denom == 32 or denom == 64 or denom == 128:
             return False
 
         return True 
-		
-	#if tree.children.data == 'number'
-#trees childrens childrens.values should be the actual 1 and 4
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):
