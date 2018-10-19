@@ -23,7 +23,7 @@ class Semantic:
 
         # Check that the tree is valid
         if not self.is_valid_tree(self.tree):
-            throw()
+            self.throw()
 
         # Split up the tree into a list of commands
         commands = self.split_into_commands(self.tree)
@@ -171,7 +171,7 @@ class Semantic:
     # given a tree that represents a time signature, set the timesig
     def apply_timesig(self, tree):
         pass
-      
+
     def throw():
         # TODO find a way to throw an exception here
         pass
