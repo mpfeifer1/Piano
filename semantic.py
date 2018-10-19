@@ -63,17 +63,17 @@ class Semantic:
         # Tempo
         if tree.data == 'tempo':
             if self.is_valid_tempo(tree):
-                self.apply_tempo()
+                self.apply_tempo(tree)
 
         # Timesig
         if tree.data == 'timesig':
             if self.is_valid_timesig(tree):
-                self.apply_timesig()
+                self.apply_timesig(tree)
 
         # Dynamic
         if tree.data == 'dynamic':
             if self.is_valid_dynamic(tree):
-                self.apply_dynamic()
+                self.apply_dynamic(tree)
 
         # Measure
         if tree.data == 'measure':
