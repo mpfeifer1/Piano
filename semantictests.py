@@ -58,6 +58,11 @@ class TestSemantics(unittest.TestCase):
         self.assertFalse(self.semantic.is_valid_tree(tree), 'Invalid tree no id to match rhs found as valid')
 
 
+    def test_validInstrumentation(self):
+        tree = Tree('insrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])], Tree('notename', [Token('__ANON_2', 'B'), Tree('accidental', [Token('__anon_3', 'b')]), Tree('number', [Token('__ANON_1', '4')])]))])
+        self.assertTrue(self.semantic.is_valid_instrumentation(tree), 'Valid instrumentation tree found invalid')
+
+
 if __name__ == '__main__':
     unittest.main()
 
