@@ -16,6 +16,16 @@ class TestGrammar(unittest.TestCase):
         self.l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
         self.help = TestHelp()
 
+    
+    def test_variable(self):
+        test = '''
+        $gp = acousticgrandpiano
+        compose{
+
+        }
+        '''
+        print(self.l.parse(test))
+
 
     def test_comment(self):
         ''' Arrange '''

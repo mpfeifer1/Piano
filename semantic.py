@@ -33,7 +33,14 @@ class Semantic:
     def is_valid_tree(self, tree):
         if tree.data != 'start':
             return False
-        if 'compose' not in [(x.data if str(type(x)) == "<class 'lark.tree.Tree'>" else x.value) for x in tree.children]:
+        for i in range(len(tree.children[:-1])):
+            if tree.children[i].data == 'id':
+                if tree.children[i+1].data != 'rhs':
+                    return False
+            if tree.children[i].data == 'rhs':
+                if tree.children[i-1].data != 'id':
+                    return False
+        if tree.children[-1].data != 'compose':
             return False 
         return True
 
