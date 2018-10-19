@@ -1,10 +1,8 @@
-$tpt = trumpet
 Compose {
-    Tempo(100)
     Repeat
         Measure {
             acousticgrandpiano {
-                1/2 C4; 1/2 --;
+                1/2 C4;
             }
         }
     Endr
