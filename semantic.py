@@ -172,6 +172,6 @@ class Semantic:
     def apply_timesig(self, tree):
         pass
 
-    def throw():
+    def throw(self):
         # TODO find a way to throw an exception here
         pass
