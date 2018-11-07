@@ -176,6 +176,7 @@ class Semantic:
             print('error: invalid noteitem')
         
         for i in tree.children:
+            # possible noteitem children : note , inlinedynamic
             if i.data == 'note':
                 self.note_to_signal(i)
             elif i.data == 'inlinedynamic':
@@ -184,6 +185,29 @@ class Semantic:
                 print('invalid noteitem child')
     
     def note_to_signal(self, tree):
+        if tree.data != 'note':
+            print('error: not a note!')
+        
+        for i in tree.children:
+            # children of a note: division, notename, --, chord, tuple
+            if i == "--":
+                self.rest_to_signal(i)
+            elif i.data == 'division':
+                print("collecting divisions") 
+            elif i.data == 'notename':
+                print("collecting notename")
+            elif i.data == "chord":
+                self.chord_to_signal(i)
+            elif i.data == "tuple":
+                self.tuple_to_signal(i)
+            else:
+                print("invalid\n")
+                print(i)
+
+    def rest_to_signal(self, tree):
+         print("resting")
+
+    def notename_to_signal(self, tree):
         pass
 
     def inlinedynmaic_to_signal(self, tree):
