@@ -1,3 +1,5 @@
+import lark
+
 class Semantic:
     # Take in the tree from the user
     def __init__(self, tree):
@@ -10,6 +12,8 @@ class Semantic:
         self.timesig = (4,4)
         self.timestamp = 0
         self.variables = {}
+
+        self.treetype = type(lark.tree.Tree('data', ['children']))
 
     # Take the tree, and convert it into a list of signals
     def analyze(self):
@@ -31,6 +35,9 @@ class Semantic:
 
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+
         if tree.data != 'start':
             return False
         for i in range(len(tree.children[:-1])):
@@ -41,7 +48,7 @@ class Semantic:
                 if tree.children[i-1].data != 'id':
                     return False
         if tree.children[-1].data != 'compose':
-            return False 
+            return False
         return True
 
     
@@ -66,16 +73,21 @@ class Semantic:
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
-        
-        if not tree.data == 'division':
+        if not type(tree) is self.treetype:
             return False
-	
-        if not tree.children[0].data == 'number':
+
+        if not tree.data == 'division':
             return False
 
         if not tree.children[0].data == 'number':
             return False
-        
+
+        if not tree.children[1].data == 'number':
+            return False
+
+        if not len(tree.children) == 2:
+            return False
+
         if not int(tree.children[0].children[0].value) > 0:
             return False
 
@@ -90,7 +102,7 @@ class Semantic:
         if tree.data != 'noteitem':
             return False
         for x in tree.children:
-            if str(type(x)) != "<class 'lark.tree.Tree'>":
+            if type(x) != type(Tree):
                 return False
             if x.data == 'note' and not is_valid_note(x):
                 return False
@@ -100,20 +112,43 @@ class Semantic:
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+
         pass
 
-    
+
     def is_valid_measure(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'measure':
+            return False
+
+        for subtree in tree.children:
+            isInstr = self.is_valid_instrumentation(subtree)
+            isId = self.is_valid_identifier(subtree)
+            if (not isInstr) and (not isId):
+                return False
+
+        return True
 
     def is_valid_instrumentation(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+
         if tree.data != 'instrumentation':
             return False
+
+        if len(tree.children) < 1:
+            return False
+
         child = tree.children
         if child[0].type != 'INSTRUMENT':
             return False
+
         for x in child[1:]:
-            if not is_valid_noteitem:
+            if not self.is_valid_noteitem(x):
                 return False
         return True
 
@@ -123,6 +158,9 @@ class Semantic:
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+
         pass
 
     # Takes in a measure, builds a list of signals
