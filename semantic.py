@@ -195,29 +195,52 @@ class Semantic:
             elif i.data == 'division':
                 print("collecting divisions") 
             elif i.data == 'notename':
-                print("collecting notename")
+                self.notename_to_signal(i)
             elif i.data == "chord":
                 self.chord_to_signal(i)
             elif i.data == "tuple":
                 self.tuple_to_signal(i)
             else:
-                print("invalid\n")
-                print(i)
+                print("invalid note child")
 
     def rest_to_signal(self, tree):
          print("resting")
 
     def notename_to_signal(self, tree):
-        pass
+        print('notename to signal')
+        for i in tree.children:
+            if 'Tree' in str(type(i)):
+                print(i.children[0])
+            elif 'Token' in str(type(i)): #it's a token
+                print(i) 
+            else:
+                print('invalid notename child')
 
     def inlinedynmaic_to_signal(self, tree):
         pass
         
     def chord_to_signal(self, tree):
-        pass
+        if tree.data != 'chord':
+            print('error! not a chord')
+
+        for i in tree.children:
+            # only children of a chord are notenames
+            if i.data == 'notename':
+                self.notename_to_signal(i)
+            else:
+                print('invalid chord child')
 
     def tuple_to_signal(self, tree):
-        pass
+        if tree.data != 'tuple':
+            print('error: not a tuple')
+
+        for i in tree.children:
+            if i.data == 'notename':
+                self.notename_to_signal(i)
+            elif i.data == 'chord':
+                self.chord_to_signal(i)
+            else:
+                print('invalid tuple child')
 
 
     # given a tree that represents a dynamic, set the new volume
