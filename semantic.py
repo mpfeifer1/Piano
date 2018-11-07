@@ -164,21 +164,37 @@ class Semantic:
         if tree.data != 'instrumentation':
             print('error: not an instrumentation')
             return False
-        print('instrumentation: ' + tree.children[0])
+        print('\ninstrumentation: ' + tree.children[0])
         if instrumentToNumber.__contains__(tree.children[0]):
-            print("yyaay!") 
+            for i in tree.children[1:]:
+                self.noteitem_to_signal(i)
         else:
             print('invalid instrument')
-        
 
+    def noteitem_to_signal(self,tree):
+        if tree.data != 'noteitem':
+            print('error: invalid noteitem')
+        
+        for i in tree.children:
+            if i.data == 'note':
+                self.note_to_signal(i)
+            elif i.data == 'inlinedynamic':
+                self.inlinedynmaic_to_signal(i)
+            else:
+                print('invalid noteitem child')
+    
+    def note_to_signal(self, tree):
+        pass
+
+    def inlinedynmaic_to_signal(self, tree):
+        pass
+        
     def chord_to_signal(self, tree):
         pass
 
     def tuple_to_signal(self, tree):
         pass
 
-    def note_to_signal(self, tree):
-        pass
 
     # given a tree that represents a dynamic, set the new volume
     def apply_dynamic(self, tree):
