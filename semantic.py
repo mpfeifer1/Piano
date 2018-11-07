@@ -78,7 +78,7 @@ class Semantic:
         return True
 
 
-    def is_valid_noteitem(self):
+    def is_valid_noteitem(self, tree):
         if not type(tree) is self.treetype:
             return False
 
@@ -121,8 +121,9 @@ class Semantic:
         child = tree.children
         if child[0].type != 'INSTRUMENT':
             return False
+
         for x in child[1:]:
-            if not is_valid_noteitem:
+            if not self.is_valid_noteitem(x):
                 return False
         return True
 
