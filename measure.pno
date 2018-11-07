@@ -1,0 +1,10 @@
+Compose {
+    Measure {
+        acousticgrandpiano {
+            1/2 C4; 1/2 --;
+        }
+        trumpet {
+            1/4 E4; 1/4 (C4 E4); 1/4 (E4 G4); fff; 1/4 tuplet( C4); 
+        }
+    }
+}
