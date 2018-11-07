@@ -21,17 +21,111 @@ class Semantic:
         # this should keep track of global time, and send that in
         # to each measure
 
+        # Check that the tree is valid
         if not self.is_valid_tree(self.tree):
-            #TODO throw real exception
-            print('hey man theres no start')
+            self.throw()
 
-        # Print children
+        # Split up the tree into a list of commands
+        commands = self.split_into_commands(self.tree)
+
+        # Process each command in the language
+        for command in commands:
+            # If it's an assignment, do that
+            if command[0] == 'assignment':
+                self.set_variable(command[1], command[2], self.variables)
+            # If it's a compose, do that
+            if command[0] == 'compose':
+                signals = self.process_compose(command[1])
+
+        return signals
+
+    # Take in a list of trees with composeitems at their root
+    # return a list of signals
+    def process_compose(self, trees):
+        # Define the signals
+        signals = []
+
+        # For each tree, add its signals to the list
+        for tree in trees:
+            signals += self.process_composeitems(tree)
+
+        return signals
+
+    # Take in a list of trees with a single composeitem
+    # return a list of signals
+    def process_composeitems(self, tree):
+        # Strip out the 'composeitems' tree
+        tree = tree.children[0]
+
+        # Define the list of signals
+        signals = []
+
+        # Tempo
+        if tree.data == 'tempo':
+            if self.is_valid_tempo(tree):
+                self.apply_tempo(tree)
+
+        # Timesig
+        if tree.data == 'timesig':
+            if self.is_valid_timesig(tree):
+                self.apply_timesig(tree)
+
+        # Dynamic
+        if tree.data == 'dynamic':
+            if self.is_valid_dynamic(tree):
+                self.apply_dynamic(tree)
+
+        # Measure
+        if tree.data == 'measure':
+            if self.is_valid_measure(tree):
+                signals += self.measure_to_signal(tree)
+
+        # Repeat
+        if tree.data == 'repeat':
+            if self.is_valid_repeat(tree):
+                tree = self.expand_repeat(tree)
+                signals += self.process_composeitems(tree)
+
+        print(tree)
+        print()
+        return signals
+
+
+
+    # Take the tree, and split it up into a list of commands
+    def split_into_commands(self, tree):
+        commands = []
+        # For each child
         for i in self.tree.children:
-            print(i.pretty())
+            # If it's an identifier, add a new command, add the lhs to it
+            if i.data == 'id':
+                commands.append(['assignment'])
+                commands[-1].append(i.children[0])
+            # If it's a rhs, there must already be a command, attach this to it
+            if i.data == 'rhs':
+                commands[-1].append(i.children[0])
+            # Otherwise, if it's a compose, add this to the list of commands
+            if i.data == 'compose':
+                commands.append(['compose'])
+                commands[-1].append(i.children)
+
+        return commands
 
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
         return tree.data == 'start'
+
+    # check that the measure is valid
+    def is_valid_repeat(self, tree):
+        pass
+
+    # check that the measure is valid
+    def is_valid_measure(self, tree):
+        pass
+
+    # check that the tempo is valid
+    def is_valid_tempo(self, tree):
+        pass
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
@@ -42,7 +136,7 @@ class Semantic:
         pass
 
     # sets a variable in our memory to its tree
-    def set_variable(self, tree):
+    def set_variable(self, lhs, rhs, variables):
         pass
 
     # Check if it has a 'start', and one compose
@@ -50,16 +144,16 @@ class Semantic:
         pass
 
     # Takes in a measure, builds a list of signals
-    def measure_to_signal(self, tree, time):
+    def measure_to_signal(self, tree):
         pass
 
-    def chord_to_signal(self, tree, time):
+    def chord_to_signal(self, tree):
         pass
 
-    def tuple_to_signal(self, tree, time):
+    def tuple_to_signal(self, tree):
         pass
 
-    def note_to_signal(self, tree, time):
+    def note_to_signal(self, tree):
         pass
 
     # given a tree that represents a dynamic, set the new volume
@@ -78,3 +172,6 @@ class Semantic:
     def apply_timesig(self, tree):
         pass
 
+    def throw(self):
+        # TODO find a way to throw an exception here
+        pass
