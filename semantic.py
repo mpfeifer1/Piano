@@ -97,6 +97,12 @@ class Semantic:
         if not tree.data == 'measure':
             return False
 
+        for subtree in tree.children:
+            isInstr = self.is_valid_instrumentation(subtree)
+            isId = self.is_valid_identifier(subtree)
+            if (not isInstr) and (not isId):
+                return False
+
         return True
 
     def is_valid_instrumentation(self, tree):
