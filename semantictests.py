@@ -68,9 +68,13 @@ class TestSemantics(unittest.TestCase):
 
 
 
-#    def test_validMeasure(self):
-#        tree = Tree('measure', [Tree('compose', [])])
-#        self.assertTrue(self.semantic.is_valid_tree(tree), 'Valid Tree found invalid')
+    def test_validMeasure(self):
+        tree = Tree('measure', [])
+        self.assertTrue(self.semantic.is_valid_measure(tree), 'Valid empty measure found invalid')
+
+    def test_invalidMeasure(self):
+        tree = Tree('compose', [])
+        self.assertFalse(self.semantic.is_valid_measure(tree), 'Valid empty measure found invalid')
 
 if __name__ == '__main__':
     unittest.main()
