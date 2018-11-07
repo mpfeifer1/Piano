@@ -37,5 +37,6 @@ analyzer = semantic.Semantic(tree)
 signals = analyzer.analyze()
 
 # Pass the sound signals to Mido, and build a MIDI file
-midifile = midigenerator.generate(signals)
+generator = midigenerator.MidiGenerator(signals)
+song = generator.generate()
 
