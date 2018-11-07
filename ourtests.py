@@ -18,28 +18,25 @@ LarkError = exceptions.LarkError
 class TestSignalGeneration(unittest.TestCase):
    
     def setUp(self):
-        self.testMeasure =
+        self.l = lark.Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
+        self.measureTest = '''
+        Compose {
+            Measure {
+                acousticgrandpiano {
+                    1/2 C4; 1/2 --;
+                }
+                trumpet {
+                    1/4 E4; 1/4 (C4 E4); 1/4 (E4 G4); fff; 1/4 tuplet(C4 D4 E4 F4 G4); 
+                }
+            }
+        }         
         '''
-[Tree(measure,
-  [Tree(instrumentation,
-    [Token(INSTRUMENT, 'acousticgrandpiano'),
-    Tree(noteitem,
-      [Tree(note,
-        [Tree(division,
-          [Tree(number,
-            [Token(__ANON_3, '1')]),
-          Tree(number,
-            [Token(__ANON_3, '2')])]),
-          Tree(notename,
-            [Token(__ANON_1, 'C'),
-          Tree(number,
-            [Token(__ANON_3, '4')])])])]),
-    Tree(noteitem,
-      [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '2')])]), Token(REST, '--')])])]), Tree(instrumentation, [Token(INSTRUMENT, 'trumpet'), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])])])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(chord, [Tree(notename, [Token(__ANON_2, 'C'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])])])])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(chord, [Tree(notename, [Token(__ANON_2, 'E'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'G'), Tree(number, [Token(__ANON_3, '4')])])])])]), Tree(noteitem, [Tree(inlinedynamic, [Token(__ANON_5, 'fff')])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(tuple, [Tree(notename, [Token(__ANON_2, 'C'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'D'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'F'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'G'), Tree(number, [Token(__ANON_3, '4')])])])])])])])]
-         
-        '''
+
+        self.tree = self.l.parse(self.measureTest)
+        self.testMeasure = self.tree.children[0].children[0].children[0]
+
         # what args go here???
-        self.semantic = Semantic()
+        self.semantic = Semantic(self.testMeasure)
         self.help = TestHelp()
 
     def test_measure_to_signal(self):

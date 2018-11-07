@@ -1,3 +1,5 @@
+from instrumentToNumber import instrumentToNumber
+
 class Semantic:
     # Take in the tree from the user
     def __init__(self, tree):
@@ -127,6 +129,12 @@ class Semantic:
     def is_valid_tempo(self, tree):
         pass
 
+    def is_valid_timesig(self, tree):
+        pass
+
+    def is_valid_dynamic(self, tree):
+        pass
+
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
         pass
@@ -145,7 +153,23 @@ class Semantic:
 
     # Takes in a measure, builds a list of signals
     def measure_to_signal(self, tree):
-        pass
+        if tree.data != 'measure':
+            print('error: not a measure')
+            return False
+        for i in tree.children:
+            if i.data == 'instrumentation':
+                self.instrumentation_to_signal(i)
+
+    def instrumentation_to_signal(self, tree):
+        if tree.data != 'instrumentation':
+            print('error: not an instrumentation')
+            return False
+        print('instrumentation: ' + tree.children[0])
+        if instrumentToNumber.__contains__(tree.children[0]):
+            print("yyaay!") 
+        else:
+            print('invalid instrument')
+        
 
     def chord_to_signal(self, tree):
         pass
