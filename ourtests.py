@@ -6,9 +6,45 @@ import lark
 from lark import Tree
 from lark import lexer
 from lark import exceptions
+
+from instrumentToNumber import instrumentToNumber
+from noteToNumber import noteToNumber
+
+from semantic import Semantic
+
 Token = lexer.Token
 LarkError = exceptions.LarkError
 
+class TestSignalGeneration(unittest.TestCase):
+   
+    def setUp(self):
+        self.testMeasure =
+        '''
+[Tree(measure,
+  [Tree(instrumentation,
+    [Token(INSTRUMENT, 'acousticgrandpiano'),
+    Tree(noteitem,
+      [Tree(note,
+        [Tree(division,
+          [Tree(number,
+            [Token(__ANON_3, '1')]),
+          Tree(number,
+            [Token(__ANON_3, '2')])]),
+          Tree(notename,
+            [Token(__ANON_1, 'C'),
+          Tree(number,
+            [Token(__ANON_3, '4')])])])]),
+    Tree(noteitem,
+      [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '2')])]), Token(REST, '--')])])]), Tree(instrumentation, [Token(INSTRUMENT, 'trumpet'), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])])])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(chord, [Tree(notename, [Token(__ANON_2, 'C'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])])])])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(chord, [Tree(notename, [Token(__ANON_2, 'E'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'G'), Tree(number, [Token(__ANON_3, '4')])])])])]), Tree(noteitem, [Tree(inlinedynamic, [Token(__ANON_5, 'fff')])]), Tree(noteitem, [Tree(note, [Tree(division, [Tree(number, [Token(__ANON_3, '1')]), Tree(number, [Token(__ANON_3, '4')])]), Tree(tuple, [Tree(notename, [Token(__ANON_2, 'C'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'D'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'E'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'F'), Tree(number, [Token(__ANON_3, '4')])]), Tree(notename, [Token(__ANON_1, 'G'), Tree(number, [Token(__ANON_3, '4')])])])])])])])]
+         
+        '''
+        # what args go here???
+        self.semantic = Semantic()
+        self.help = TestHelp()
+
+    def test_measure_to_signal(self):
+        self.semantic.measure_to_signal(self.testMeasure)
+        
 
 class TestGrammar(unittest.TestCase):
 
@@ -42,6 +78,7 @@ class TestGrammar(unittest.TestCase):
             }
         }
         """
+
         accept = '''
         start
           compose
