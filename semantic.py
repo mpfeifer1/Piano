@@ -62,9 +62,12 @@ class Semantic:
         if not tree.children[0].data == 'number':
             return False
 
-        if not tree.children[0].data == 'number':
+        if not tree.children[1].data == 'number':
             return False
 
+        if not len(tree.children) == 2:
+            return False
+        
         if not int(tree.children[0].children[0].value) > 0:
             return False
 

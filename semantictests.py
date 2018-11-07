@@ -26,13 +26,16 @@ class TestSemantics(unittest.TestCase):
         self.assertFalse(self.semantic.is_valid_division(division), 'Invalid division, no number on left')
 
     def test_invalidDivisionNoNumberOnRight(self):
-        pass
+        division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('division', [Token('__ANON_1', '4')])])
+        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid division, no number on right')
 
     def test_invalidDivisionNumerator(self):
-        pass
+        division = Tree('division', [Tree('number', [Token('__ANON_0', '-1')]), Tree('number', [Token('__ANON_1', '4')])])
+        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid numerator')
 
     def test_invalidDivisionDenominator(self):
-        pass
+        division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '5')])])
+        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid denominator')
 
     def test_validTree(self):
         tree = Tree('start', [Tree('compose', [])])
