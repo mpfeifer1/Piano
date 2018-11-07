@@ -63,6 +63,15 @@ class TestSemantics(unittest.TestCase):
         self.assertTrue(self.semantic.is_valid_instrumentation(tree), 'Valid instrumentation tree found invalid')
 
 
+    def test_validNoteitem(self):
+        tree1 = Tree('noteitem', [ Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '4') ]) ]),  Tree('notename', [ Token('__ANON_1', 'A'),  Tree('accidental', [ Token('__ANON_0', 'b') ]),  Tree('number', [ Token('__ANON_3', '5') ]) ]) ]) ]) 
+        tree2 = Tree('noteitem', [ Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '2') ]) ]),  Token('REST', '--') ]) ])
+        tree3 = Tree('noteitem', [ Tree('inlinedynamic', [ Token('__ANON_5', 'mf') ]) ])
+        self.assertTrue(self.semantic.is_valid_noteitem(tree1), 'Valid noteitem tree with note found inalid')
+        self.assertTrue(self.semantic.is_valid_noteitem(tree2), 'Valid noteitem tree with rest found inalid')
+        self.assertTrue(self.semantic.is_valid_noteitem(tree3), 'Valid noteitem tree with dynamic found inalid')
+
+
 if __name__ == '__main__':
     unittest.main()
 

@@ -44,6 +44,26 @@ class Semantic:
             return False 
         return True
 
+    
+    def is_valid_inlinedynamic(self, tree):
+        if tree.data != 'inlinedynamic':
+            return False
+        if len(tree.children) != 1 or str(type(tree.children[0])) != "<class 'lark.token.Token'>":
+            return False
+        return True
+
+
+    def is_valid_note(self, tree):
+        if tree.data != 'note':
+            return False
+        if tree.data == 'note':
+            if not is_valid_division(tree.children[0]):
+                return False
+            if ( tree.children[1].type if str(type(tree.children[1])) == "<class 'lark.token.Token'>" else tree.children[1].data ) not in ['REST', 'notename']:
+                return False
+        return True 
+
+
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
         
@@ -66,9 +86,17 @@ class Semantic:
         return True
 
 
-    def is_valid_noteitem(self):
-        pass
- 
+    def is_valid_noteitem(self, tree):
+        if tree.data != 'noteitem':
+            return False
+        for x in tree.children:
+            if str(type(x)) != "<class 'lark.tree.Tree'>":
+                return False
+            if x.data == 'note' and not is_valid_note(x):
+                return False
+            if x.data == 'inlinedynamic' and not is_valid_inlinedynamic(x):
+                return False
+        return True 
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):

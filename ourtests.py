@@ -19,9 +19,12 @@ class TestGrammar(unittest.TestCase):
     
     def test_variable(self):
         test = '''
-        $gp = acousticgrandpiano
         compose{
-
+            measure {
+                acousticgrandpiano {
+                    mf;
+                }
+            }
         }
         '''
         accept = '''
@@ -29,7 +32,8 @@ class TestGrammar(unittest.TestCase):
             id $gp
             compose
         '''
-        res = self.l.parse(test).pretty()
+        res = self.l.parse(test)
+        print(res)
         #TODO: Fix this test case
         #self.assertEqual(accept, res, 'Variable declaration not properly parsed')
 
