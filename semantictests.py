@@ -15,8 +15,7 @@ class TestSemantics(unittest.TestCase):
 
     def test_validDivision(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.semantic.is_valid_division(division)
-        self.assertTrue(True, 'Valid Division found invalid')
+        self.assertTrue(self.semantic.is_valid_division(division), 'Valid Division found invalid')
 
     def test_invalidDivisionNoDivision(self):
         division = [Tree('number', [])]
@@ -64,6 +63,11 @@ class TestSemantics(unittest.TestCase):
 #        tree = Tree('insrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])], Tree('notename', [Token('__ANON_2', 'B'), Tree('accidental', [Token('__anon_3', 'b')]), Tree('number', [Token('__ANON_1', '4')])]))])
 #        self.assertTrue(self.semantic.is_valid_instrumentation(tree), 'Valid instrumentation tree found invalid')
 
+
+
+#    def test_validMeasure(self):
+#        tree = Tree('measure', [Tree('compose', [])])
+#        self.assertTrue(self.semantic.is_valid_tree(tree), 'Valid Tree found invalid')
 
 if __name__ == '__main__':
     unittest.main()

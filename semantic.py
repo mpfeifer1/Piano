@@ -94,6 +94,9 @@ class Semantic:
         if not type(tree) is self.treetype:
             return False
 
+        if not tree.data == 'measure':
+            return False
+
         pass
 
     def is_valid_instrumentation(self, tree):
