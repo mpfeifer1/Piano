@@ -77,8 +77,8 @@ class TestSemantics(unittest.TestCase):
         self.assertFalse(self.semantic.is_valid_measure(tree), 'Valid measure found invalid')
 
     def test_validMeasureWithInstrumentation(self):
-        #tree = Tree('measure', [Tree('instrumentation', [])])
-        #self.assertTrue(self.semantic.is_valid_measure(tree), 'Valid measure found invalid')
+        tree = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])
+        self.assertTrue(self.semantic.is_valid_measure(tree), 'Valid measure found invalid')
         pass
 
 if __name__ == '__main__':

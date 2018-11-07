@@ -67,7 +67,7 @@ class Semantic:
 
         if not len(tree.children) == 2:
             return False
-        
+
         if not int(tree.children[0].children[0].value) > 0:
             return False
 
@@ -114,6 +114,10 @@ class Semantic:
 
         if tree.data != 'instrumentation':
             return False
+
+        if len(tree.children) < 1:
+            return False
+
         child = tree.children
         if child[0].type != 'INSTRUMENT':
             return False
