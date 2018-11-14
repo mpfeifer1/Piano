@@ -59,7 +59,7 @@ class Semantic:
             return False
         return True
 
-
+    '''
     def is_valid_note(self, tree):
         if tree.data != 'note':
             return False
@@ -69,6 +69,33 @@ class Semantic:
             if ( tree.children[1].type if str(type(tree.children[1])) == "<class 'lark.token.Token'>" else tree.children[1].data ) not in ['REST', 'notename']:
                 return False
         return True 
+    '''
+    def is_valid_note(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+        #note: division notename
+        #        | division (chord | id)
+        #        | division (tuple | id)
+        #        | division REST
+        
+        #tree.children[0].data == 'note'
+        if len(tree.children[0].children) != 2:
+            return False
+        
+        if tree.children[0].children[0].data != 'division':
+            return False
+        else:
+            n = tree.children[0].children[1].data
+            if not ( n == 'notename' or n == 'chord' or n == 'tuple' or n == 'id' or n == 'REST'):
+                return False
+            
+            if tree.children[0].children[1].data == 'REST':
+                if tree.children[0].children[1].children[0].value != '--':
+                    print('rest is not good')
+                    return False
+                            
+        return True
+
 
 
     # check that all the numbers are powers of 2 and nonzero
@@ -98,17 +125,112 @@ class Semantic:
         return True
 
 
+    #def is_valid_noteitem(self, tree):
+    #    if tree.data != 'noteitem':
+    #        return False
+    #    for x in tree.children:
+    #        if type(x) != type(Tree):
+    #            return False
+    #        if x.data == 'note' and not is_valid_note(x):
+    #            return False
+    #        if x.data == 'inlinedynamic' and not is_valid_inlinedynamic(x):
+    #            return False
+    #    return True 
+
     def is_valid_noteitem(self, tree):
-        if tree.data != 'noteitem':
+        if not type(tree) is self.treetype:
             return False
-        for x in tree.children:
-            if type(x) != type(Tree):
+
+        if not tree.data == 'noteitem':
+            return False
+
+        if not len(tree.children) == 1:
+            return False
+        
+        if tree.children[0].data == 'note':
+            return Semantic.is_valid_note(self, tree)
+        
+        if tree.children[0].data == 'id':
+            return Semantic.is_valid_identifier(self, tree)
+        
+        if tree.children[0].data == 'inlinedynamic':
+            return Semantic.is_valid_inlinedynamic(self, tree)
+
+        # if children size not 1 throw error
+
+        # if note, return is_valid_note
+        # if id, return is_valid_identif
+        # if inlinedynamic, return is_valid_inline...
+
+        # otherwise false
+        
+        #if not (tree.children[0] == 'note' or tree.children[0] == 'id') or tree.children[0] == 'inlinedynamic'
+        #    return False                
+
+
+        #noteitem: (note|id)";"
+        #        | inlinedynamic";"
+        #note: division notename
+        #        | division (chord | id)
+        #        | division (tuple | id)
+        #        | division REST
+        #id starts with $, then letter, then letter or number
+        #
+        #inlinedynamic is mp, mf, pp, ff etc (case insensitive)
+
+        return True
+
+    def is_valid_notename(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'notename':
+            return False
+
+        if not (len(tree.children) == 3 or len(tree.children) == 2):
+            return False
+
+        n = tree.children[0]
+        n.upper()
+        if not (n  == 'A' or n == 'B' or n == 'C' or n == 'D' or n == 'E' or n == 'F' or n == 'G'):
+            return False
+        
+        if len(tree.children) == 3:
+            #Has accidental
+            if tree.children[1].data != 'accidental':
+                #print('Incorrect name for the second arg')
+                return False    
+            if tree.children[2].data != 'number':
+                #print('Incorrect name for third arg')
                 return False
-            if x.data == 'note' and not is_valid_note(x):
+            
+            acc = tree.children[1].children[0].value
+            #print('ACC', acc)
+            if acc != ('#' or 'b'):
+                #print('bad accidental symbol')
                 return False
-            if x.data == 'inlinedynamic' and not is_valid_inlinedynamic(x):
+            octave = int(tree.children[2].children[0].value) 
+            #print('OCTAVE', octave)
+            if 9 > octave < 0:
+                #print('Bad range for octave number')
                 return False
-        return True 
+
+        elif len(tree.children) == 2:
+            #No accidental
+            if tree.children[1].data != 'number':
+                #print('Incorrect name for second arg')
+                return False
+            octave = int(tree.children[1].children[0].value)
+            #print('OCTAVE', octave)
+            if 9 > octave < 0:
+                #print('Bad range for octave number')
+                return False
+        else:
+            #Invalid length 
+            return False
+
+        return True
+
 
     # check the name exists in our program
     def is_valid_identifier(self, tree):
