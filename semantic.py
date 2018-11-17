@@ -37,7 +37,6 @@ class Semantic:
             # If it's a compose, do that
             if command[0] == 'compose':
                 signals += self.process_compose(command[1])
-
         return signals
 
     # Return a list of signals with all the default settings
@@ -57,8 +56,8 @@ class Semantic:
 
         # For each tree, add its signals to the list
         for tree in trees:
-            signals += self.process_composeitems(tree)
-
+            signals += self.process_composeitems(tree)       
+ 
         return signals
 
     # Take in a list of trees with a single composeitem
@@ -165,68 +164,105 @@ class Semantic:
         if tree.data != 'measure':
             print('error: not a measure')
             return False
+
+        signals = []
+        signals.append({'type':'measure'})
+        
         for i in tree.children:
             if i.data == 'instrumentation':
-                self.instrumentation_to_signal(i)
+                signals.append(self.instrumentation_to_signal(i))
+        
+        print("\n\n\n\n\n\n\n")
+        print(signals)
+        
+        # the list of signals needs to be flattened here!
+        # it's also very possible the returns are borked
+        # i.e. [ {} [ {} [[ {} ]]]] needs to be [{} {} {}] 
+        
+        return signals
 
     def instrumentation_to_signal(self, tree):
         if tree.data != 'instrumentation':
             print('error: not an instrumentation')
             return False
-        print('\ninstrumentation: ' + tree.children[0])
+
+        signals = []
+        name = tree.children[0]
+        
+        signals.append({'type':'instrument', 'name':str(name)})
+        #print('\ninstrumentation: ' + tree.children[0])
         if instrumentToNumber.__contains__(tree.children[0]):
             for i in tree.children[1:]:
-                self.noteitem_to_signal(i)
+                signals.append(self.noteitem_to_signal(i))
         else:
             print('invalid instrument')
+
+        return signals
 
     def noteitem_to_signal(self,tree):
         if tree.data != 'noteitem':
             print('error: invalid noteitem')
         
+        signals = []
+
         for i in tree.children:
             # possible noteitem children : note , inlinedynamic
             if i.data == 'note':
-                self.note_to_signal(i)
+                signals.append(self.note_to_signal(i))
             elif i.data == 'inlinedynamic':
-                self.inlinedynmaic_to_signal(i)
+                signals.append(self.inlinedynmaic_to_signal(i))
             else:
                 print('invalid noteitem child')
-    
+   
+        return signals
+ 
     def note_to_signal(self, tree):
         if tree.data != 'note':
             print('error: not a note!')
+
+        signals = []
+        notesig = {'note_name':'', 'length_numerator':0, 'length_denominator':0}        
+
+        num = 0
+        den = 0
         
         for i in tree.children:
             # children of a note: division, notename, --, chord, tuple
             if i == "--":
                 self.rest_to_signal(i)
             elif i.data == 'division':
-                print("collecting divisions") 
+                print("collecting divisions")
+                num = i.children[0].children[0]
+                den = i.children[1].children[0]
             elif i.data == 'notename':
-                self.notename_to_signal(i)
+                notesig['note_name'] = self.notename_to_signal(i)
             elif i.data == "chord":
                 self.chord_to_signal(i)
             elif i.data == "tuple":
                 self.tuple_to_signal(i)
             else:
                 print("invalid note child")
+        signals.append(notesig)
+        return signals
 
     def rest_to_signal(self, tree):
          print("resting")
 
     def notename_to_signal(self, tree):
         print('notename to signal')
+        name = ""
         for i in tree.children:
-            if 'Tree' in str(type(i)):
-                print(i.children[0])
-            elif 'Token' in str(type(i)): #it's a token
-                print(i) 
+            if 'Token' in str(type(i)):
+                name += str(i)
+            elif 'Tree' in str(type(i)): #it's a token
+                name+=i.children[0]
             else:
                 print('invalid notename child')
+        
+        return name
 
     def inlinedynmaic_to_signal(self, tree):
-        pass
+        return []
         
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
