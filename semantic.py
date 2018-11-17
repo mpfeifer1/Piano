@@ -221,7 +221,7 @@ class Semantic:
             print('error: not a note!')
 
         signals = []
-        notesig = {'note_name':'', 'length_numerator':0, 'length_denominator':0}        
+        notesig = {'note_name':'', 'length_num':0, 'length_den':0}        
 
         num = 0
         den = 0
@@ -242,6 +242,11 @@ class Semantic:
                 self.tuple_to_signal(i)
             else:
                 print("invalid note child")
+        
+        print("num: " + num)
+        notesig['length_num'] = int(num)
+        notesig['length_den'] = int(den)
+
         signals.append(notesig)
         return signals
 
