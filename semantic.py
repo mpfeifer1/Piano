@@ -7,10 +7,6 @@ class Semantic:
         self.tree = tree
 
         # Keep track of current 'state' of song
-        self.dynamic = 'mf'
-        self.tempo = 120
-        self.timesig = (4,4)
-        self.timestamp = 0
         self.variables = {}
 
     # Take the tree, and convert it into a list of signals
@@ -30,6 +26,9 @@ class Semantic:
         # Split up the tree into a list of commands
         commands = self.split_into_commands(self.tree)
 
+        # Grab the initial signals
+        signals = self.get_default_signals()
+
         # Process each command in the language
         for command in commands:
             # If it's an assignment, do that
@@ -37,8 +36,17 @@ class Semantic:
                 self.set_variable(command[1], command[2], self.variables)
             # If it's a compose, do that
             if command[0] == 'compose':
-                signals = self.process_compose(command[1])
+                signals += self.process_compose(command[1])
 
+        return signals
+
+    # Return a list of signals with all the default settings
+    def get_default_signals(self):
+        signals = []
+        # send default instrument
+        # " tempo
+        # " timesig
+        # " dynamic
         return signals
 
     # Take in a list of trees with composeitems at their root
@@ -65,17 +73,17 @@ class Semantic:
         # Tempo
         if tree.data == 'tempo':
             if self.is_valid_tempo(tree):
-                self.apply_tempo(tree)
+                signals += self.get_tempo_signal(tree)
 
         # Timesig
         if tree.data == 'timesig':
             if self.is_valid_timesig(tree):
-                self.apply_timesig(tree)
+                signals += self.get_timesig_signal(tree)
 
         # Dynamic
         if tree.data == 'dynamic':
             if self.is_valid_dynamic(tree):
-                self.apply_dynamic(tree)
+                signals += self.get_dynamic_signal(tree)
 
         # Measure
         if tree.data == 'measure':
@@ -85,8 +93,9 @@ class Semantic:
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
-                tree = self.expand_repeat(tree)
-                signals += self.process_composeitems(tree)
+                repeatedsignals = self.process_composeitems(tree)
+                signals += repeatedsignals
+                signals += repeatedsignals
 
         print(tree)
         print()
@@ -245,10 +254,6 @@ class Semantic:
 
     # given a tree that represents a dynamic, set the new volume
     def apply_dynamic(self, tree):
-        pass
-
-    # returns a new tree without the base repeat
-    def expand_repeat(self, tree):
         pass
 
     # given a tree that represents a tempo, set that new tempo
