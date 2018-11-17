@@ -62,7 +62,6 @@ class TestGrammar(unittest.TestCase):
             }
         }
         """
-
         accept = '''
         start
           compose
