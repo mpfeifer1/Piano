@@ -59,26 +59,10 @@ class Semantic:
             return False
         return True
 
-    '''
-    def is_valid_note(self, tree):
-        if tree.data != 'note':
-            return False
-        if tree.data == 'note':
-            if not is_valid_division(tree.children[0]):
-                return False
-            if ( tree.children[1].type if str(type(tree.children[1])) == "<class 'lark.token.Token'>" else tree.children[1].data ) not in ['REST', 'notename']:
-                return False
-        return True 
-    '''
     def is_valid_note(self, tree):
         if not type(tree) is self.treetype:
             return False
-        #note: division notename
-        #        | division (chord | id)
-        #        | division (tuple | id)
-        #        | division REST
         
-        #tree.children[0].data == 'note'
         if len(tree.children[0].children) != 2:
             return False
         
@@ -95,8 +79,6 @@ class Semantic:
                     return False
                             
         return True
-
-
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
@@ -124,19 +106,6 @@ class Semantic:
 
         return True
 
-
-    #def is_valid_noteitem(self, tree):
-    #    if tree.data != 'noteitem':
-    #        return False
-    #    for x in tree.children:
-    #        if type(x) != type(Tree):
-    #            return False
-    #        if x.data == 'note' and not is_valid_note(x):
-    #            return False
-    #        if x.data == 'inlinedynamic' and not is_valid_inlinedynamic(x):
-    #            return False
-    #    return True 
-
     def is_valid_noteitem(self, tree):
         if not type(tree) is self.treetype:
             return False
@@ -155,28 +124,6 @@ class Semantic:
         
         if tree.children[0].data == 'inlinedynamic':
             return Semantic.is_valid_inlinedynamic(self, tree)
-
-        # if children size not 1 throw error
-
-        # if note, return is_valid_note
-        # if id, return is_valid_identif
-        # if inlinedynamic, return is_valid_inline...
-
-        # otherwise false
-        
-        #if not (tree.children[0] == 'note' or tree.children[0] == 'id') or tree.children[0] == 'inlinedynamic'
-        #    return False                
-
-
-        #noteitem: (note|id)";"
-        #        | inlinedynamic";"
-        #note: division notename
-        #        | division (chord | id)
-        #        | division (tuple | id)
-        #        | division REST
-        #id starts with $, then letter, then letter or number
-        #
-        #inlinedynamic is mp, mf, pp, ff etc (case insensitive)
 
         return True
 
@@ -198,32 +145,23 @@ class Semantic:
         if len(tree.children) == 3:
             #Has accidental
             if tree.children[1].data != 'accidental':
-                #print('Incorrect name for the second arg')
                 return False    
             if tree.children[2].data != 'number':
-                #print('Incorrect name for third arg')
                 return False
             
             acc = tree.children[1].children[0].value
-            #print('ACC', acc)
             if acc != ('#' or 'b'):
-                #print('bad accidental symbol')
                 return False
             octave = int(tree.children[2].children[0].value) 
-            #print('OCTAVE', octave)
             if 9 > octave < 0:
-                #print('Bad range for octave number')
                 return False
 
         elif len(tree.children) == 2:
             #No accidental
             if tree.children[1].data != 'number':
-                #print('Incorrect name for second arg')
                 return False
             octave = int(tree.children[1].children[0].value)
-            #print('OCTAVE', octave)
             if 9 > octave < 0:
-                #print('Bad range for octave number')
                 return False
         else:
             #Invalid length 
