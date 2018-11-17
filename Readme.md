@@ -14,6 +14,7 @@ Some other things are needed too.
 
 ### Compile Code
 Current way of running a file.  This will be updated in the future.
+
     $ python piano.py -p example.pno -m example.midi
 
 ### Example Files
@@ -53,8 +54,15 @@ Compose {
 
 ### Run Tests
 The file to run the tests is called 'run-tests.bash' and it is located in the scripts directory.
-This script will run the available test files, 'ourtests.py' and 'semantictests.py'.
+This script will run the available test files.
 All tests should be passing.  If all are not, a description of the error will be outputted.
 
     $ ./scripts/run-tests.bash
+Or a given test can be run using python.
+
+    $ python semantictest.py
+    
+    
+The CI hook is set up by running the following.
+    $ ./scripts/install-hooks.bash
     
