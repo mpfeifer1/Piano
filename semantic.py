@@ -100,7 +100,14 @@ class Semantic:
         print()
         return signals
 
+    def get_dynamic_signal(self, tree):
+        pass
 
+    def get_tempo_signal(self, tree):
+        pass
+
+    def get_timesig_signal(self, tree):
+        pass
 
     # Take the tree, and split it up into a list of commands
     def split_into_commands(self, tree):
@@ -218,7 +225,8 @@ class Semantic:
             print('error: not a note!')
 
         signals = []
-        notesig = {'note_name':'', 'length_num':0, 'length_den':0}        
+        notesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}        
+        chordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}        
 
         num = 0
         den = 0
@@ -233,19 +241,19 @@ class Semantic:
                 den = i.children[1].children[0]
             elif i.data == 'notename':
                 notesig['note_name'] = self.notename_to_signal(i)
+                notesig['length_num'] = int(num)
+                notesig['length_denom'] = int(den)
+                signals.append(notesig)
             elif i.data == "chord":
-                self.chord_to_signal(i)
+                chordsig['notes'] = self.chord_to_signal(i)
+                chordsig['length_num'] = int(num)
+                chordsig['length_denom'] = int(den)
+                signals.append(chordsig)
             elif i.data == "tuple":
                 self.tuple_to_signal(i)
             else:
                 print("invalid note child")
-        
-        print("num: " + num)
-        notesig['length_num'] = int(num)
-        notesig['length_den'] = int(den)
 
-        signals.append(notesig)
-        
         print(signals)
         return signals
 
@@ -266,18 +274,22 @@ class Semantic:
         return name
 
     def inlinedynmaic_to_signal(self, tree):
-        return [{'type':'inlinedynamic'}]
+        return [{'type':'dynamic'}]
         
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
             print('error! not a chord')
+        
+        notes = []
 
         for i in tree.children:
             # only children of a chord are notenames
             if i.data == 'notename':
-                self.notename_to_signal(i)
+                notes.append(self.notename_to_signal(i))
             else:
                 print('invalid chord child')
+        
+        return notes
 
     def tuple_to_signal(self, tree):
         if tree.data != 'tuple':
