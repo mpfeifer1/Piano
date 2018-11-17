@@ -69,6 +69,26 @@ class TestSemantics(unittest.TestCase):
         dynamic = Tree('inlinedynamic', [Token('__ANON_0', 'mpp')])
         self.assertFalse(self.semantic.is_valid_inlinedynamic(dynamic), 'Invalid inline dynamic found valid')
 
+    def test_validDynamic(self):
+        dynamic = Tree('dynamic', [Tree('inlinedynamic', [Token('__ANON_0', 'fff')])])
+        self.assertTrue(self.semantic.is_valid_dynamic(dynamic), 'Valid dynamic found invalid')
+
+    def test_invalidDynamic(self):
+        dynamic = Tree('dynamic', [Tree('number', [Token('__ANON_0', 'fff')])])
+        self.assertFalse(self.semantic.is_valid_dynamic(dynamic), 'Invalid dynamic found valid')
+
+    def test_validId(self):
+        iden = Tree('id', [Token('__ANON_0', '$tpt_in-out')])
+        self.assertTrue(self.semantic.is_valid_identifier(iden), 'Valid identifier found invalid')
+
+    def test_invalidIdNoStart(self):
+        iden = Tree('id', [Token('__ANON_0', 'tpt')])
+        self.assertFalse(self.semantic.is_valid_identifier(iden), 'Invalid identifier no $ at start found valid')
+
+    def test_invalidIdBadSymbol(self):
+        iden = Tree('id', [Token('__ANON_0', '$tp$t')])
+        self.assertFalse(self.semantic.is_valid_identifier(iden), 'Invalid identifier bad symbol found valid')
+
 
     def test_validTree(self):
         tree = Tree('start', [Tree('compose', [])])

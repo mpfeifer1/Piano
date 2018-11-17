@@ -33,6 +33,8 @@ class Semantic:
         for i in self.tree.children:
             print(i.pretty())
 
+    # TODO order these checks in a better order
+
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
         if not type(tree) is self.treetype:
@@ -51,7 +53,23 @@ class Semantic:
             return False
         return True
 
-    
+    def is_valid_dynamic(self, tree):
+        if not type(tree) is self.treetype:
+            return False
+        if tree.data != 'dynamic':
+            return False
+        item = tree.children[0].data 
+        if item == 'inlinedynamic':
+            d = tree.children[0].children[0].lower()
+            if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
+                return False
+        elif item == 'id':
+            return Semantic.is_valid_identifier(self, tree)
+        else:
+            return False        
+
+        return True   
+ 
     def is_valid_inlinedynamic(self, tree):
         if not type(tree) is self.treetype:
             return False
@@ -121,14 +139,17 @@ class Semantic:
         if not len(tree.children) == 1:
             return False
         
-        if tree.children[0].data == 'note':
+        item = tree.children[0].data
+        if item == 'note':
             return Semantic.is_valid_note(self, tree)
-        
-        if tree.children[0].data == 'id':
+        elif item  == 'id':
             return Semantic.is_valid_identifier(self, tree)
-        
-        if tree.children[0].data == 'inlinedynamic':
-            return Semantic.is_valid_inlinedynamic(self, tree)
+        elif item == 'inlinedynamic':
+            d = tree.children[0].lower()
+            if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
+                return False
+        else:
+            return False
 
         return True
 
@@ -179,8 +200,23 @@ class Semantic:
     def is_valid_identifier(self, tree):
         if not type(tree) is self.treetype:
             return False
-
-        pass
+        if not tree.data == 'id':
+            return False
+        theID = tree.children[0]
+        length = len(theID) 
+        if length < 2:
+            return False
+        if theID[0] != '$':
+            return False 
+        if not theID[1].isalpha():
+            return False
+        
+        for i in range(2, length):
+            idChar = theID[i]
+            if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
+                return False
+        
+        return True 
 
 
     def is_valid_measure(self, tree):
