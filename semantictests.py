@@ -61,6 +61,13 @@ class TestSemantics(unittest.TestCase):
         noteitem = Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '1')]), Tree('number', [Token('__ANON_3', '2')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])])
         self.assertTrue(self.semantic.is_valid_noteitem(noteitem), 'Valid noteitem found invalid')
     
+    def test_validInlineDynamic(self):
+        dynamic = Tree('inlinedynamic', [Token('__ANON_0', 'MP')])
+        self.assertTrue(self.semantic.is_valid_inlinedynamic(dynamic), 'Valid inline dynamic found invalid')
+
+    def test_invalidInlineDynamic(self):
+        dynamic = Tree('inlinedynamic', [Token('__ANON_0', 'mpp')])
+        self.assertFalse(self.semantic.is_valid_inlinedynamic(dynamic), 'Invalid inline dynamic found valid')
 
 
     def test_validTree(self):

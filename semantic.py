@@ -53,10 +53,15 @@ class Semantic:
 
     
     def is_valid_inlinedynamic(self, tree):
+        if not type(tree) is self.treetype:
+            return False
         if tree.data != 'inlinedynamic':
             return False
-        if len(tree.children) != 1 or str(type(tree.children[0])) != "<class 'lark.token.Token'>":
-            return False
+        
+        d = tree.children[0].lower()
+        if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
+            return False    
+    
         return True
 
     def is_valid_note(self, tree):
