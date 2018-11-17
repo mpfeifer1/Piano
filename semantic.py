@@ -170,14 +170,10 @@ class Semantic:
         
         for i in tree.children:
             if i.data == 'instrumentation':
-                signals.append(self.instrumentation_to_signal(i))
+                signals += (self.instrumentation_to_signal(i))
         
         print("\n\n\n\n\n\n\n")
         print(signals)
-        
-        # the list of signals needs to be flattened here!
-        # it's also very possible the returns are borked
-        # i.e. [ {} [ {} [[ {} ]]]] needs to be [{} {} {}] 
         
         return signals
 
@@ -190,10 +186,11 @@ class Semantic:
         name = tree.children[0]
         
         signals.append({'type':'instrument', 'name':str(name)})
+        
         #print('\ninstrumentation: ' + tree.children[0])
         if instrumentToNumber.__contains__(tree.children[0]):
             for i in tree.children[1:]:
-                signals.append(self.noteitem_to_signal(i))
+                signals += (self.noteitem_to_signal(i))
         else:
             print('invalid instrument')
 
@@ -208,9 +205,9 @@ class Semantic:
         for i in tree.children:
             # possible noteitem children : note , inlinedynamic
             if i.data == 'note':
-                signals.append(self.note_to_signal(i))
+                signals += (self.note_to_signal(i))
             elif i.data == 'inlinedynamic':
-                signals.append(self.inlinedynmaic_to_signal(i))
+                signals += (self.inlinedynmaic_to_signal(i))
             else:
                 print('invalid noteitem child')
    
@@ -248,6 +245,8 @@ class Semantic:
         notesig['length_den'] = int(den)
 
         signals.append(notesig)
+        
+        print(signals)
         return signals
 
     def rest_to_signal(self, tree):
@@ -267,7 +266,7 @@ class Semantic:
         return name
 
     def inlinedynmaic_to_signal(self, tree):
-        return []
+        return [{'type':'inlinedynamic'}]
         
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
