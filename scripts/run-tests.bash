@@ -12,3 +12,4 @@ echo "Running tests"
 echo "............................" 
 
 python3 ourtests.py
+python3 semantictests.py
