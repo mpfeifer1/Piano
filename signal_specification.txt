@@ -1,0 +1,50 @@
+Signals will be passed around as a list of dictionaries.
+
+Upon taking in a list of signals, the generator should check that each
+signal has all necessary fields, and no extra fields. The
+generator will NOT, however, check if the values in each field
+are valid. It is assumed these values are passed in correctly.
+
+Each dictionary will contain a field 'type'.
+'type' can be:
+    'note'
+    'measure'
+    'tempo'
+    'dynamic'
+    'chord'
+    'tuple'
+    'rest'
+    'instrument'
+
+Depending on the type, the dictionary will have more fields.
+Below is a list of all the types and their extra fields.
+
+'note'
+    'note_name': string
+    'length_num': int
+    'length_denom': int
+
+'measure'
+
+'tempo'
+    'bpm': int
+
+'dynamic'
+    'volume': string
+
+'chord'
+    'length_num': int
+    'length_denom': int
+    'notes': array of strings, each containing note names
+
+'tuple'
+    'length_num': int
+    'length_denom': int
+    'notes': array, contents are yet to be decided
+
+'rest'
+    'length_num': int
+    'length_denom': int
+
+'instrument'
+    'name': string
