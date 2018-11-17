@@ -40,11 +40,11 @@ class TestSemantics(unittest.TestCase):
     def test_validNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'),  Tree('number', [Token('__ANON_1', '4')])])
         self.assertTrue(self.semantic.is_valid_notename(notename), 'Valid notename found invalid')
-   
+
     def test_validNoteNameAccidental(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'), Tree('accidental', [Token('__ANON_1', '#')]), Tree('number', [Token('__ANON_1', '4')])])
         self.assertTrue(self.semantic.is_valid_notename(notename), 'Valid notename found invalid')
-    
+
     def test_invalidNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'H'),  Tree('number', [Token('__ANON_1', '4')])])
         self.assertFalse(self.semantic.is_valid_notename(notename), 'Invalid notename letter')
@@ -60,7 +60,7 @@ class TestSemantics(unittest.TestCase):
     def test_validNoteItem(self):
         noteitem = Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '1')]), Tree('number', [Token('__ANON_3', '2')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])])
         self.assertTrue(self.semantic.is_valid_noteitem(noteitem), 'Valid noteitem found invalid')
-    
+
     def test_validInlineDynamic(self):
         dynamic = Tree('inlinedynamic', [Token('__ANON_0', 'MP')])
         self.assertTrue(self.semantic.is_valid_inlinedynamic(dynamic), 'Valid inline dynamic found invalid')
@@ -125,7 +125,7 @@ class TestSemantics(unittest.TestCase):
     '''
     '''
     def test_validNoteitem(self):
-        tree1 = Tree('noteitem', [ Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '4') ]) ]),  Tree('notename', [ Token('__ANON_1', 'A'),  Tree('accidental', [ Token('__ANON_0', 'b') ]),  Tree('number', [ Token('__ANON_3', '5') ]) ]) ]) ]) 
+        tree1 = Tree('noteitem', [ Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '4') ]) ]),  Tree('notename', [ Token('__ANON_1', 'A'),  Tree('accidental', [ Token('__ANON_0', 'b') ]),  Tree('number', [ Token('__ANON_3', '5') ]) ]) ]) ])
         tree2 = Tree('noteitem', [ Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '2') ]) ]),  Token('REST', '--') ]) ])
         tree3 = Tree('noteitem', [ Tree('inlinedynamic', [ Token('__ANON_5', 'mf') ]) ])
         self.assertTrue(self.semantic.is_valid_noteitem(tree1), 'Valid noteitem tree with note found inalid')

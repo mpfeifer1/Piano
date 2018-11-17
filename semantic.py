@@ -15,6 +15,17 @@ class Semantic:
 
         self.treetype = type(lark.tree.Tree('data', ['children']))
 
+        # Build all of the valid dynamic levels
+        self.valid_levels = ["mp", "mf"]
+        soft = ""
+        loud = ""
+        for i in range(4):
+            soft = soft + "p"
+            loud = loud + "f"
+            self.valid_levels.append(loud)
+            self.valid_levels.append(soft)
+
+
     # Take the tree, and convert it into a list of signals
     def analyze(self):
         # so basically here, we're gonna wanna loop through
@@ -58,49 +69,50 @@ class Semantic:
             return False
         if tree.data != 'dynamic':
             return False
-        item = tree.children[0].data 
+
+        item = tree.children[0].data
         if item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
-            if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
+            if d not in self.valid_levels:
                 return False
         elif item == 'id':
             return Semantic.is_valid_identifier(self, tree)
         else:
-            return False        
+            return False
 
-        return True   
- 
+        return True
+
     def is_valid_inlinedynamic(self, tree):
         if not type(tree) is self.treetype:
             return False
         if tree.data != 'inlinedynamic':
             return False
-        
+
         d = tree.children[0].lower()
-        if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
-            return False    
-    
+        if d not in self.valid_levels:
+            return False
+
         return True
 
     def is_valid_note(self, tree):
         if not type(tree) is self.treetype:
             return False
-        
+
         if len(tree.children[0].children) != 2:
             return False
-        
+
         if tree.children[0].children[0].data != 'division':
             return False
         else:
             n = tree.children[0].children[1].data
             if not ( n == 'notename' or n == 'chord' or n == 'tuple' or n == 'id' or n == 'REST'):
                 return False
-            
+
             if tree.children[0].children[1].data == 'REST':
                 if tree.children[0].children[1].children[0].value != '--':
                     print('rest is not good')
                     return False
-                            
+
         return True
 
     # check that all the numbers are powers of 2 and nonzero
@@ -138,7 +150,7 @@ class Semantic:
 
         if not len(tree.children) == 1:
             return False
-        
+
         item = tree.children[0].data
         if item == 'note':
             return Semantic.is_valid_note(self, tree)
@@ -146,7 +158,7 @@ class Semantic:
             return Semantic.is_valid_identifier(self, tree)
         elif item == 'inlinedynamic':
             d = tree.children[0].lower()
-            if not (d == 'mp' or d == 'mf' or d == 'p' or d == 'pp' or d == 'ppp' or d == 'pppp' or d == 'f' or d == 'ff' or d == 'fff' or d == 'ffff' ):
+            if d not in self.valid_levels:
                 return False
         else:
             return False
@@ -167,18 +179,18 @@ class Semantic:
         n.upper()
         if not (n  == 'A' or n == 'B' or n == 'C' or n == 'D' or n == 'E' or n == 'F' or n == 'G'):
             return False
-        
+
         if len(tree.children) == 3:
             #Has accidental
             if tree.children[1].data != 'accidental':
-                return False    
+                return False
             if tree.children[2].data != 'number':
                 return False
-            
+
             acc = tree.children[1].children[0].value
             if acc != ('#' or 'b'):
                 return False
-            octave = int(tree.children[2].children[0].value) 
+            octave = int(tree.children[2].children[0].value)
             if 9 > octave < 0:
                 return False
 
@@ -190,7 +202,7 @@ class Semantic:
             if 9 > octave < 0:
                 return False
         else:
-            #Invalid length 
+            #Invalid length
             return False
 
         return True
@@ -203,20 +215,20 @@ class Semantic:
         if not tree.data == 'id':
             return False
         theID = tree.children[0]
-        length = len(theID) 
+        length = len(theID)
         if length < 2:
             return False
         if theID[0] != '$':
-            return False 
+            return False
         if not theID[1].isalpha():
             return False
-        
+
         for i in range(2, length):
             idChar = theID[i]
             if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
                 return False
-        
-        return True 
+
+        return True
 
 
     def is_valid_measure(self, tree):
