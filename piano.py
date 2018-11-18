@@ -37,4 +37,3 @@ signals = analyzer.analyze()
 # Pass the sound signals to Mido, and build a MIDI file
 generator = midigenerator.MidiGenerator(signals)
 midifile = generator.generate()
-
