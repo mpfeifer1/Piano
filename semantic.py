@@ -180,7 +180,8 @@ class Semantic:
                 signals += (self.instrumentation_to_signal(i))
         
         print("\n\n\n\n\n\n\n")
-        print(signals)
+        for x in signals:
+            print(x)
         
         return signals
 
@@ -226,7 +227,8 @@ class Semantic:
 
         signals = []
         notesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}        
-        chordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}        
+        chordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
+        restsig = {'type': 'rest', 'length_num':0, 'length_denom':0}        
 
         num = 0
         den = 0
@@ -234,7 +236,9 @@ class Semantic:
         for i in tree.children:
             # children of a note: division, notename, --, chord, tuple
             if i == "--":
-                self.rest_to_signal(i)
+                restsig['length_num'] = int(num)
+                restsig['length_denom'] = int(den)
+                signals.append(restsig)
             elif i.data == 'division':
                 print("collecting divisions")
                 num = i.children[0].children[0]
@@ -254,11 +258,7 @@ class Semantic:
             else:
                 print("invalid note child")
 
-        print(signals)
         return signals
-
-    def rest_to_signal(self, tree):
-         print("resting")
 
     def notename_to_signal(self, tree):
         print('notename to signal')
