@@ -254,7 +254,7 @@ class Semantic:
                 chordsig['length_denom'] = int(den)
                 signals.append(chordsig)
             elif i.data == "tuple":
-                self.tuple_to_signal(i)
+                signals += self.tuple_to_signal(i)
             else:
                 print("invalid note child")
 
@@ -274,7 +274,7 @@ class Semantic:
         return name
 
     def inlinedynmaic_to_signal(self, tree):
-        return [{'type':'dynamic'}]
+        return [{'type':'dynamic', 'volume':str(tree.children[0])}]
         
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
@@ -294,6 +294,8 @@ class Semantic:
     def tuple_to_signal(self, tree):
         if tree.data != 'tuple':
             print('error: not a tuple')
+        # put dummy data in a tuple signal because we don't like them much
+        return [{'type':'tuple', 'length_num':0, 'length_denom':0, 'notes':[]}]
 
         for i in tree.children:
             if i.data == 'notename':
