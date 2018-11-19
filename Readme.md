@@ -1,22 +1,36 @@
 # PIANO Is Anyone's Next Overture
 Create your next overture using Piano!
 
-Write songs in Piano to midi files!
-
+Piano is designed to allow composers to programmatically and efficiently create songs in midi files. 
 
 ### Dependencies
-Piano uses the Lark Parser for Python.
-Some other things are needed too.
+Piano uses the Lark Parser and Mido for Python.  These are needed to run Piano.  These can be installed using pip.
 
     $ pip install lark-parser
     $ pip install lark
     $ pip install mido
 
 ### Compile Code
-Current way of running a file.  This will be updated in the future.
+This is the current way of running a file and will be updated in the future as the project progresses.
 
     $ python piano.py -p example.pno -m example.midi
 
+### Running Tests
+The Continuous Integration (CI) hook is set up by running the following.
+
+    $ ./scripts/install-hooks.bash
+This hook will create a pre-commit call to the run tests file (run-tests.bash) everytime that a commit is attempted.  
+This hook is **REQUIRED** if you wish to contribute to our project.
+
+The file to run the tests is called *run-tests.bash* and it is located in the scripts directory.
+This script will run the available test files.
+All tests should be passing before and after any code is pushed.  If all tests are not, a description of the error will be outputted.
+
+    $ ./scripts/run-tests.bash
+Or a given test can be run using python.
+
+    $ python semantictest.py
+    
 ### Example Files
 
 ```
@@ -51,18 +65,3 @@ Compose {
 	}
 }
 ```
-
-### Run Tests
-The file to run the tests is called 'run-tests.bash' and it is located in the scripts directory.
-This script will run the available test files.
-All tests should be passing.  If all are not, a description of the error will be outputted.
-
-    $ ./scripts/run-tests.bash
-Or a given test can be run using python.
-
-    $ python semantictest.py
-    
-    
-The CI hook is set up by running the following.
-    $ ./scripts/install-hooks.bash
-    
