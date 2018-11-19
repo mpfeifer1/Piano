@@ -110,8 +110,8 @@ class Semantic:
                 signals += repeatedsignals
                 signals += repeatedsignals
 
-        print(tree)
-        print()
+        #print(tree)
+        #print()
         return signals
 
     def get_dynamic_signal(self, tree):
@@ -162,12 +162,11 @@ class Semantic:
             return False
         return True
 
-    def is_valid_dynamic(self, tree):
+    def is_valid_dynamic(self, tree): 
         if not type(tree) is self.treetype:
             return False
         if tree.data != 'dynamic':
             return False
-
         item = tree.children[0].data
         if item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
@@ -185,7 +184,7 @@ class Semantic:
             return False
         if tree.data != 'inlinedynamic':
             return False
-
+        
         d = tree.children[0].lower()
         if d not in self.valid_levels:
             return False
@@ -226,9 +225,6 @@ class Semantic:
         pass
 
     def is_valid_timesig(self, tree):
-        pass
-
-    def is_valid_dynamic(self, tree):
         pass
 
     # check that all the numbers are powers of 2 and nonzero
@@ -422,7 +418,7 @@ class Semantic:
         
         if tree.children[0] in instrumentToNumber:
             for i in tree.children[1:]:
-                signals += (self.noteitem_to_signal(i))
+                signals += self.noteitem_to_signal(i)
         else:
             print('invalid instrument')
 
@@ -450,6 +446,8 @@ class Semantic:
             print('error: not a note!')
 
         signals = []
+        # this function loops through the note's children and fills
+        # out the necessary fields when it finds them.`
         notesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}        
         chordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
         restsig = {'type': 'rest', 'length_num':0, 'length_denom':0}        
@@ -464,7 +462,6 @@ class Semantic:
                 restsig['length_denom'] = int(den)
                 signals.append(restsig)
             elif i.data == 'division':
-                print("collecting divisions")
                 num = i.children[0].children[0]
                 den = i.children[1].children[0]
             elif i.data == 'notename':
@@ -485,7 +482,6 @@ class Semantic:
         return signals
 
     def notename_to_signal(self, tree):
-        print('notename to signal')
         name = ""
         for i in tree.children:
             if 'Token' in str(type(i)):
