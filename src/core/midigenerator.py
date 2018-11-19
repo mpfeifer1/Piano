@@ -63,7 +63,7 @@ class MidiGenerator:
         # with its corresponding end signal
 
         # If the signals passed in aren't valid, return an error
-        if not validate(self.signals):
+        if not self.validate(self.signals):
             return False
 
         pass
