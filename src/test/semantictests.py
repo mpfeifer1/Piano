@@ -13,7 +13,6 @@ class TestSemantics(unittest.TestCase):
         self.help = TestHelp()
         self.semantic = Semantic(Tree('start', []))
 
-
     def test_validDivision(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
         self.assertTrue(self.semantic.is_valid_division(division), 'Valid Division found invalid')
