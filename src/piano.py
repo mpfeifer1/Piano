@@ -1,13 +1,13 @@
 #!/usr/bin/env python3.5
 
-# Import system libraries - TODO remove unnecessary ones
+# Import system libraries
 from lark import Lark
 from argparse import ArgumentParser
 
-
-# Import our libraries
+# Import Piano libraries
 from core import grammar
 from core import semanticanalyzer as semantic
+from core import midigenerator 
 from core import flags
 
 # Get input flags
@@ -29,8 +29,7 @@ try:
     signals = analyzer.analyze()
 
     # Pass the sound signals to Mido, and build a MIDI file
-    #TODO: Make this stuff
-    #generator = midigenerator.MidiGenerator(signals)
-    #midifile = generator.generate()
+    generator = midigenerator.MidiGenerator(signals)
+    midifile = generator.generate()
 except Exception as e:
     print(e)
