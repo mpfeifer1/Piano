@@ -204,6 +204,7 @@ class Semantic:
         if tree.children[0].children[0].data != 'division':
             return False
         else:
+            validNoteGrammar = ['notename', 'chord', 'tuple', 'id', 'REST']
             child = tree.children[0].children[1]
             # our child elements are going to be notenames, chords, etc
             # all of those except rests are more trees, rests are just tokens
@@ -212,7 +213,7 @@ class Semantic:
                 n = child.data
             else:
                 n = child.type
-            if not ( n == 'notename' or n == 'chord' or n == 'tuple' or n == 'id' or n == 'REST'):
+            if n not in validNoteGrammar:
                 return False
 
             if n == 'REST':
@@ -254,7 +255,8 @@ class Semantic:
             return False
 
         denom = int(tree.children[1].children[0].value)
-        if not (denom  == 1 or denom == 2 or denom == 4 or denom == 8 or denom == 16 or denom == 32 or denom == 64 or denom == 128):
+        validDenoms = [1, 2, 4, 8, 16, 32, 64, 128]
+        if denom not in validDenoms:
             return False
 
         return True
@@ -295,7 +297,8 @@ class Semantic:
 
         n = tree.children[0]
         n.upper()
-        if not (n  == 'A' or n == 'B' or n == 'C' or n == 'D' or n == 'E' or n == 'F' or n == 'G'):
+        validNoteLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
+        if n not in validNoteLetters:
             return False
 
         if len(tree.children) == 3:
