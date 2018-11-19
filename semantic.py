@@ -179,9 +179,8 @@ class Semantic:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
         
-        print("\n\n\n\n\n\n\n")
-        for x in signals:
-            print(x)
+        #for x in signals:
+        #    print(x)
         
         return signals
 
@@ -195,8 +194,7 @@ class Semantic:
         
         signals.append({'type':'instrument', 'name':str(name)})
         
-        #print('\ninstrumentation: ' + tree.children[0])
-        if instrumentToNumber.__contains__(tree.children[0]):
+        if tree.children[0] in instrumentToNumber:
             for i in tree.children[1:]:
                 signals += (self.noteitem_to_signal(i))
         else:
