@@ -1,6 +1,7 @@
 import unittest
-import grammar
 from testhelper import TestHelp
+TestHelp().chwd()
+import grammar
 
 import lark
 from lark import Tree

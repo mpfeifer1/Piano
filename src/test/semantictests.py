@@ -1,6 +1,7 @@
 import unittest
 from testhelper import TestHelp
-from semantic import Semantic
+TestHelp().chwd()
+from semanticanalyzer import Semantic
 from lark import Tree
 from lark import lexer
 
