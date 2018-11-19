@@ -72,8 +72,8 @@ class Semantic:
 
         # For each tree, add its signals to the list
         for tree in trees:
-            signals += self.process_composeitems(tree)       
- 
+            signals += self.process_composeitems(tree)
+
         return signals
 
     # Take in a list of trees with a single composeitem
@@ -164,7 +164,7 @@ class Semantic:
             return False
         return True
 
-    def is_valid_dynamic(self, tree): 
+    def is_valid_dynamic(self, tree):
         if not type(tree) is self.treetype:
             return False
         if tree.data != 'dynamic':
@@ -186,7 +186,7 @@ class Semantic:
             return False
         if tree.data != 'inlinedynamic':
             return False
-        
+
         d = tree.children[0].lower()
         if d not in self.valid_levels:
             return False
@@ -216,10 +216,6 @@ class Semantic:
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
-        pass
-
-    # check that the measure is valid
-    def is_valid_measure(self, tree):
         pass
 
     # check that the tempo is valid
@@ -398,14 +394,14 @@ class Semantic:
 
         signals = []
         signals.append({'type':'measure'})
-        
+
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
-        
+
         #for x in signals:
         #    print(x)
-        
+
         return signals
 
     def instrumentation_to_signal(self, tree):
@@ -415,9 +411,9 @@ class Semantic:
 
         signals = []
         name = tree.children[0]
-        
+
         signals.append({'type':'instrument', 'name':str(name)})
-        
+
         if tree.children[0] in instrumentToNumber:
             for i in tree.children[1:]:
                 signals += self.noteitem_to_signal(i)
@@ -429,7 +425,7 @@ class Semantic:
     def noteitem_to_signal(self,tree):
         if tree.data != 'noteitem':
             print('error: invalid noteitem')
-        
+
         signals = []
 
         for i in tree.children:
@@ -440,9 +436,9 @@ class Semantic:
                 signals += (self.inlinedynmaic_to_signal(i))
             else:
                 print('invalid noteitem child')
-   
+
         return signals
- 
+
     def note_to_signal(self, tree):
         if tree.data != 'note':
             print('error: not a note!')
@@ -450,13 +446,13 @@ class Semantic:
         signals = []
         # this function loops through the note's children and fills
         # out the necessary fields when it finds them.`
-        notesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}        
+        notesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}
         chordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
-        restsig = {'type': 'rest', 'length_num':0, 'length_denom':0}        
+        restsig = {'type': 'rest', 'length_num':0, 'length_denom':0}
 
         num = 0
         den = 0
-        
+
         for i in tree.children:
             # children of a note: division, notename, --, chord, tuple
             if i == "--":
@@ -492,16 +488,16 @@ class Semantic:
                 name+=i.children[0]
             else:
                 print('invalid notename child')
-        
+
         return name
 
     def inlinedynmaic_to_signal(self, tree):
         return [{'type':'dynamic', 'volume':str(tree.children[0])}]
-        
+
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
             print('error! not a chord')
-        
+
         notes = []
 
         for i in tree.children:
@@ -510,7 +506,7 @@ class Semantic:
                 notes.append(self.notename_to_signal(i))
             else:
                 print('invalid chord child')
-        
+
         return notes
 
     def tuple_to_signal(self, tree):
