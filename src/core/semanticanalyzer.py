@@ -13,6 +13,7 @@ class Semantic:
         self.variables = {}
 
         self.treetype = type(lark.tree.Tree('data', ['children']))
+        self.tokentype = type(lark.Token('data1', 'data2'))
 
         # Build all of the valid dynamic levels
         self.valid_levels = ["mp", "mf"]
@@ -367,12 +368,15 @@ class Semantic:
             return False
 
         child = tree.children
+        if type(child[0]) != self.tokentype:
+            return False
         if child[0].type != 'INSTRUMENT':
             return False
 
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
                 return False
+
         return True
 
     # sets a variable in our memory to its tree

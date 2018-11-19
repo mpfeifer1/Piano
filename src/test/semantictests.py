@@ -115,6 +115,10 @@ class TestSemantics(unittest.TestCase):
         tree = Tree('start', [Tree('rhs', Token('__ANON_0', 'acousticgrandpiano')), Tree('compose', [Token('__ANON_1', 'acousticgrandpiano')])])
         self.assertFalse(self.semantic.is_valid_tree(tree), 'Invalid tree no id to match rhs found as valid')
 
+    def test_instrumentationInvalidChild(self):
+        tree = Tree('instrumentation', [Tree('trumpet', [])])
+        self.assertFalse(self.semantic.is_valid_instrumentation(tree), 'Instrumentation\'s child must be a token')
+
     '''
     def test_validInstrumentation(self):
         div = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
