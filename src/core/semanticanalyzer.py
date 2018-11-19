@@ -1,3 +1,5 @@
+import sys
+sys.path.append(r'core')
 from instrumentToNumber import instrumentToNumber
 import lark
 

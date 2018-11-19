@@ -1,3 +1,6 @@
+from testhelper import TestHelp
+TestHelp().chwd()
+
 import unittest
 import midigenerator
 

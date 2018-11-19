@@ -11,7 +11,7 @@ from lark import exceptions
 from instrumentToNumber import instrumentToNumber
 from noteToNumber import noteToNumber
 
-from semantic import Semantic
+from semanticanalyzer import Semantic
 
 Token = lexer.Token
 LarkError = exceptions.LarkError
