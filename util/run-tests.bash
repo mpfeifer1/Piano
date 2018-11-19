@@ -10,5 +10,4 @@ cd "${0%/*}/../src/test"
 
 echo "Running tests"
 echo "............................" 
-python3.5 grammartests.py
-python3.5 semantictests.py
+python3 runtests.py
