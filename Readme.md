@@ -11,9 +11,10 @@ Piano uses the Lark Parser and Mido for Python.  These are needed to run Piano. 
     $ pip install mido
 
 ### Compile Code
-This is the current way of running a file and will be updated in the future as the project progresses.
+This is the current way of running a file and will be updated in the future as the project progresses.  
+The *piano.py* file is located under the src directory.
 
-    $ python piano.py -p example.pno -m example.midi
+    $ ./piano.py -p example.pno -m example.midi
 
 ### Running Tests
 The Continuous Integration (CI) hook is set up by running the following.
