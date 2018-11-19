@@ -203,13 +203,20 @@ class Semantic:
         if tree.children[0].children[0].data != 'division':
             return False
         else:
-            n = tree.children[0].children[1].data
+            child = tree.children[0].children[1]
+            # our child elements are going to be notenames, chords, etc
+            # all of those except rests are more trees, rests are just tokens
+            # and thus have no data, so they need a separate check
+            if(hasattr(child, 'data')):
+                n = child.data
+            else:
+                n = child.type
             if not ( n == 'notename' or n == 'chord' or n == 'tuple' or n == 'id' or n == 'REST'):
                 return False
 
-            if tree.children[0].children[1].data == 'REST':
-                if tree.children[0].children[1].children[0].value != '--':
-                    print('rest is not good')
+            if n == 'REST':
+                if child != '--':
+                    print('rest is broken')
                     return False
 
         return True
