@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 # Import Piano libraries
 from core import grammar
 from core import semanticanalyzer as semantic
-from core import midigenerator 
+from core import midigenerator
 from core import flags
 
 # Get input flags

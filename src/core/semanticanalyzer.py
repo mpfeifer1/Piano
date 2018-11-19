@@ -13,6 +13,7 @@ class Semantic:
         self.variables = {}
 
         self.treetype = type(lark.tree.Tree('data', ['children']))
+        self.tokentype = type(lark.Token('data1', 'data2'))
 
         # Build all of the valid dynamic levels
         self.valid_levels = ["mp", "mf"]
@@ -225,10 +226,6 @@ class Semantic:
     def is_valid_repeat(self, tree):
         pass
 
-    # check that the measure is valid
-    def is_valid_measure(self, tree):
-        pass
-
     # check that the tempo is valid
     def is_valid_tempo(self, tree):
         pass
@@ -378,12 +375,15 @@ class Semantic:
             return False
 
         child = tree.children
+        if type(child[0]) != self.tokentype:
+            return False
         if child[0].type != 'INSTRUMENT':
             return False
 
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
                 return False
+
         return True
 
     # sets a variable in our memory to its tree
@@ -405,14 +405,14 @@ class Semantic:
 
         signals = []
         signals.append({'type':'measure'})
-        
+
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
-        
+
         #for x in signals:
         #    print(x)
-        
+
         return signals
 
     def instrumentation_to_signal(self, tree):
@@ -517,7 +517,7 @@ class Semantic:
                 notes.append(self.notename_to_signal(i))
             else:
                 print('invalid chord child')
-        
+
         return notes
 
     def tuple_to_signal(self, tree):
