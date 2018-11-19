@@ -29,7 +29,8 @@ try:
     signals = analyzer.analyze()
 
     # Pass the sound signals to Mido, and build a MIDI file
-    generator = midigenerator.MidiGenerator(signals)
-    midifile = generator.generate()
+    #TODO: Make this stuff
+    #generator = midigenerator.MidiGenerator(signals)
+    #midifile = generator.generate()
 except Exception as e:
     print(e)

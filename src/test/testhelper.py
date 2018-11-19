@@ -1,7 +1,11 @@
+import sys
 
 class TestHelp():
     def __init__(self):
         pass
+
+    def chwd(self):
+        sys.path.append(r'../core')
     
     def prettyTreeComp(self, tree1, tree2):
         tree1 = tree1.strip().split('\n')
