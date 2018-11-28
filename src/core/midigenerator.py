@@ -1,4 +1,6 @@
-from mido import Message, MidiFile, MidiTrack
+from mido import Message, MidiFile, MidiTrack, MetaMessage
+import mido
+from noteToNumber import noteToNumber
 
 class MidiGenerator:
     # Take in the list of signals, build a midi file
@@ -9,7 +11,7 @@ class MidiGenerator:
         self.tempo = 120
         self.measure_start_time = 0
         self.measure_end_time = 0
-        self.seconds_per_beat = 0
+        self.ticks_per_beat = 0
         self.song = MidiFile(type=2)
         self.max_track = 0
         self.current_track = 0
@@ -82,19 +84,52 @@ class MidiGenerator:
 
         self.add_track()
 
-        self.song.tracks[self.current_track].append(Message('note_on', note=64, velocity=64, time=0))
-        self.song.tracks[self.current_track].append(Message('note_off', note=64, velocity=127, time=5000))
+        self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 20}))
+
+        # self.song.tracks[self.current_track].append(Message('note_on', note=64, velocity=64, time=0))
+        # self.song.tracks[self.current_track].append(Message('note_off', note=64, velocity=127, time=5000))
 
 
-        self.song.save('piano.mid')
         for signal in self.signals:
             print(signal)
+            if signal['type'] == 'note':
+                on, off = self.midify_note(signal)
+                self.song.tracks[self.current_track].append(on)
+                self.song.tracks[self.current_track].append(off)
+
+        self.song.save('piano.mid')
 
 
     def midify_measure(self, signal):
-        pass
+        self.measure_start_time = self.measure_end_time
+
+
+    def midify_tempo(self, signal):
+        if(signal['type'] != 'tempo'):
+            print('Error when midifying tempo')
+            return ''
+        self.ticks_per_beat = mido.bpm2tempo(signal['bpm'])
+        return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
+
+    def midify_note(self, signal):
+        if(signal['type'] != 'note'):
+            print('Error when midifying note')
+            return '', ''
+
+        noteNumber = noteToNumber[signal['note_name']]
+        length = int(500 * (signal['length_num']/float(signal['length_denom'])))
+
+        self.measure_end_time = self.measure_start_time + length
+        return Message('note_on', note=noteNumber, velocity=127, time=0), Message('note_off',note=noteNumber, velocity=127, time=length)
+
+
+
 
     def add_track(self):
         self.song.tracks.append(MidiTrack())
         self.max_track += 1
         self.current_track = self.max_track - 1
+
+
+    def calculate_seconds_per_beat(self):
+        pass
