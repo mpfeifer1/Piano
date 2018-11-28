@@ -4,12 +4,11 @@ Create your next overture using Piano!
 Piano is designed to allow composers to programmatically and efficiently create songs in midi files. 
 
 ### Dependencies
-Piano uses the Lark Parser and Mido for Python.  These are needed to run Piano.  These can be installed using pip.
-
-    $ pip install lark-parser
-    $ pip install lark
-    $ pip install mido
-
+Piano uses the Lark Parser and Mido for Python.  These are needed to run Piano.  These can be installed using pip or the provided 
+script to install python, pip, and dependencies.
+    
+    $ ./install-dependencies
+    
 ### Compile Code
 This is the current way of running a file and will be updated in the future as the project progresses.  
 The *piano.py* file is located under the src directory.
@@ -30,7 +29,7 @@ All tests should be passing before and after any code is pushed.  If all tests a
     $ ./scripts/run-tests.bash
 Or a given test can be run using python.
 
-    $ python semantictest.py
+    $ python3 semantictest.py
     
 ### Example Files
 
