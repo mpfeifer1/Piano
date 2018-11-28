@@ -1,6 +1,7 @@
 from mido import Message, MidiFile, MidiTrack, MetaMessage
 import mido
 from noteToNumber import noteToNumber
+from instrumentToNumber import instrumentToNumber
 
 class MidiGenerator:
     # Take in the list of signals, build a midi file
@@ -85,14 +86,16 @@ class MidiGenerator:
         self.add_track()
 
         self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 20}))
-
-        # self.song.tracks[self.current_track].append(Message('note_on', note=64, velocity=64, time=0))
-        # self.song.tracks[self.current_track].append(Message('note_off', note=64, velocity=127, time=5000))
-
+        self.song.tracks[self.current_track].append(Message('program_change', program=1, time=0))
 
         for signal in self.signals:
             print(signal)
-            if signal['type'] == 'note':
+            if signal['type'] == 'measure':
+                self.midify_measure(signal)
+            elif signal['type'] == 'instrument':
+                msg = self.midify_instrument(signal)
+                self.song.tracks[self.current_track].append(msg)
+            elif signal['type'] == 'note':
                 on, off = self.midify_note(signal)
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
@@ -103,6 +106,11 @@ class MidiGenerator:
     def midify_measure(self, signal):
         self.measure_start_time = self.measure_end_time
 
+
+    def midify_instrument(self, signal):
+        instrumentNumber = instrumentToNumber[signal['name']]
+
+        return Message('program_change', program=instrumentNumber, time=0)
 
     def midify_tempo(self, signal):
         if(signal['type'] != 'tempo'):
@@ -120,9 +128,8 @@ class MidiGenerator:
         length = int(500 * (signal['length_num']/float(signal['length_denom'])))
 
         self.measure_end_time = self.measure_start_time + length
-        return Message('note_on', note=noteNumber, velocity=127, time=0), Message('note_off',note=noteNumber, velocity=127, time=length)
-
-
+        return Message('note_on', note=noteNumber, velocity=127, time=0), Message('note_off',
+            note=noteNumber, velocity=127, time=length)
 
 
     def add_track(self):
