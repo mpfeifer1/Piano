@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
+# This script is only for ubuntu linux
+
 # if any command inside script returns error, exit and return that error 
 set -e
 
-# magic line to ensure that we're always inside the root of our application,
-# no matter from which directory we'll run script
-# thanks to it we can just enter `./scripts/run-tests.bash`
-#cd "${0%/*}/../src/test"
-
 echo "-----Installing Hooks Script-----"
 ./install-hooks.bash
+echo "-----Installing Python3-----"
+sudo apt-get install python3
+echo "-----Installing Pip3-----"
+sudo apt-get install python3-pip
 echo "-----Installing Mido-----"
 pip3 install mido
 echo "-----Installing Lark-----"
