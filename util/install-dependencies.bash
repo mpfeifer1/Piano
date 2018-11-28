@@ -11,8 +11,8 @@ set -e
 echo "-----Installing Hooks Script-----"
 ./install-hooks.bash
 echo "-----Installing Mido-----"
-pip install mido
+pip3 install mido
 echo "-----Installing Lark-----"
-pip install lark
+pip3 install lark
 echo "-----Installing Lark Parser-----"
-pip install lark-parser
+pip3 install lark-parser
