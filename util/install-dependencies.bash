@@ -5,8 +5,6 @@
 # if any command inside script returns error, exit and return that error 
 set -e
 
-echo "-----Installing Hooks Script-----"
-./install-hooks.bash
 echo "-----Installing Python3-----"
 sudo apt-get install python3
 echo "-----Installing Pip3-----"
