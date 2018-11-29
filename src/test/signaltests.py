@@ -24,7 +24,6 @@ class TestSignalGeneration(unittest.TestCase):
         self.tree = self.l.parse(self.measureTest)
         self.testMeasure = self.tree.children[0].children[0].children[0]
 
-        # what args go here???
         self.semantic = Semantic(self.testMeasure)
         self.help = TestHelp()
 
