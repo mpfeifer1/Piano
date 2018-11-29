@@ -61,7 +61,6 @@ class MidiGenerator:
             need = len(types[curr_type])
             have = len(signal) - 1
             if have != need:
-                print(curr_type)
                 print("Error: Expected " , need , " type paramaters")
                 return False
 
@@ -87,13 +86,11 @@ class MidiGenerator:
         self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 20}))
 
         for signal in self.signals:
-            print(signal)
             if signal['type'] == 'measure':
                 self.midify_measure(signal)
             elif signal['type'] == 'instrument':
                 msg = self.midify_instrument(signal)
                 self.song.tracks[self.current_track].append(msg)
-                print(self.current_track)
             elif signal['type'] == 'note':
                 on, off = self.midify_note(signal)
                 self.song.tracks[self.current_track].append(on)
