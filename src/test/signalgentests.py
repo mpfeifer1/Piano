@@ -20,6 +20,13 @@ class TestSignalGen(unittest.TestCase):
         signal = self.semantic.measure_to_signal(input_measure)
         self.assertEqual(expected, signal, "Measure signal not valid")
 
+    def test_MismatchMeasureSigGen(self):
+        input_measure = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('noteitem', [Tree('inlinedynamic', [Token('__ANON_5', 'ff')])])])])
+        expected = [{'type':'measure'}]
+        signal = self.semantic.measure_to_signal(input_measure)
+        self.assertNotEqual(expected, signal, "Measure signal valid when it shouldn't be")
+
+
     def test_veryComplexMeasure(self):
 
         very_Complex_Input = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENTATION', 'acousticgrandpiano'), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '2')])]), Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])])])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Token('REST', '--')])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Tree('chord', [Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'E'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'G'), Tree('number', [Token('__ANON_0', '4')])])])])])])])
@@ -53,6 +60,11 @@ class TestSignalGen(unittest.TestCase):
         signal = self.semantic.note_to_signal(input_note)
         self.assertEqual(expected, signal, "Note (note) signal not valid")
 
+    def test_MismatchNoteSigGen(self):
+        input_note = Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '2')]), Tree('number', [Token('__ANON_3', '3')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])
+        expected = [{'type':'note', 'length_num':1, 'length_denom':2, 'note_name':'C4'}]
+        signal = self.semantic.note_to_signal(input_note)
+        self.assertNotEqual(expected, signal, "Note (note) signal valid when it shouldn't be")
 
     def test_restSigGen(self):
         input_rest= Tree('note', [ Tree('division', [ Tree('number', [ Token('__ANON_3', '1') ]),  Tree('number', [ Token('__ANON_3', '2') ]) ]),  Token('REST', '--') ])
