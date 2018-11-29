@@ -21,7 +21,7 @@ class MidiGenerator:
         self.current_channel = 0
 
         #Debugging Crap
-        self.file = open('piano.py', 'w')
+        self.file = open('mido_test.py', 'w')
         self.file.write('from mido import Message, MidiFile, MidiTrack, MetaMessage\n')
         self.file.write('import mido\n')
         self.file.write('song = MidiFile(type=1, ticks_per_beat=1000)\n')
