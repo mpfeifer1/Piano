@@ -15,6 +15,7 @@ Each dictionary will contain a field 'type'.
     'tuple'
     'rest'
     'instrument'
+    'timesig'
 
 Depending on the type, the dictionary will have more fields.
 Below is a list of all the types and their extra fields.
@@ -48,3 +49,7 @@ Below is a list of all the types and their extra fields.
 
 'instrument'
     'name': string
+
+'timesig'
+    'time_num': int
+    'time_denom': int
