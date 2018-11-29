@@ -26,12 +26,10 @@ class TestGeneration(unittest.TestCase):
     def test_validateWrongNumberFields(self):
         signals = [{"type":"dynamic"}]
         self.assertFalse(self.generator.validate(signals), 'Invalid signal list found valid')
-        pass
 
     def test_validateSignalWrongFields(self):
         signals = [{"type":"dynamic", "BADFIELD":"data"}]
         self.assertFalse(self.generator.validate(signals), 'Invalid signal list found valid')
-        pass
 
 if __name__ == '__main__':
     unittest.main()
