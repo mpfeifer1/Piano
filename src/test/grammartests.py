@@ -3,9 +3,10 @@ import lark
 import unittest
 from lark import Tree
 from lark import lexer
-from lexer import Token
 from lark import exceptions
-from exceptions import LarkError
+
+Token = lexer.Token
+LarkError = exceptions.LarkError
 
 # Local imports
 from testhelper import TestHelp
