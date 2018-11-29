@@ -31,6 +31,7 @@ class MidiGenerator:
         types['measure'] = []
         types['dynamic'] = ['volume']
         types['instrument'] = ['name']
+        types['timesig'] = ['time_num', 'time_denom']
         return types
 
 
@@ -60,13 +61,14 @@ class MidiGenerator:
             need = len(types[curr_type])
             have = len(signal) - 1
             if have != need:
-                print("Error: Expected " + need + " type paramaters")
+                print(curr_type)
+                print("Error: Expected " , need , " type paramaters")
                 return False
 
             # Check that all the parameters we have match what we neeed
             for i in types[curr_type]:
                 if i not in signal:
-                    print("Error: Unexpected parameter " + i + " in " + curr_type)
+                    print("Error: Unexpected parameter " , i , " in " , curr_type)
                     return False
 
         return True
