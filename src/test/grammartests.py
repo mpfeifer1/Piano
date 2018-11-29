@@ -1,20 +1,20 @@
-import unittest
-from testhelper import TestHelp
-TestHelp().chwd()
-import grammar
-
+# Standard imports
 import lark
+import unittest
 from lark import Tree
 from lark import lexer
+from lexer import Token
 from lark import exceptions
+from exceptions import LarkError
 
-from instrumentToNumber import instrumentToNumber
-from noteToNumber import noteToNumber
+# Local imports
+from testhelper import TestHelp
 
-from semanticanalyzer import Semantic
+# Change directory for imports
+TestHelp().chwd()
 
-Token = lexer.Token
-LarkError = exceptions.LarkError
+# Core imports
+import grammar
 
 class TestGrammar(unittest.TestCase):
 
@@ -33,15 +33,11 @@ class TestGrammar(unittest.TestCase):
             }
         }
         '''
-        accept = '''
-        start
-            id $gp
-            compose
-        '''
-        res = self.l.parse(test)
-        print(res)
-        #TODO: Fix this test case
-        #self.assertEqual(accept, res, 'Variable declaration not properly parsed')
+        accept = Tree('start', [Tree('compose', [Tree('composeitems', [Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('noteitem', [Tree('inlinedynamic', [Token('__ANON_5', 'mf')])])])])])])])
+
+        res = self.l.parse(test)#.pretty()
+        self.assertEqual(accept, res, 'Variable declaration not properly parsed')
+
 
     def test_comment(self):
         ''' Arrange '''
@@ -88,8 +84,8 @@ class TestGrammar(unittest.TestCase):
         '''
 
         testtree = self.l.parse(test).pretty()
-        print(self.l.parse(test))
         self.assertTrue(self.help.prettyTreeComp(testtree, accept), 'Basic Measure syntax parsed incorrectly')
+
 
     def test_repeat(self):
         test='''
@@ -136,77 +132,7 @@ class TestGrammar(unittest.TestCase):
             testfail = True
         self.assertTrue(testfail, 'Incorrect repeat structure accepted (no Endr)')
 
-'''
-    """
-    Compose{
-        // Nerd Nerd Nerd
-        Tempo(60)
-        Timesig(4/4)
-    }
-    """,
-
-
-
-    """
-    $gp = acousticgrandpiano
-    Compose{
-    }
-    """,
-
-    """
-    compose {
-        measure {
-
-        }
-    }
-    """,
-
-
-    """
-    Compose {
-        Measure {
-        }
-    }
-    """
-
-]
-
-badstrs = [
-    "INVALID%$&",
-    "h#4",
-    """
-    nathan = a5
-    """,
-    """
-    A
-    """,
-    """
-    $    gp = acousticgrandpiano
-    Compose{
-    }
-    """
-]
-
-def runtests():
-    l = lark.Lark(grammar.getgrammar())
-
-    print("~~~~~~~GOOD~~~~~~~~")
-    for i in goodstrs:
-        try:
-            l.parse(i)
-        except:
-            print("INCORRECT - didn't accept", i)
-
-    print()
-
-    print("~~~~~~~BAD~~~~~~~~")
-    for i in badstrs:
-        try:
-            l.parse(i)
-            print("INCORRECT - accepted", i)
-        except:
-            pass
-'''
 
 if __name__ == '__main__':
     unittest.main()
+
