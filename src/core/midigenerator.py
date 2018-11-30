@@ -162,7 +162,7 @@ class MidiGenerator:
         if(signal['type'] != 'tempo'):
             print('Error when midifying tempo')
             return ''
-        self.ticks_per_beat = mido.bpm2tempo(signal['bpm'] * 18)
+        self.ticks_per_beat = mido.bpm2tempo(int(signal['bpm']) * 18)
 
         return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
 
