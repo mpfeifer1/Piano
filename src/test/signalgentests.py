@@ -16,7 +16,7 @@ class TestSignalGen(unittest.TestCase):
 
     def test_measureSigGen(self):
         input_measure = Tree('measure', [])
-        expected = [{'type':'measure','start':True}, {'type':'measure','start':False}]
+        expected = [{'type':'measure','start':True},{'type':'measure','start':False}]
         signal = self.semantic.measure_to_signal(input_measure)
         self.assertEqual(expected, signal, "Measure signal not valid")
 
