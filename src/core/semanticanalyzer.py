@@ -363,6 +363,61 @@ class Semantic:
         return True
 
 
+    def is_valid_tuple(self, tree):
+        if not type(tree) is self.treetype:
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
+        if not tree.data == 'tuple':
+            return False
+
+        try:
+            for child in tree.children:
+                if child.data == 'notename':
+                    if not self.is_valid_notename(child):
+                        raise SemanticError
+                elif child.data == 'chord':
+                    if not self.is_valid_chord(child):
+                        raise SemanticError
+                elif child.data == 'rest':
+                    if not self.is_valid_rest(child):
+                        raise SemanticError
+                else:
+                    raise SemanticError
+        except:
+            raise SemanticError('Tuples may only contian notes, chords, and rests.')
+
+        return True
+
+
+    def is_valid_rest(self, tree):
+        if not type(tree) is self.treetype:
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
+        if not tree.data == 'rest':
+            return False
+
+        return True
+
+
+    def is_valid_chord(self, tree):
+        if not type(tree) is self.treetype:
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
+        if not tree.data == 'chord':
+            return False
+
+        try:
+            for child in tree.children:
+                if not child.data == 'notename':
+                    return False
+                if not self.is_valid_notename(child):
+                    raise SemanticError
+        except:
+            raise exceptions.SemanticError('Chords should only contain notes.')
+
+        return True
+
+
     def is_valid_notename(self, tree):
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
