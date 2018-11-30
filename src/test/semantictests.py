@@ -30,23 +30,23 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidDivisionNoDivision(self):
         division = [Tree('number', [])]
-        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
+        self.assertRaises(exceptions.DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNoNumberOnLeft(self):
         division = Tree('division', [Tree('division', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
+        self.assertRaises(exceptions.DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNoNumberOnRight(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('division', [Token('__ANON_1', '4')])])
-        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
+        self.assertRaises(exceptions.DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNumerator(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '-1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
+        self.assertRaises(exceptions.DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionDenominator(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '5')])])
-        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
+        self.assertRaises(exceptions.DivisionError, self.semantic.is_valid_division, division)
 
     def test_validNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'),  Tree('number', [Token('__ANON_1', '4')])])
@@ -58,15 +58,15 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'H'),  Tree('number', [Token('__ANON_1', '4')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_notename, notename)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_notename, notename)
 
     def test_invalidNoteNameAccidental(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'), Tree('accidental', [Token('__ANON_1', '@')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_notename, notename)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_notename, notename)
 
     def test_invalidNoteNameAccidentalLength(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'), Tree('accidental', [Token('__ANON_1', '@')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_notename, notename)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_notename, notename)
 
     def test_validNoteItem(self):
         noteitem = Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '1')]), Tree('number', [Token('__ANON_3', '2')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])])
@@ -78,7 +78,7 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidInlineDynamic(self):
         dynamic = Tree('inlinedynamic', [Token('__ANON_0', 'mpp')])
-        self.assertRaises(DunamicError, self.semantic.is_valid_inlinedynamic, dynamic)
+        self.assertRaises(exceptions.DunamicError, self.semantic.is_valid_inlinedynamic, dynamic)
 
     def test_validDynamic(self):
         dynamic = Tree('dynamic', [Tree('inlinedynamic', [Token('__ANON_0', 'fff')])])
@@ -86,7 +86,7 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidDynamic(self):
         dynamic = Tree('dynamic', [Tree('number', [Token('__ANON_0', 'fff')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_dynamic, dynamic)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_dynamic, dynamic)
 
     def test_validId(self):
         iden = Tree('id', [Token('__ANON_0', '$tpt_in-out')])
@@ -94,11 +94,11 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidIdNoStart(self):
         iden = Tree('id', [Token('__ANON_0', 'tpt')])
-        self.assertRaises(SemanticError, self.semantic.is_valid_identifier, iden)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_identifier, iden)
 
     def test_invalidIdBadSymbol(self):
         iden = Tree('id', [Token('__ANON_0', '$tp$t')])
-        self.assertRaises(SemanticError, self.semantic.is_valid_identifier, iden)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_identifier, iden)
 
 
     def test_validTree(self):
@@ -108,26 +108,26 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidTreeNoCompose(self):
         tree = Tree('start', [Tree('id', [Token('__ANON_0', '$gp')]), Tree('rhs', [Token('__ANON_1', 'acousticgrandpiano')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_tree, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_tree, tree)
 
 
     def test_invalidTreeNoStart(self):
         tree = Tree('compose', [])
-        self.assertRaises(SemanticError, self.semantic.is_valid_tree, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_tree, tree)
 
 
     def test_invalidTreeIdNoRHS(self):
         tree = Tree('start', [Tree('id', Token('__ANON_0', '$gp')), Tree('compose', [Token('__ANON_1', 'acousticgrandpiano')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_tree, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_tree, tree)
 
 
     def test_invalidTreeRHSNoId(self):
         tree = Tree('start', [Tree('rhs', Token('__ANON_0', 'acousticgrandpiano')), Tree('compose', [Token('__ANON_1', 'acousticgrandpiano')])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_tree, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_tree, tree)
 
     def test_instrumentationInvalidChild(self):
         tree = Tree('instrumentation', [Tree('trumpet', [])])
-        self.assertRaises(SemanticError, self.semantic.is_valid_instrumentation, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_instrumentation, tree)
 
     '''
     def test_validInstrumentation(self):
@@ -153,7 +153,7 @@ class TestSemantics(unittest.TestCase):
 
     def test_invalidMeasure(self):
         tree = Tree('compose', [])
-        self.assertRaises(SemanticError, self.semantic.is_valid_measure, tree)
+        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_measure, tree)
 
     def test_validMeasureWithInstrumentation(self):
         tree = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])
