@@ -97,7 +97,6 @@ class Semantic:
 
         # Tempo
         if tree.data == 'tempo':
-            print("tempo subtree")
             if self.is_valid_tempo(tree):
                 signals += self.get_tempo_signal(tree)
 
@@ -123,8 +122,6 @@ class Semantic:
                 signals += repeatedsignals
                 signals += repeatedsignals
 
-        #print(tree)
-        #print()
         return signals
 
     def get_dynamic_signal(self, tree):
@@ -242,7 +239,6 @@ class Semantic:
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
-        print(tree)
         pass
 
     # check that the tempo is valid

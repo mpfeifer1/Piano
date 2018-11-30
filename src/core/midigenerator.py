@@ -53,6 +53,7 @@ class MidiGenerator:
 
             # Check the signal has a type
             if 'type' not in signal:
+                print(signal)
                 print('Error: Missing Signal Type')
                 return False
 
