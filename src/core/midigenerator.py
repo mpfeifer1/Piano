@@ -87,7 +87,6 @@ class MidiGenerator:
         #add an initial track to the song
         self.add_track()
 
-        self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 60}))
 
         for signal in self.signals:
             print(signal)
@@ -105,6 +104,9 @@ class MidiGenerator:
                 self.midify_dynamic(signal)
             elif signal['type'] == 'timesig':
                 self.midify_timesig(signal)
+            elif signal['type'] == 'tempo':
+                msg = self.midify_tempo(signal)
+                self.song.tracks[self.current_track].append(msg)
         self.midify_measure({})
 
 
