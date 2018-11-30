@@ -13,7 +13,6 @@ class MidiGenerator:
         self.tempo = 120
         self.dynamic = 87
         self.measure_start_time = 0
-        self.measure_end_time = 0
         self.ticks_per_beat = 0
         self.song = MidiFile(type=1, ticks_per_beat=1000)
         self.max_track = -1
@@ -112,13 +111,13 @@ class MidiGenerator:
         self.song.save('piano.mid')
 
     def midify_measure(self, signal):
-        self.measure_start_time = self.measure_end_time + 1
+        self.measure_start_time += 1000
         for i in range(len(self.song.tracks)):
             if self.track_time[i] < self.measure_start_time:
                 time_diff = self.measure_start_time - self.track_time[i]
                 self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
                 self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
-                self.track_time[i] = self.measure_end_time
+                self.track_time[i] = self.measure_start_time
 
         self.current_track = 0
         self.current_channel = 0
@@ -170,11 +169,7 @@ class MidiGenerator:
         noteNumber = noteToNumber[signal['note_name']]
         length = int(self.timesig * (signal['length_num']/float(signal['length_denom'])))
 
-        self.measure_end_time = self.measure_start_time + length
-
-        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic,
-            time=0), Message('note_off',note=noteNumber, channel=self.current_channel,
-            velocity=self.dynamic, time=length)
+        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
 
     def add_track(self):
         self.song.tracks.append(MidiTrack())
