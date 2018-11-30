@@ -114,8 +114,8 @@ class MidiGenerator:
     def midify_measure(self, signal):
         self.measure_start_time = self.measure_end_time + 1
         for i in range(len(self.song.tracks)):
-            if self.track_time[i] < self.measure_end_time:
-                time_diff = self.measure_end_time - self.track_time[i]
+            if self.track_time[i] < self.measure_start_time:
+                time_diff = self.measure_start_time - self.track_time[i]
                 self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
                 self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
                 self.track_time[i] = self.measure_end_time
