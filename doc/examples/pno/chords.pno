@@ -2,7 +2,7 @@ Compose {
     Tempo(100)
     Measure {
         acousticgrandpiano {
-            mp; 1/4 (C4 G4); 1/4 (C4 G4); 1/4 (D4 G4); 1/4 (D4 G4);
+            mp; 1/4 (C4 G4); 1/4 C4; 1/4 (D4 G4); 1/4 D4;
         }
     }
 }
