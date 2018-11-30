@@ -228,14 +228,48 @@ class Semantic:
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'repeat':
+            return False
+
+        try:
+            for subtree in tree.children:
+                if not subtree.data == 'composeitems':
+                    return False
+        except:
+            return False
+
+        return True
+
 
     # check that the tempo is valid
     def is_valid_tempo(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'tempo':
+            return False
+
+        tempoval = int(tree.children[0].children[0].value)
+        if tempoval < 40 or tempoval > 240:
+            return False
+
+        return True
+
 
     def is_valid_timesig(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'timesig':
+            return False
+
+        if not tree.children[0].data == 'division':
+            return False
+
+        return self.is_valid_division(tree.children[0])
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
