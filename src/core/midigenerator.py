@@ -112,8 +112,7 @@ class MidiGenerator:
                 msg = self.midify_tempo(signal)
                 self.song.tracks[self.current_track].append(msg)
 
-        self.song.save('piano.mid')
-
+        return self.song
 
     def midify_measure(self, signal):
         if signal['start']:
