@@ -10,6 +10,7 @@ class MidiGenerator:
         # Save the signals the user passed in
         self.signals = signals
         self.timesig = 1000
+        self.timesigsplit = [4,4]
         self.tempo = 120
         self.dynamic = 87
         self.measure_start_time = 0
@@ -116,7 +117,7 @@ class MidiGenerator:
         if self.first_measure:
             self.first_measure = False
         else:
-            self.measure_start_time += self.timesig
+            self.measure_start_time += 1000 * self.timesigsplit[0]
 
         for i in range(len(self.song.tracks)):
             if self.track_time[i] < self.measure_start_time:
@@ -133,7 +134,8 @@ class MidiGenerator:
         if signal['type'] != 'timesig':
             print('Error: invalid timesig signal')
 
-        self.timesig = int(1000 /  int(signal['time_denom']))
+        self.timesigsplit = [int(signal['time_num']), int(signal['time_denom'])]
+        self.timesig = int(1000 *  int(signal['time_denom']))
 
     def midify_dynamic(self, signal):
         if signal['type'] != 'dynamic':
@@ -176,7 +178,8 @@ class MidiGenerator:
         #print("before")
         #print(type(self.timesig))
         #print(self.timesig)
-        length = int(int(self.timesig) * (signal['length_num']/float(signal['length_denom'])))
+        #length = int(int(self.timesig) * (signal['length_num']/float(signal['length_denom'])))
+        length = int(1000 * (signal['length_num']))
         #print("after")
 
         return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
