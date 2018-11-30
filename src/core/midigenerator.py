@@ -18,6 +18,13 @@ class MidiGenerator:
         self.track_time = []
         self.chord_track = 0
         self.first_instrument = True
+        self.current_channel = 0
+
+        #Debugging Crap
+        self.file = open('mido_test.py', 'w')
+        self.file.write('from mido import Message, MidiFile, MidiTrack, MetaMessage\n')
+        self.file.write('import mido\n')
+        self.file.write('song = MidiFile(type=1, ticks_per_beat=1000)\n')
 
     # Returns a dictionary from each signal type to a list
     # of all the extra fields that type requires
@@ -86,6 +93,7 @@ class MidiGenerator:
         self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 20}))
 
         for signal in self.signals:
+            print(signal)
             if signal['type'] == 'measure':
                 self.midify_measure(signal)
             elif signal['type'] == 'instrument':
@@ -96,40 +104,53 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
 
-        for track in self.song.tracks:
-            print("track")
-            for message in track:
-                print(message)
-
         self.song.save('piano.mid')
+
+        #QQQXXX DEBUG
+        self.file.write('song.save("ugh.mid")\n')
+        self.file.close()
 
 
     def midify_measure(self, signal):
-        self.measure_start_time = self.measure_end_time
-        self.current_track = 0
-        self.first_instrument = True
+        self.measure_start_time = self.measure_end_time + 1
+        #self.current_track = 0
+        #self.current_channel = 0
+        #self.first_instrument = True
 
 
     def midify_instrument(self, signal):
         instrumentNumber = instrumentToNumber[signal['name']]
 
-        self.measure_end_time = self.measure_start_time
-
-        if(self.current_track == self.max_track and self.first_instrument == False):
-            print('adding a new track')
-            self.add_track()
-        elif(self.first_instrument == True):
+        if(self.first_instrument == True):
             self.first_instrument = False
         else:
-            self.current_track += 1
+            self.current_channel += 1
 
-        return Message('program_change', program=instrumentNumber, time=0)
+            if(self.current_track == self.max_track and self.first_instrument == False):
+                self.add_track()
+            elif(self.first_instrument == True):
+                self.first_instrument = False
+            else:
+                self.current_track += 1
+
+        #QQQXXX DEBUG
+        self.file.write('song.tracks[' + str(self.current_track) +
+             '].append(Message("program_change", channel=' + str(self.current_channel) +
+            ', program='+ str(instrumentNumber) + ', time=0))\n')
+
+
+        return Message('program_change', channel=self.current_channel, program=instrumentNumber, time=0)
 
     def midify_tempo(self, signal):
         if(signal['type'] != 'tempo'):
             print('Error when midifying tempo')
             return ''
         self.ticks_per_beat = mido.bpm2tempo(signal['bpm'])
+
+        #QQQXXX DEBUG
+        self.file.write('song.tracks[' + str(self.current_track) +
+             '].append(MetaMessage("set_tempo", tempo=' + str(self.ticks_per_beat) +'))\n')
+
         return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
 
     def midify_note(self, signal):
@@ -141,13 +162,28 @@ class MidiGenerator:
         length = int(1000 * (signal['length_num']/float(signal['length_denom'])))
 
         self.measure_end_time = self.measure_start_time + length
-        return Message('note_on', note=noteNumber, velocity=127, time=0), Message('note_off',
-            note=noteNumber, velocity=127, time=length)
+
+        #QQQXXX DEBUG
+        self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_on", note='
+            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=127, time=0))\n')
+        self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_off", note='
+            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=127, time=' +
+            str(length) + '))\n')
+
+
+        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=127,
+            time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=127, time=length)
 
 
     def add_track(self):
         self.song.tracks.append(MidiTrack())
+        ###QQQXXX DEBUG
+        self.file.write('song.tracks.append(MidiTrack())\n')
+
         self.max_track += 1
         self.current_track = self.max_track
         self.track_time.append(0)
+        self.song.tracks[self.max_track].append(Message("note_on", note=0, channel=self.current_channel, velocity=127, time=0))
+        self.song.tracks[self.max_track].append(Message("note_off", note=0, channel=self.current_channel, velocity=127, time=self.measure_start_time))
+
 
