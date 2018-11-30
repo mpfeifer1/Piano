@@ -106,6 +106,7 @@ class MidiGenerator:
                 self.midify_dynamic(signal)
             elif signal['type'] == 'timesig':
                 self.midify_timesig(signal)
+        self.midify_measure({})
 
 
         self.song.save('piano.mid')
