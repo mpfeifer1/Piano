@@ -9,6 +9,7 @@ class MidiGenerator:
     def __init__(self, signals):
         # Save the signals the user passed in
         self.signals = signals
+        self.timesig = 1000
         self.tempo = 120
         self.dynamic = 87
         self.measure_start_time = 0
@@ -87,7 +88,7 @@ class MidiGenerator:
         #add an initial track to the song
         self.add_track()
 
-        self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 20}))
+        self.song.tracks[self.current_track].append(self.midify_tempo({'type': 'tempo', 'bpm': 60}))
 
         for signal in self.signals:
             print(signal)
@@ -103,6 +104,9 @@ class MidiGenerator:
                 self.track_time[self.current_track] += off.time
             elif signal['type'] == 'dynamic':
                 self.midify_dynamic(signal)
+            elif signal['type'] == 'timesig':
+                self.midify_timesig(signal)
+
 
         self.song.save('piano.mid')
 
@@ -118,6 +122,12 @@ class MidiGenerator:
         self.current_track = 0
         self.current_channel = 0
         self.first_instrument = True
+
+    def midify_timesig(self, signal):
+        if signal['type'] != 'timesig':
+            print('Error: invalid timesig signal')
+
+        self.timesig = 1000 * signal['time_denom']
 
     def midify_dynamic(self, signal):
         if signal['type'] != 'dynamic':
@@ -157,7 +167,7 @@ class MidiGenerator:
             return '', ''
 
         noteNumber = noteToNumber[signal['note_name']]
-        length = int(1000 * (signal['length_num']/float(signal['length_denom'])))
+        length = int(self.timesig * (signal['length_num']/float(signal['length_denom'])))
 
         self.measure_end_time = self.measure_start_time + length
 
