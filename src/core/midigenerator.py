@@ -1,5 +1,6 @@
 from mido import Message, MidiFile, MidiTrack, MetaMessage
 import mido
+import exceptions
 from noteToNumber import noteToNumber
 from instrumentToNumber import instrumentToNumber
 from dynamicToVelocity import dynamicToVelocity
@@ -47,30 +48,26 @@ class MidiGenerator:
 
             # Check the signal has a type
             if 'type' not in signal:
-                print('Error: Missing Signal Type')
-                return False
+                raise exceptions.SignalError('Signal has no type.')
 
             # Find this signal's type
             curr_type = signal['type']
 
             # Check it's a valid type
             if curr_type not in types:
-                print('Error: Invalid Signal Type')
-                return False
+                raise exceptions.SignalError('Signal has improper type.')
 
             # Count how many parameters are needed, and how many we have
             need = len(types[curr_type])
             have = len(signal) - 1
 
             if have != need:
-                print("Error: Expected " , need , " signal paramaters")
-                return False
+                raise exceptions.SignalError('Incorrect number of signal parameters.')
 
             # Check that all the parameters we have match what we neeed
             for i in types[curr_type]:
                 if i not in signal:
-                    print("Error: Unexpected parameter " , i , " in " , curr_type)
-                    return False
+                    raise exceptions.SignalError('Missing parameter for signal type.')
 
         return True
 
