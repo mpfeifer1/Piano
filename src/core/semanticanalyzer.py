@@ -524,7 +524,20 @@ class Semantic:
                 chordsig['length_denom'] = int(den)
                 signals.append(chordsig)
             elif i.data == "tuple":
-                signals += self.tuple_to_signal(i)
+                tupleItems = self.tuple_to_signal(i)
+                itemCount = len(tupleItems)
+                newDen = int(den) * itemCount
+                for item in tupleItems:
+                    if item['type'] == 'note':
+                        notesig['note_name'] = item['value']
+                        notesig['length_num'] = int(num)
+                        notesig['length_denom'] = newDen
+                        signals.append(notesig)
+                    elif item['type'] == 'chord':
+                        chordsig['notes'] = item['value']
+                        chordsig['length_num'] = int(num)
+                        chordsig['length_denom'] = newDen
+                        signals.append(chordsig)
             else:
                 print("invalid note child")
 
@@ -564,15 +577,18 @@ class Semantic:
         if tree.data != 'tuple':
             print('error: not a tuple')
         # put dummy data in a tuple signal because we don't like them much
-        return [{'type':'tuple', 'length_num':0, 'length_denom':0, 'notes':[]}]
+
+        notes = []
 
         for i in tree.children:
             if i.data == 'notename':
-                self.collect_notename(i)
+                notes.append({'type' : 'note', 'value' : self.collect_notename(i)})
             elif i.data == 'chord':
-                self.chord_to_signal(i)
+                notes.append({'type' : 'chord', 'value' : self.chord_to_signal(i)})
             else:
                 print('invalid tuple child')
+
+        return notes
 
 
     # given a tree that represents a dynamic, set the new volume
