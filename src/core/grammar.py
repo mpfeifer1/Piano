@@ -145,7 +145,7 @@ def getgrammar():
 
         chord: "(" notename+ ")"
 
-        tuple: "tuple(" (chord|notename|REST|id)+ ")"
+        tuple: "tuple(" (chord|notename|id)+ ")"
 
         note: division notename
             | division (chord | id)
