@@ -1,0 +1,15 @@
+Compose  {
+    Measure {
+        trumpet {
+            1/1 C4;
+        }
+    }
+    tempo(60)
+    dynamic(pppp)
+    timesig(3/8)
+    Measure {
+        trumpet {
+            1/1 C4;
+        }
+    }
+}

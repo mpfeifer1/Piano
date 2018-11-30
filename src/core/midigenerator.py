@@ -61,7 +61,7 @@ class MidiGenerator:
             need = len(types[curr_type])
             have = len(signal) - 1
             if have != need:
-                print("Error: Expected " , need , " type paramaters")
+                print("Error: Expected " , need , " signal paramaters")
                 return False
 
             # Check that all the parameters we have match what we neeed

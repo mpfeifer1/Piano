@@ -97,6 +97,7 @@ class Semantic:
 
         # Tempo
         if tree.data == 'tempo':
+            print("tempo subtree")
             if self.is_valid_tempo(tree):
                 signals += self.get_tempo_signal(tree)
 
@@ -127,13 +128,20 @@ class Semantic:
         return signals
 
     def get_dynamic_signal(self, tree):
-        pass
+        signal = {"type":"dynamic"}
+        signal["volume"] = tree.children[0].children[0]
+        return [signal]
 
     def get_tempo_signal(self, tree):
-        pass
+        signal = {"type":"tempo"}
+        signal["bpm"] = tree.children[0].children[0]
+        return [signal]
 
     def get_timesig_signal(self, tree):
-        pass
+        signal = {"type":"timesig"}
+        signal["time_num"] = tree.children[0].children[0].data.children[0]
+        signal["time_denom"] = tree.children[0].children[1].data.children[0]
+        return [signal]
 
     # Take the tree, and split it up into a list of commands
     def split_into_commands(self, tree):
@@ -234,6 +242,7 @@ class Semantic:
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
+        print(tree)
         pass
 
     # check that the tempo is valid
@@ -546,18 +555,6 @@ class Semantic:
             else:
                 print('invalid tuple child')
 
-
-    # given a tree that represents a dynamic, set the new volume
-    def apply_dynamic(self, tree):
-        pass
-
-    # given a tree that represents a tempo, set that new tempo
-    def apply_tempo(self, tree):
-        pass
-
-    # given a tree that represents a time signature, set the timesig
-    def apply_timesig(self, tree):
-        pass
 
     def throw(self):
         # TODO find a way to throw an exception here
