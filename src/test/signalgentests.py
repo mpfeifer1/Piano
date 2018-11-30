@@ -22,7 +22,7 @@ class TestSignalGen(unittest.TestCase):
 
     def test_MismatchMeasureSigGen(self):
         input_measure = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('noteitem', [Tree('inlinedynamic', [Token('__ANON_5', 'ff')])])])])
-        expected = [{'type':'measure'}]
+        expected = [{'type':'measure','start':True},{'type':'measure','start':False}]
         signal = self.semantic.measure_to_signal(input_measure)
         self.assertNotEqual(expected, signal, "Measure signal valid when it shouldn't be")
 

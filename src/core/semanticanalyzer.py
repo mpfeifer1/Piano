@@ -99,10 +99,8 @@ class Semantic:
     def process_composeitems(self, tree):
         # Strip out the 'composeitems' tree
         tree = tree.children[0]
-
         # Define the list of signals
         signals = []
-
         # Tempo
         if tree.data == 'tempo':
             if self.is_valid_tempo(tree):
@@ -140,6 +138,10 @@ class Semantic:
             else:
                 raise exceptions.RepeatError('Invalid Repeat Structure.')
 
+        # Variable measures
+        if tree.data == 'id':
+            if self.is_valid_measure(self.variables[tree.children[0]]):
+                signals += self.measure_to_signal(self.variables[tree.children[0]])
         return signals
 
 
@@ -175,7 +177,6 @@ class Semantic:
             elif i.data == 'compose':
                 commands.append(['compose'])
                 commands[-1].append(i.children)
-
         return commands
 
     # TODO order these checks in a better order
@@ -482,7 +483,7 @@ class Semantic:
 
         if not theID[1].isalpha():
             raise exceptions.SemanticError('Identifier first non-$ must be alpha-non-numeric.')
-
+            
         for i in range(2, length):
             idChar = theID[i]
             if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
@@ -494,16 +495,14 @@ class Semantic:
     def is_valid_measure(self, tree):
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
-
+            
         if not tree.data == 'measure':
             return False
-
         for subtree in tree.children:
             isInstr = self.is_valid_instrumentation(subtree)
             isId = self.is_valid_identifier(subtree)
             if (not isInstr) and (not isId):
                 raise exceptions.MeasureError('Instrument or identifier required.')
-
         return True
 
 
@@ -513,11 +512,14 @@ class Semantic:
 
         if tree.data != 'instrumentation':
             return False
-
         if len(tree.children) < 1:
             raise exceptions.SemanticError('At least 1 child expected, ' + len(tree.children[0].children) + ' given.')
 
         child = tree.children
+        if type(child[0]) == self.treetype:
+            if not self.is_valid_identifier(child[0]):
+                return False
+            child[0] = self.variables[child[0].children[0]]
         if type(child[0]) != self.tokentype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(child[0])) + ' is not ' + str(self.tokentype) + '.')
         if child[0].type != 'INSTRUMENT':
@@ -526,17 +528,12 @@ class Semantic:
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
                 raise exceptions.SemanticError('Invalid Noteitem.')
-
         return True
 
 
     # sets a variable in our memory to its tree
     def set_variable(self, lhs, rhs):
-        # variables can be instrument names, so then they're just a token
-        if type(rhs) == self.tokentype:
-            self.variables[lhs.value] = rhs
-        else: #else it's a tree and the variable needs the whole shebang
-            self.variables[lhs.value] = rhs.children[0]
+        self.variables[lhs.value] = rhs
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
@@ -552,7 +549,6 @@ class Semantic:
 
         signals = []
         signals.append({'type':'measure', 'start':True})
-
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
@@ -576,6 +572,7 @@ class Semantic:
                 signals += self.noteitem_to_signal(i)
         else:
             raise exceptions.SignalConversionError('Invalid instrument given.')
+
 
         return signals
 

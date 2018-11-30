@@ -159,15 +159,15 @@ class TestSemantics(unittest.TestCase):
 
     def test_variableInstrument(self):
         lhs = Token('__ANON_9', '$tpt')
-        rhs = Tree('rhs', [Token('INSTRUMENT', 'trumpet')])
+        rhs = Token('INSTRUMENT', 'trumpet')
         expected = {'$tpt': Token('INSTRUMENT', 'trumpet')}
         self.semantic.set_variable(lhs, rhs)
-
         self.assertEqual(expected, self.semantic.variables, "Instrument variables not set correctly!")
+
 
     def test_variableMeasure(self):
         lhs = Token('__ANON_9', '$testMeasure')
-        rhs = Tree('rhs', [Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])])
+        rhs = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])
         expected = {'$testMeasure': Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])}
         self.semantic.set_variable(lhs, rhs)
 
