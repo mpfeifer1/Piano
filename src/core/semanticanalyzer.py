@@ -58,7 +58,6 @@ class Semantic:
             if command[0] == 'compose':
                 newsig = self.process_compose(command[1])
                 signals += self.process_compose(command[1])
-        print(self.variables)
         return signals
 
     # Return a list of signals with all the default settings
@@ -569,10 +568,6 @@ class Semantic:
                 print('invalid chord child')
 
         return notes
-
-    def id_to_signal(self, tree):
-        print(tree.data)
-        return [{}]
 
     def tuple_to_signal(self, tree):
         if tree.data != 'tuple':
