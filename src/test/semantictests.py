@@ -124,7 +124,7 @@ class TestSemantics(unittest.TestCase):
 
     def test_instrumentationInvalidChild(self):
         tree = Tree('instrumentation', [Tree('trumpet', [])])
-        self.assertRaises(exceptions.SemanticError, self.semantic.is_valid_instrumentation, tree)
+        self.assertFalse(self.semantic.is_valid_instrumentation(tree))
 
     '''
     def test_validInstrumentation(self):
