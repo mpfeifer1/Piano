@@ -31,5 +31,8 @@ try:
     # Pass the sound signals to Mido, and build a MIDI file
     generator = midigenerator.MidiGenerator(signals)
     midifile = generator.generate()
+    midi_name = inputflags['midi_file']
+
+    midifile.save(midi_name)
 except Exception as e:
     print(e)
