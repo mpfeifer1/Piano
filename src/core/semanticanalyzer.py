@@ -212,21 +212,34 @@ class Semantic:
         return True
 
     def is_valid_note(self, tree):
+        print('NOTE', tree)
         if not type(tree) is self.treetype:
+            print('n1')
             return False
 
         if len(tree.children[0].children) != 2:
+            print('n2')
             return False
 
         if tree.children[0].data != 'division':
+            print('n3')
             return False
 
         if not self.is_valid_division(tree.children[0]):
+            print('n4')
             return False
 
-        if not self.is_valid_notename(tree.children[1]):
+        if type(tree.children[1]) == self.tokentype and tree.children[1].type == 'REST':
+            print('n5')
+            return True
+
+        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]):
+            print('n6')
             return False
 
+        return True
+
+    def is_valid_chord(self, tree):
         return True
 
     # check that the measure is valid
@@ -302,6 +315,7 @@ class Semantic:
         return True
 
     def is_valid_noteitem(self, tree):
+        print('NOTEITEM TREE',tree)
         if not type(tree) is self.treetype:
             return False
 
@@ -312,6 +326,7 @@ class Semantic:
             return False
 
         item = tree.children[0].data
+        print("ITEM", item)
         if item == 'note':
             return Semantic.is_valid_note(self, tree.children[0])
         elif item  == 'id':
@@ -409,22 +424,29 @@ class Semantic:
 
     def is_valid_instrumentation(self, tree):
         if not type(tree) is self.treetype:
+            print('f1')
             return False
 
         if tree.data != 'instrumentation':
+            print('f2')
             return False
 
         if len(tree.children) < 1:
+            print('f3')
             return False
 
         child = tree.children
         if type(child[0]) != self.tokentype:
+            print('f4')
             return False
         if child[0].type != 'INSTRUMENT':
+            print(child[0].type)
+            print('f5')
             return False
 
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
+                print('f6')
                 return False
 
         return True
@@ -447,13 +469,14 @@ class Semantic:
     def measure_to_signal(self, tree):
         if not self.is_valid_measure(tree):
             print('error: not a measure')
+            return []
 
         signals = []
         signals.append({'type':'measure', 'start':True})
 
         for i in tree.children:
             if i.data == 'instrumentation':
-                signals += (self.instrumentation_to_signal(i))
+                signals += self.instrumentation_to_signal(i)
 
         signals.append({'type':'measure', 'start':False})
 
@@ -462,7 +485,7 @@ class Semantic:
     def instrumentation_to_signal(self, tree):
         if not self.is_valid_instrumentation(tree):
             print('error: not an instrumentation')
-            return False
+            return []
 
         signals = []
         name = tree.children[0]
