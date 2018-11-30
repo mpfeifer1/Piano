@@ -22,12 +22,6 @@ class MidiGenerator:
         self.first_instrument = True
         self.current_channel = 0
 
-        #Debugging Crap
-        self.file = open('mido_test.py', 'w')
-        self.file.write('from mido import Message, MidiFile, MidiTrack, MetaMessage\n')
-        self.file.write('import mido\n')
-        self.file.write('song = MidiFile(type=1, ticks_per_beat=1000)\n')
-
     # Returns a dictionary from each signal type to a list
     # of all the extra fields that type requires
     def get_type_fields(self):
@@ -106,21 +100,24 @@ class MidiGenerator:
                 on, off = self.midify_note(signal)
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
+                self.track_time[self.current_track] += off.time
             elif signal['type'] == 'dynamic':
                 self.midify_dynamic(signal)
 
         self.song.save('piano.mid')
 
-        #QQQXXX DEBUG
-        self.file.write('song.save("ugh.mid")\n')
-        self.file.close()
-
-
     def midify_measure(self, signal):
         self.measure_start_time = self.measure_end_time + 1
-        #self.current_track = 0
-        #self.current_channel = 0
-        #self.first_instrument = True
+        for i in range(len(self.song.tracks)):
+            if self.track_time[i] < self.measure_end_time:
+                time_diff = self.measure_end_time - self.track_time[i]
+                self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
+                self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
+                self.track_time[i] = self.measure_end_time
+
+        self.current_track = 0
+        self.current_channel = 0
+        self.first_instrument = True
 
     def midify_dynamic(self, signal):
         if signal['type'] != 'dynamic':
@@ -144,12 +141,6 @@ class MidiGenerator:
             else:
                 self.current_track += 1
 
-        #QQQXXX DEBUG
-        self.file.write('song.tracks[' + str(self.current_track) +
-             '].append(Message("program_change", channel=' + str(self.current_channel) +
-            ', program='+ str(instrumentNumber) + ', time=0))\n')
-
-
         return Message('program_change', channel=self.current_channel, program=instrumentNumber, time=0)
 
     def midify_tempo(self, signal):
@@ -157,10 +148,6 @@ class MidiGenerator:
             print('Error when midifying tempo')
             return ''
         self.ticks_per_beat = mido.bpm2tempo(signal['bpm'])
-
-        #QQQXXX DEBUG
-        self.file.write('song.tracks[' + str(self.current_track) +
-             '].append(MetaMessage("set_tempo", tempo=' + str(self.ticks_per_beat) +'))\n')
 
         return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
 
@@ -174,28 +161,15 @@ class MidiGenerator:
 
         self.measure_end_time = self.measure_start_time + length
 
-        #QQQXXX DEBUG
-        self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_on", note='
-            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=' + str(self.dynamic) + ', time=0))\n')
-        self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_off", note='
-            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=' + str(self.dynamic) + ', time=' +
-            str(length) + '))\n')
-
-
         return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic,
             time=0), Message('note_off',note=noteNumber, channel=self.current_channel,
             velocity=self.dynamic, time=length)
 
-
     def add_track(self):
         self.song.tracks.append(MidiTrack())
-        ###QQQXXX DEBUG
-        self.file.write('song.tracks.append(MidiTrack())\n')
-
         self.max_track += 1
         self.current_track = self.max_track
-        self.track_time.append(0)
+        self.track_time.append(self.measure_start_time)
         self.song.tracks[self.max_track].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
         self.song.tracks[self.max_track].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=self.measure_start_time))
-
 
