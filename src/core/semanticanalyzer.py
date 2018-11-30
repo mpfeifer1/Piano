@@ -483,7 +483,7 @@ class Semantic:
 
         if not theID[1].isalpha():
             raise exceptions.SemanticError('Identifier first non-$ must be alpha-non-numeric.')
-            
+
         for i in range(2, length):
             idChar = theID[i]
             if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
@@ -495,7 +495,7 @@ class Semantic:
     def is_valid_measure(self, tree):
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
-            
+
         if not tree.data == 'measure':
             return False
         for subtree in tree.children:
