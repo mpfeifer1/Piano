@@ -55,6 +55,7 @@ class MidiGenerator:
 
             # Check the signal has a type
             if 'type' not in signal:
+                print(signal)
                 print('Error: Missing Signal Type')
                 return False
 
@@ -71,7 +72,7 @@ class MidiGenerator:
             have = len(signal) - 1
 
             if have != need:
-                print("Error: Expected " , need , " type paramaters")
+                print("Error: Expected " , need , " signal paramaters")
                 return False
 
             # Check that all the parameters we have match what we neeed
