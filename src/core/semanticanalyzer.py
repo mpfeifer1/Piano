@@ -171,10 +171,11 @@ class Semantic:
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if tree.data != 'start':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, start expected.')
+            return False
+
         for i in range(len(tree.children[:-1])):
             if tree.children[i].data == 'id':
                 if tree.children[i+1].data != 'rhs':
@@ -189,9 +190,10 @@ class Semantic:
 
     def is_valid_dynamic(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
         if tree.data != 'dynamic':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, dynamic expected.')
+            return False
+
         item = tree.children[0].data
         if item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
@@ -207,9 +209,9 @@ class Semantic:
 
     def is_valid_inlinedynamic(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
         if tree.data != 'inlinedynamic':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, inlinedynamic expected.')
+            return False
 
         d = tree.children[0].lower()
         if d not in self.valid_levels:
@@ -220,7 +222,10 @@ class Semantic:
 
     def is_valid_note(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
+        if tree.data != 'noteitem':
+            return False
 
         if len(tree.children[0].children) != 2:
             raise exceptions.SemanticError('2 children expected, ' + len(tree.children[0].children) + ' given.')
@@ -264,10 +269,10 @@ class Semantic:
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'division':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, division expected.')
+            return False
 
         if not tree.children[0].data == 'number':
             raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, number expected.')
@@ -291,10 +296,10 @@ class Semantic:
 
     def is_valid_noteitem(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'noteitem':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, noteitem expected.')
+            return False
 
         if not len(tree.children) == 1:
             raise exceptions.SemanticError('1 child expected, ' + len(tree.children[0].children) + ' given.')
@@ -316,10 +321,10 @@ class Semantic:
 
     def is_valid_notename(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'notename':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, notename expected.')
+            return False
 
         if not (len(tree.children) == 3 or len(tree.children) == 2):
             raise exceptions.SemanticError('2 or 3 children expected, ' + len(tree.children[0].children) + ' given.')
@@ -362,10 +367,10 @@ class Semantic:
     # check the name exists in our program
     def is_valid_identifier(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'id':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, notename expected.')
+            return False
 
         theID = tree.children[0]
         length = len(theID)
@@ -389,10 +394,10 @@ class Semantic:
 
     def is_valid_measure(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'measure':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, measure expected.')
+            return False
 
         for subtree in tree.children:
             isInstr = self.is_valid_instrumentation(subtree)
@@ -405,17 +410,17 @@ class Semantic:
 
     def is_valid_instrumentation(self, tree):
         if not type(tree) is self.treetype:
-            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if tree.data != 'instrumentation':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, instrumentation expected.')
+            return False
 
         if len(tree.children) < 1:
             raise exceptions.SemanticError('At least 1 child expected, ' + len(tree.children[0].children) + ' given.')
 
         child = tree.children
         if type(child[0]) != self.tokentype:
-            raise exceptions.ValidationError('Type mismatch: ' + type(child[0]) + ' is not ' + self.tokentype + '.')
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(child[0])) + ' is not ' + str(self.tokentype) + '.')
         if child[0].type != 'INSTRUMENT':
             raise exceptions.ValidationError('Type mismatch: ' + child[0].type + ' is not INSTRUMENT.')
 
