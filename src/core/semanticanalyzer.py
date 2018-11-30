@@ -131,7 +131,7 @@ class Semantic:
 
     def get_tempo_signal(self, tree):
         signal = {"type":"tempo"}
-        signal["bpm"] = tree.children[0].children[0]
+        signal["bpm"] = tree.children[0].children[0].value
         return [signal]
 
     def get_timesig_signal(self, tree):
