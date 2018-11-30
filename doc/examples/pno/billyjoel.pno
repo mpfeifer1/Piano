@@ -1,0 +1,45 @@
+$gp = acousticgrandpiano
+$h = harmonica
+$m1 = Measure { $h { 5/8 (G5 C6); 1/8 (A5 F5); } }
+$m2 = Measure { $h { 2/4 (G5 C6); 1/8 (A5 F5); 1/8 (E5 G5);}}
+$m3 = Measure { $h { 1/8 (A5 F5); 5/8 (E5 G5);} }
+$fullRest = Measure { $gp { 3/4 --;} }
+Compose {
+    tempo(160)
+    dynamic(ff)
+    timesig(3/4)
+    $m1
+    $m2
+    $m3
+    $fullRest
+    Measure { $h { 3/4 (C5 G4);}}
+    Measure { $h { 3/8 (C5 G4); 1/8 (E5 B4); 1/4 (C5 G4); }}
+    Measure { $h { 3/4 (D5 A4);}}
+    Measure { $h { 2/4 (D5 A4) ;1/8 E5; 1/8 F5;}}
+    $m1
+    $m2
+    $m3
+    $fullRest
+    Measure { $h { 3/4 (C5 G4);}}
+    Measure { $h { 1/8 (F5 D5); 3/8 (E5 C5); 1/4 (D5 B4);}}
+    Measure { 
+        $gp {1/4 C4; 1/8 C4; 1/8 E4; 1/8 G4; 1/8 C5; } 
+        $h { 3/4 C5;}
+    }    
+    Measure {
+        $gp {1/4 (C4 F4 C5); 1/8 C4; 1/8 F4; 1/8 C5; 1/8 G4; }  
+    }
+    Measure {
+         $gp {1/4 (C4 G4 C5); 1/8 C4; 1/8 G4; 1/8 C5; 1/8 G4; }   
+    }
+    Measure {
+        $gp {1/4 C5; 1/4 C5; 1/4 C5;}
+        $gp {1/4 F4; 1/4 E4; 1/4 D4;}
+        $gp {1/4 F4; 1/4 E3; 1/4 D3;}
+    }
+    Measure {
+        $gp {3/4 G4;}
+        $gp {3/4 E4;}
+        $gp {3/4 C4;}
+    }
+}
