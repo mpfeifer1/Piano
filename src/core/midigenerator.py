@@ -21,6 +21,7 @@ class MidiGenerator:
         self.chord_track = 0
         self.first_instrument = True
         self.current_channel = 0
+        self.first_measure = True
 
     # Returns a dictionary from each signal type to a list
     # of all the extra fields that type requires
@@ -111,7 +112,11 @@ class MidiGenerator:
         self.song.save('piano.mid')
 
     def midify_measure(self, signal):
-        self.measure_start_time += 1000
+        if self.first_measure:
+            self.first_measure = False
+        else:
+            self.measure_start_time += self.timesig
+
         for i in range(len(self.song.tracks)):
             if self.track_time[i] < self.measure_start_time:
                 time_diff = self.measure_start_time - self.track_time[i]
