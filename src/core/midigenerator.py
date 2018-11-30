@@ -102,6 +102,20 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
                 self.track_time[self.current_track] += off.time
+            elif signal['type'] == 'chord':
+                initialTrack = self.current_track
+                for note in signal['notes']:
+                    newSignal = {'type': 'note', 'note_name': note,
+                        'length_num':signal['length_num'], 'length_denom' : signal['length_denom']}
+                    on, off = self.midify_note(newSignal)
+                    self.song.tracks[self.current_track].append(on)
+                    self.song.tracks[self.current_track].append(off)
+                    self.track_time[self.current_track] += off.time
+                    if(self.current_track == self.max_track):
+                        self.add_track()
+                    else:
+                        self.current_track += 1
+                self.current_track = initialTrack
             elif signal['type'] == 'dynamic':
                 self.midify_dynamic(signal)
             elif signal['type'] == 'timesig':

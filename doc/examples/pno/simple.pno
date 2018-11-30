@@ -1,34 +1,8 @@
-$tpt = trumpet
 Compose {
     Tempo(100)
     Measure {
         acousticgrandpiano {
-            mp; 1/4 C4; 1/4 C4; 1/4 D4; 1/4 D4;
-        }
-        trumpet {
-            1/2 C5; 1/2 D5;
-        }
-        tuba {
-            1/1 C3;
-        }
-    }
-    Measure {
-        acousticgrandpiano {
-            mf; 1/4 C4; 1/4 C4; 1/4 D4; 1/4 D4;
-        }
-        trumpet {
-            1/2 E5; 1/2 D5;
-        }
-    }
-    Measure {
-        acousticgrandpiano {
-            mp; 1/4 C4; 1/4 C4; 1/4 D4; 1/4 D4;
-        }
-        trumpet {
-            1/2 C5; 1/2 D5;
-        }
-        tuba {
-            1/1 C3;
+            mp; 1/4 (C4 G4); 1/4 (C4 G4); 1/4 (D4 G4); 1/4 (D4 G4);
         }
     }
 }
