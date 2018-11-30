@@ -53,7 +53,7 @@ class Semantic:
         for command in commands:
             # If it's an assignment, do that
             if command[0] == 'assignment':
-                self.set_variable(command[1], command[2], self.variables)
+                self.set_variable(command[1], command[2])
             # If it's a compose, do that
             if command[0] == 'compose':
                 signals += self.process_compose(command[1])
@@ -393,8 +393,12 @@ class Semantic:
         return True
 
     # sets a variable in our memory to its tree
-    def set_variable(self, lhs, rhs, variables):
-        pass
+    def set_variable(self, lhs, rhs):
+        # variables can be instrument names, so then they're just a token
+        if type(rhs) == self.tokentype:
+            self.variables[lhs.value] = rhs
+        else: #else it's a tree and the variable needs the whole shebang
+            self.variables[lhs.value] = rhs.children[0]
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
