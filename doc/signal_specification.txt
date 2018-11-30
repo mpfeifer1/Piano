@@ -26,6 +26,7 @@ Below is a list of all the types and their extra fields.
     'length_denom': int
 
 'measure'
+    'start': boolean
 
 'tempo'
     'bpm': int

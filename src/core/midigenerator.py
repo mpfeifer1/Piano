@@ -9,12 +9,10 @@ class MidiGenerator:
     def __init__(self, signals):
         # Save the signals the user passed in
         self.signals = signals
-        self.timesig = 1000
-        self.timesigsplit = [4,4]
-        self.tempo = 120
+        self.timsig = [4,4]
         self.dynamic = 87
         self.measure_start_time = 0
-        self.ticks_per_beat = 0
+        self.ticks_per_beat = 1000
         self.song = MidiFile(type=1, ticks_per_beat=1000)
         self.max_track = -1
         self.current_track = -1
@@ -33,7 +31,7 @@ class MidiGenerator:
         types['tempo'] = ['bpm']
         types['chord'] = ['notes', 'length_num', 'length_denom']
         types['tuple'] = ['notes', 'length_num', 'length_denom']
-        types['measure'] = []
+        types['measure'] = ['start']
         types['dynamic'] = ['volume']
         types['instrument'] = ['name']
         types['timesig'] = ['time_num', 'time_denom']
@@ -90,7 +88,7 @@ class MidiGenerator:
 
 
         for signal in self.signals:
-            print(signal)
+            print('signal: ', signal)
             if signal['type'] == 'measure':
                 self.midify_measure(signal)
             elif signal['type'] == 'instrument':
@@ -113,35 +111,31 @@ class MidiGenerator:
             elif signal['type'] == 'tempo':
                 msg = self.midify_tempo(signal)
                 self.song.tracks[self.current_track].append(msg)
-        self.midify_measure({})
 
         self.song.save('piano.mid')
 
 
     def midify_measure(self, signal):
-        if self.first_measure:
-            self.first_measure = False
+        if signal['start']:
+            print("MEASURE START")
+            self.current_track = 0
+            self.current_channel = 0
+            self.first_instrument = True
+            for i in range(len(self.song.tracks)):
+                if self.track_time[i] < self.measure_start_time:
+                    time_diff = self.measure_start_time - self.track_time[i]
+                    self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
+                    self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
+                    self.track_time[i] = self.measure_start_time
         else:
-            self.measure_start_time += 1000 * self.timesigsplit[0]
-
-        for i in range(len(self.song.tracks)):
-            if self.track_time[i] < self.measure_start_time:
-                time_diff = self.measure_start_time - self.track_time[i]
-                self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
-                self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
-                self.track_time[i] = self.measure_start_time
-
-        self.current_track = 0
-        self.current_channel = 0
-        self.first_instrument = True
-
+            print("MEASURE END")
+            self.measure_start_time += self.ticks_per_beat * self.timesig[0]
 
     def midify_timesig(self, signal):
         if signal['type'] != 'timesig':
             print('Error: invalid timesig signal')
 
-        self.timesigsplit = [int(signal['time_num']), int(signal['time_denom'])]
-        self.timesig = int(1000 *  int(signal['time_denom']))
+        self.timesig = [int(signal['time_num']), int(signal['time_denom'])]
 
 
     def midify_dynamic(self, signal):
@@ -173,7 +167,7 @@ class MidiGenerator:
         if(signal['type'] != 'tempo'):
             print('Error when midifying tempo')
             return ''
-        self.ticks_per_beat = mido.bpm2tempo(signal['bpm'])
+        self.ticks_per_beat = mido.bpm2tempo(signal['bpm'] * 18)
 
         return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
 
@@ -184,13 +178,8 @@ class MidiGenerator:
             return '', ''
 
         noteNumber = noteToNumber[signal['note_name']]
-        #print("before")
-        #print(type(self.timesig))
-        #print(self.timesig)
-        #length = int(int(self.timesig) * (signal['length_num']/float(signal['length_denom'])))
-        length = int(1000 * (signal['length_num']))
-        #print("after")
-
+        length = int(self.ticks_per_beat * self.timesig[0] * signal['length_num'] / signal['length_denom'])
+        length = int(self.ticks_per_beat * self.timesig[1] * signal['length_num'] / signal['length_denom'])
         return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
 
 
@@ -199,9 +188,8 @@ class MidiGenerator:
             print('Error when midifying rest')
             return '', ''
 
-        length = int(self.timesig * (signal['length_num']/float(signal['length_denom'])))
-        print(length)
-
+        length = int(self.ticks_per_beat * self.timesig[0] * signal['length_num'] / signal['length_denom'])
+        length = int(self.ticks_per_beat * self.timesig[1] * signal['length_num'] / signal['length_denom'])
         return Message('note_on', note=0, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=0, channel=self.current_channel, velocity=self.dynamic, time=length)
 
 

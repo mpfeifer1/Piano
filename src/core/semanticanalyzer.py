@@ -422,14 +422,13 @@ class Semantic:
             return False
 
         signals = []
-        signals.append({'type':'measure'})
+        signals.append({'type':'measure', 'start':True})
 
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
 
-        #for x in signals:
-        #    print(x)
+        signals.append({'type':'measure', 'start':False})
 
         return signals
 
