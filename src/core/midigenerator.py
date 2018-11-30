@@ -101,6 +101,11 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
                 self.track_time[self.current_track] += off.time
+            elif signal['type'] == 'rest':
+                on, off = self.midify_rest(signal)
+                self.song.tracks[self.current_track].append(on)
+                self.song.tracks[self.current_track].append(off)
+                self.track_time[self.current_track] += off.time
             elif signal['type'] == 'dynamic':
                 self.midify_dynamic(signal)
             elif signal['type'] == 'timesig':
@@ -110,8 +115,8 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(msg)
         self.midify_measure({})
 
-
         self.song.save('piano.mid')
+
 
     def midify_measure(self, signal):
         if self.first_measure:
@@ -130,12 +135,14 @@ class MidiGenerator:
         self.current_channel = 0
         self.first_instrument = True
 
+
     def midify_timesig(self, signal):
         if signal['type'] != 'timesig':
             print('Error: invalid timesig signal')
 
         self.timesigsplit = [int(signal['time_num']), int(signal['time_denom'])]
         self.timesig = int(1000 *  int(signal['time_denom']))
+
 
     def midify_dynamic(self, signal):
         if signal['type'] != 'dynamic':
@@ -161,6 +168,7 @@ class MidiGenerator:
 
         return Message('program_change', channel=self.current_channel, program=instrumentNumber, time=0)
 
+
     def midify_tempo(self, signal):
         if(signal['type'] != 'tempo'):
             print('Error when midifying tempo')
@@ -168,6 +176,7 @@ class MidiGenerator:
         self.ticks_per_beat = mido.bpm2tempo(signal['bpm'])
 
         return MetaMessage("set_tempo", tempo=self.ticks_per_beat)
+
 
     def midify_note(self, signal):
         if(signal['type'] != 'note'):
@@ -183,6 +192,18 @@ class MidiGenerator:
         #print("after")
 
         return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
+
+
+    def midify_rest(self, signal):
+        if(signal['type'] != 'rest'):
+            print('Error when midifying rest')
+            return '', ''
+
+        length = int(self.timesig * (signal['length_num']/float(signal['length_denom'])))
+        print(length)
+
+        return Message('note_on', note=0, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=0, channel=self.current_channel, velocity=self.dynamic, time=length)
+
 
     def add_track(self):
         self.song.tracks.append(MidiTrack())
