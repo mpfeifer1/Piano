@@ -238,7 +238,7 @@ class Semantic:
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
-        if tree.data != 'noteitem':
+        if tree.data != 'note':
             return False
 
         if len(tree.children[0].children) != 2:

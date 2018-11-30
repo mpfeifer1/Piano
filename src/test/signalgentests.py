@@ -28,7 +28,7 @@ class TestSignalGen(unittest.TestCase):
 
 
     def test_veryComplexMeasure(self):
-        very_Complex_Input = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENTATION', 'acousticgrandpiano'), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '2')])]), Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])])])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Token('REST', '--')])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Tree('chord', [Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'E'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'G'), Tree('number', [Token('__ANON_0', '4')])])])])])])])
+        very_Complex_Input = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '2')])]), Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])])])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Token('REST', '--')])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Tree('chord', [Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'E'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'G'), Tree('number', [Token('__ANON_0', '4')])])])])])])])
 
         expected = [{'type':'measure','start':True},
                     {'type':'instrument', 'name':'acousticgrandpiano'},
@@ -60,7 +60,7 @@ class TestSignalGen(unittest.TestCase):
         self.assertEqual(expected, signal, "Note (note) signal not valid")
 
     def test_MismatchNoteSigGen(self):
-        input_note = Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '2')]), Tree('number', [Token('__ANON_3', '3')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])
+        input_note = Tree('note', [Tree('division', [Tree('number', [Token('__ANON_3', '1')]), Tree('number', [Token('__ANON_3', '4')])]), Tree('notename', [Token('__ANON_2', 'C'), Tree('number', [Token('__ANON_3', '4')])])])
         expected = [{'type':'note', 'length_num':1, 'length_denom':2, 'note_name':'C4'}]
         signal = self.semantic.note_to_signal(input_note)
         self.assertNotEqual(expected, signal, "Note (note) signal valid when it shouldn't be")
