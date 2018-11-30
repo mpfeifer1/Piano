@@ -16,13 +16,13 @@ class TestSignalGen(unittest.TestCase):
 
     def test_measureSigGen(self):
         input_measure = Tree('measure', [])
-        expected = [{'type':'measure'}]
+        expected = [{'type':'measure','start':True}, {'type':'measure','start':False}]
         signal = self.semantic.measure_to_signal(input_measure)
         self.assertEqual(expected, signal, "Measure signal not valid")
 
     def test_MismatchMeasureSigGen(self):
         input_measure = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'acousticgrandpiano'), Tree('noteitem', [Tree('inlinedynamic', [Token('__ANON_5', 'ff')])])])])
-        expected = [{'type':'measure'}]
+        expected = [{'type':'measure','start':True},{'type':'measure','start':False}]
         signal = self.semantic.measure_to_signal(input_measure)
         self.assertNotEqual(expected, signal, "Measure signal valid when it shouldn't be")
 
@@ -31,11 +31,12 @@ class TestSignalGen(unittest.TestCase):
 
         very_Complex_Input = Tree('measure', [Tree('instrumentation', [Token('INSTRUMENTATION', 'acousticgrandpiano'), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '2')])]), Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])])])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Token('REST', '--')])]), Tree('noteitem', [Tree('note', [Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_0', '4')])]), Tree('chord', [Tree('notename', [Token('__ANON_0', 'C'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'E'), Tree('number', [Token('__ANON_0', '4')])]), Tree('notename', [Token('__ANON_0', 'G'), Tree('number', [Token('__ANON_0', '4')])])])])])])])
 
-        expected = [{'type':'measure'},
+        expected = [{'type':'measure','start':True},
                     {'type':'instrument', 'name':'acousticgrandpiano'},
                     {'type':'note', 'note_name':'C4', 'length_num':1, 'length_denom':2},
                     {'type':'rest', 'length_num':1, 'length_denom':4},
-                    {'type':'chord', 'notes':['C4','E4','G4'], 'length_num':1, 'length_denom':4}]
+                    {'type':'chord', 'notes':['C4','E4','G4'], 'length_num':1, 'length_denom':4},
+                    {'type':'measure','start':False}]
 
 
         signal = self.semantic.measure_to_signal(very_Complex_Input)

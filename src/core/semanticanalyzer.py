@@ -58,6 +58,7 @@ class Semantic:
             if command[0] == 'compose':
                 newsig = self.process_compose(command[1])
                 signals += self.process_compose(command[1])
+        print(self.variables)
         return signals
 
     # Return a list of signals with all the default settings
@@ -94,10 +95,8 @@ class Semantic:
     def process_composeitems(self, tree):
         # Strip out the 'composeitems' tree
         tree = tree.children[0]
-
         # Define the list of signals
         signals = []
-
         # Tempo
         if tree.data == 'tempo':
             if self.is_valid_tempo(tree):
@@ -125,6 +124,10 @@ class Semantic:
                 signals += repeatedsignals
                 signals += repeatedsignals
 
+        # Variable measures
+        if tree.data == 'id':
+            if self.is_valid_measure(self.variables[tree.children[0]]):
+                signals += self.measure_to_signal(self.variables[tree.children[0]])
         return signals
 
     def get_dynamic_signal(self, tree):
@@ -159,7 +162,6 @@ class Semantic:
             if i.data == 'compose':
                 commands.append(['compose'])
                 commands[-1].append(i.children)
-
         return commands
 
     # TODO order these checks in a better order
@@ -394,7 +396,6 @@ class Semantic:
             return False
         if not theID[1].isalpha():
             return False
-
         for i in range(2, length):
             idChar = theID[i]
             if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
@@ -406,47 +407,39 @@ class Semantic:
     def is_valid_measure(self, tree):
         if not type(tree) is self.treetype:
             return False
-
         if not tree.data == 'measure':
             return False
-
         for subtree in tree.children:
             isInstr = self.is_valid_instrumentation(subtree)
             isId = self.is_valid_identifier(subtree)
             if (not isInstr) and (not isId):
                 return False
-
         return True
 
     def is_valid_instrumentation(self, tree):
         if not type(tree) is self.treetype:
             return False
-
         if tree.data != 'instrumentation':
             return False
-
         if len(tree.children) < 1:
             return False
-
         child = tree.children
+        if type(child[0]) == self.treetype:
+            if not self.is_valid_identifier(child[0]):
+                return False
+            child[0] = self.variables[child[0].children[0]]
         if type(child[0]) != self.tokentype:
             return False
         if child[0].type != 'INSTRUMENT':
-            return False
-
+                return False
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
                 return False
-
         return True
 
     # sets a variable in our memory to its tree
     def set_variable(self, lhs, rhs):
-        # variables can be instrument names, so then they're just a token
-        if type(rhs) == self.tokentype:
-            self.variables[lhs.value] = rhs
-        else: #else it's a tree and the variable needs the whole shebang
-            self.variables[lhs.value] = rhs.children[0]
+        self.variables[lhs.value] = rhs
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
@@ -463,7 +456,6 @@ class Semantic:
 
         signals = []
         signals.append({'type':'measure', 'start':True})
-
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
@@ -487,6 +479,7 @@ class Semantic:
                 signals += self.noteitem_to_signal(i)
         else:
             print('invalid instrument')
+
 
         return signals
 
@@ -576,6 +569,10 @@ class Semantic:
                 print('invalid chord child')
 
         return notes
+
+    def id_to_signal(self, tree):
+        print(tree.data)
+        return [{}]
 
     def tuple_to_signal(self, tree):
         if tree.data != 'tuple':
