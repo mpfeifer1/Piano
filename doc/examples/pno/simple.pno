@@ -20,4 +20,15 @@ Compose {
             1/2 E5; 1/2 D5;
         }
     }
+    Measure {
+        acousticgrandpiano {
+            mp; 1/4 C4; 1/4 C4; 1/4 D4; 1/4 D4;
+        }
+        trumpet {
+            1/2 C5; 1/2 D5;
+        }
+        tuba {
+            1/1 C3;
+        }
+    }
 }

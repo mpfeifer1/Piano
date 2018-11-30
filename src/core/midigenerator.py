@@ -50,7 +50,6 @@ class MidiGenerator:
 
             # Check the signal has a type
             if 'type' not in signal:
-                print(signal)
                 print('Error: Missing Signal Type')
                 return False
 
@@ -132,7 +131,7 @@ class MidiGenerator:
         if signal['type'] != 'timesig':
             print('Error: invalid timesig signal')
 
-        self.timesig = 1000 * signal['time_denom']
+        self.timesig = int(1000 /  int(signal['time_denom']))
 
     def midify_dynamic(self, signal):
         if signal['type'] != 'dynamic':
@@ -172,7 +171,11 @@ class MidiGenerator:
             return '', ''
 
         noteNumber = noteToNumber[signal['note_name']]
-        length = int(self.timesig * (signal['length_num']/float(signal['length_denom'])))
+        #print("before")
+        #print(type(self.timesig))
+        #print(self.timesig)
+        length = int(int(self.timesig) * (signal['length_num']/float(signal['length_denom'])))
+        #print("after")
 
         return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
 
