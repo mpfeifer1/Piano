@@ -15,7 +15,7 @@ class TestGeneration(unittest.TestCase):
 
     def test_validateFirstSignalEmpty(self):
         signals = [dict()]
-        self.assertFalse(self.generator.validate(signals), 'Invalid signal list found valid')
+        self.assertRaises(SignalError, self.generator.validate, signals)
 
     def test_validateProperSignal(self):
         signals = [{"type":"measure"}]
@@ -25,12 +25,12 @@ class TestGeneration(unittest.TestCase):
 
     def test_validateWrongNumberFields(self):
         signals = [{"type":"dynamic"}]
-        self.assertFalse(self.generator.validate(signals), 'Invalid signal list found valid')
+        self.assertRaises(SignalError, self.generator.validate, signals)
         pass
 
     def test_validateSignalWrongFields(self):
         signals = [{"type":"dynamic", "BADFIELD":"data"}]
-        self.assertFalse(self.generator.validate(signals), 'Invalid signal list found valid')
+        self.assertRaises(SignalError, self.generator.validate, signals)
         pass
 
 if __name__ == '__main__':
