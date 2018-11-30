@@ -56,16 +56,25 @@ class Semantic:
                 self.set_variable(command[1], command[2])
             # If it's a compose, do that
             if command[0] == 'compose':
+                newsig = self.process_compose(command[1])
                 signals += self.process_compose(command[1])
         return signals
 
     # Return a list of signals with all the default settings
     def get_default_signals(self):
+        tempo_sig = {"type":"tempo",
+                     "bpm":120}
+        timesig_sig = {"type": "timesig",
+                       "time_num": 4,
+                       "time_denom": 4}
+        dynamic_sig = {"type": "dynamic",
+                       "volume": "mf"}
+
         signals = []
-        # send default instrument
-        # " tempo
-        # " timesig
-        # " dynamic
+        signals.append(tempo_sig)
+        signals.append(timesig_sig)
+        signals.append(dynamic_sig)
+
         return signals
 
     # Take in a list of trees with composeitems at their root
@@ -116,18 +125,23 @@ class Semantic:
                 signals += repeatedsignals
                 signals += repeatedsignals
 
-        #print(tree)
-        #print()
         return signals
 
     def get_dynamic_signal(self, tree):
-        pass
+        signal = {"type":"dynamic"}
+        signal["volume"] = tree.children[0].children[0].value
+        return [signal]
 
     def get_tempo_signal(self, tree):
-        pass
+        signal = {"type":"tempo"}
+        signal["bpm"] = tree.children[0].children[0].value
+        return [signal]
 
     def get_timesig_signal(self, tree):
-        pass
+        signal = {"type":"timesig"}
+        signal["time_num"] = tree.children[0].children[0].children[0].value
+        signal["time_denom"] = tree.children[0].children[1].children[0].value
+        return [signal]
 
     # Take the tree, and split it up into a list of commands
     def split_into_commands(self, tree):
@@ -314,7 +328,7 @@ class Semantic:
         elif item  == 'id':
             return Semantic.is_valid_identifier(self, tree)
         elif item == 'inlinedynamic':
-            d = tree.children[0].lower()
+            d = tree.children[0].children[0].lower()
             if d not in self.valid_levels:
                 return False
         else:
@@ -448,14 +462,13 @@ class Semantic:
             return False
 
         signals = []
-        signals.append({'type':'measure'})
+        signals.append({'type':'measure', 'start':True})
 
         for i in tree.children:
             if i.data == 'instrumentation':
                 signals += (self.instrumentation_to_signal(i))
 
-        #for x in signals:
-        #    print(x)
+        signals.append({'type':'measure', 'start':False})
 
         return signals
 
@@ -578,18 +591,6 @@ class Semantic:
             else:
                 print('invalid tuple child')
 
-
-    # given a tree that represents a dynamic, set the new volume
-    def apply_dynamic(self, tree):
-        pass
-
-    # given a tree that represents a tempo, set that new tempo
-    def apply_tempo(self, tree):
-        pass
-
-    # given a tree that represents a time signature, set the timesig
-    def apply_timesig(self, tree):
-        pass
 
     def throw(self):
         # TODO find a way to throw an exception here
