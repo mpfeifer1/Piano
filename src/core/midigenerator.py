@@ -2,6 +2,7 @@ from mido import Message, MidiFile, MidiTrack, MetaMessage
 import mido
 from noteToNumber import noteToNumber
 from instrumentToNumber import instrumentToNumber
+from dynamicToVelocity import dynamicToVelocity
 
 class MidiGenerator:
     # Take in the list of signals, build a midi file
@@ -9,6 +10,7 @@ class MidiGenerator:
         # Save the signals the user passed in
         self.signals = signals
         self.tempo = 120
+        self.dynamic = 87
         self.measure_start_time = 0
         self.measure_end_time = 0
         self.ticks_per_beat = 0
@@ -67,6 +69,7 @@ class MidiGenerator:
             # Count how many parameters are needed, and how many we have
             need = len(types[curr_type])
             have = len(signal) - 1
+
             if have != need:
                 print("Error: Expected " , need , " type paramaters")
                 return False
@@ -82,7 +85,6 @@ class MidiGenerator:
 
     # Take the list of signals, and build a midi file
     def generate(self):
-
         # If the signals passed in aren't valid, return an error
         if not self.validate(self.signals):
             return False
@@ -103,6 +105,8 @@ class MidiGenerator:
                 on, off = self.midify_note(signal)
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
+            elif signal['type'] == 'dynamic':
+                self.midify_dynamic(signal)
 
         self.song.save('piano.mid')
 
@@ -116,6 +120,12 @@ class MidiGenerator:
         #self.current_track = 0
         #self.current_channel = 0
         #self.first_instrument = True
+
+    def midify_dynamic(self, signal):
+        if signal['type'] != 'dynamic':
+            print('Error: invalid dynamic signal')
+
+        self.dynamic = dynamicToVelocity[signal['volume']]
 
 
     def midify_instrument(self, signal):
@@ -165,14 +175,15 @@ class MidiGenerator:
 
         #QQQXXX DEBUG
         self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_on", note='
-            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=127, time=0))\n')
+            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=' + str(self.dynamic) + ', time=0))\n')
         self.file.write('song.tracks[' + str(self.current_track) + '].append(Message("note_off", note='
-            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=127, time=' +
+            + str(noteNumber) + ', channel=' + str(self.current_channel) + ', velocity=' + str(self.dynamic) + ', time=' +
             str(length) + '))\n')
 
 
-        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=127,
-            time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=127, time=length)
+        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic,
+            time=0), Message('note_off',note=noteNumber, channel=self.current_channel,
+            velocity=self.dynamic, time=length)
 
 
     def add_track(self):
@@ -183,7 +194,7 @@ class MidiGenerator:
         self.max_track += 1
         self.current_track = self.max_track
         self.track_time.append(0)
-        self.song.tracks[self.max_track].append(Message("note_on", note=0, channel=self.current_channel, velocity=127, time=0))
-        self.song.tracks[self.max_track].append(Message("note_off", note=0, channel=self.current_channel, velocity=127, time=self.measure_start_time))
+        self.song.tracks[self.max_track].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
+        self.song.tracks[self.max_track].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=self.measure_start_time))
 
 

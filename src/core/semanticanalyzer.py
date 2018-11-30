@@ -286,7 +286,7 @@ class Semantic:
         elif item  == 'id':
             return Semantic.is_valid_identifier(self, tree)
         elif item == 'inlinedynamic':
-            d = tree.children[0].lower()
+            d = tree.children[0].children[0].lower()
             if d not in self.valid_levels:
                 return False
         else:
