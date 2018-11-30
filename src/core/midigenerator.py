@@ -1,5 +1,4 @@
 import mido
-import exceptions
 
 class MidiGenerator:
     # Take in the list of signals, build a midi file
@@ -32,25 +31,25 @@ class MidiGenerator:
         for signal in signals:
             # Check the signal has a type
             if 'type' not in signal:
-                raise exceptions.SignalError('Signal has no type.')
+                return False
 
             # Find this signal's type
             curr_type = signal['type']
 
             # Check it's a valid type
             if curr_type not in types:
-                raise exceptions.SignalError('Signal has improper type.')
+                return False
 
             # Count how many parameters are needed, and how many we have
             need = len(types[curr_type])
             have = len(signal) - 1
             if have != need:
-                raise exceptions.SignalError('Incorrect number of signal parameters.')
+                return False
 
             # Check that all the parameters we have match what we neeed
             for i in types[curr_type]:
                 if i not in signal:
-                    raise exceptions.SignalError('Missing parameter for signal type.')
+                    return False
 
         return True
 
@@ -67,5 +66,4 @@ class MidiGenerator:
         if not self.validate(self.signals):
             return False
 
-        raise exceptions.NotImplementedException('Oops! This hasn\'t been implemented yet!')
-
+        pass
