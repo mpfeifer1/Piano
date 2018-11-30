@@ -12,11 +12,7 @@ def getgrammar():
 
         number: /[0-9]+/
 
-        INSTRUMENT:   "trumpet"i
-                    | "piano"i
-                    | "tuba"i
-                    | "acousticgrandpiano"i
-                    | "acousticgrandpiano"i
+        INSTRUMENT:   "acousticgrandpiano"i
                     | "brightacousticpiano"i
                     | "electricgrandpiano"i
                     | "honkytonkpiano"i
@@ -32,7 +28,7 @@ def getgrammar():
                     | "xylophone"i
                     | "tubularbells"i
                     | "dulcimer"i
-                    |  "drawbarorgan"i
+                    | "drawbarorgan"i
                     | "percussiveorgan"i
                     | "rockorgan"i
                     | "churchorgan"i
