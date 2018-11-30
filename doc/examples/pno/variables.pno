@@ -1,5 +1,6 @@
 $tpt = trumpet
-$test = Measure{ trumpet {1/1 --;} }
+$test = Measure{ trumpet {1/1 C4;} }
+$test2 = Measure{ acousticgrandpiano {1/4 C4; 1/4 D4; 1/4 E4; 1/4 F4;}}
 Compose {
     Tempo(100)
     Measure {
@@ -7,4 +8,6 @@ Compose {
             1/2 C4; 1/2 --;
         }
     }
+    $test
+    $test2
 }
