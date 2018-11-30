@@ -1,7 +1,9 @@
 from testhelper import TestHelp
+import unittest
+
 TestHelp().chwd()
 
-import unittest
+import exceptions
 import midigenerator
 
 class TestGeneration(unittest.TestCase):
