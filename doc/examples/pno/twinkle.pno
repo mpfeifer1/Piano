@@ -1,6 +1,6 @@
 $gp = acousticgrandpiano
 Compose  {
-    tempo(60)
+    tempo(120)
     timesig(4/4)
 
 // Line 1   
