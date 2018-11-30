@@ -150,6 +150,23 @@ class TestSemantics(unittest.TestCase):
         self.assertTrue(self.semantic.is_valid_measure(tree), 'Valid measure found invalid')
         pass
 
+    def test_variableInstrument(self):
+        lhs = Token('__ANON_9', '$tpt')
+        rhs = Tree('rhs', [Token('INSTRUMENT', 'trumpet')])
+        expected = {'$tpt': Token('INSTRUMENT', 'trumpet')}
+        self.semantic.set_variable(lhs, rhs)
+
+        self.assertEqual(expected, self.semantic.variables, "Instrument variables not set correctly!")
+
+    def test_variableMeasure(self):
+        lhs = Token('__ANON_9', '$testMeasure')
+        rhs = Tree('rhs', [Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])])
+        expected = {'$testMeasure': Tree('measure', [Tree('instrumentation', [Token('INSTRUMENT', 'trumpet')])])}
+        self.semantic.set_variable(lhs, rhs)
+
+        self.assertEqual(expected, self.semantic.variables, "Measure variables not set correctly!")
+
+
 if __name__ == '__main__':
     unittest.main()
 

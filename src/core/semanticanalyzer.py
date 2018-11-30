@@ -2,6 +2,9 @@ import sys
 sys.path.append(r'core')
 from instrumentToNumber import instrumentToNumber
 import lark
+from lark import lexer
+
+Token = lexer.Token
 
 class Semantic:
     # Take in the tree from the user
@@ -13,7 +16,7 @@ class Semantic:
         self.variables = {}
 
         self.treetype = type(lark.tree.Tree('data', ['children']))
-        self.tokentype = type(lark.Token('data1', 'data2'))
+        self.tokentype = type(Token('data1', 'data2'))
 
         # Build all of the valid dynamic levels
         self.valid_levels = ["mp", "mf"]
@@ -50,7 +53,7 @@ class Semantic:
         for command in commands:
             # If it's an assignment, do that
             if command[0] == 'assignment':
-                self.set_variable(command[1], command[2], self.variables)
+                self.set_variable(command[1], command[2])
             # If it's a compose, do that
             if command[0] == 'compose':
                 newsig = self.process_compose(command[1])
@@ -239,15 +242,48 @@ class Semantic:
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'repeat':
+            return False
+
+        try:
+            for subtree in tree.children:
+                if not subtree.data == 'composeitems':
+                    return False
+        except:
+            return False
+
+        return True
+
 
     # check that the tempo is valid
     def is_valid_tempo(self, tree):
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'tempo':
+            return False
+
+        tempoval = int(tree.children[0].children[0].value)
+        if tempoval < 40 or tempoval > 240:
+            return False
+
+        return True
+
 
     def is_valid_timesig(self, tree):
-        return True
-        pass
+        if not type(tree) is self.treetype:
+            return False
+
+        if not tree.data == 'timesig':
+            return False
+
+        if not tree.children[0].data == 'division':
+            return False
+
+        return self.is_valid_division(tree.children[0])
 
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
@@ -405,8 +441,12 @@ class Semantic:
         return True
 
     # sets a variable in our memory to its tree
-    def set_variable(self, lhs, rhs, variables):
-        pass
+    def set_variable(self, lhs, rhs):
+        # variables can be instrument names, so then they're just a token
+        if type(rhs) == self.tokentype:
+            self.variables[lhs.value] = rhs
+        else: #else it's a tree and the variable needs the whole shebang
+            self.variables[lhs.value] = rhs.children[0]
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
@@ -461,7 +501,7 @@ class Semantic:
             if i.data == 'note':
                 signals += (self.note_to_signal(i))
             elif i.data == 'inlinedynamic':
-                signals += (self.inlinedynmaic_to_signal(i))
+                signals += (self.inlinedynamic_to_signal(i))
             else:
                 print('invalid noteitem child')
 
@@ -491,7 +531,7 @@ class Semantic:
                 num = i.children[0].children[0]
                 den = i.children[1].children[0]
             elif i.data == 'notename':
-                notesig['note_name'] = self.notename_to_signal(i)
+                notesig['note_name'] = self.collect_notename(i)
                 notesig['length_num'] = int(num)
                 notesig['length_denom'] = int(den)
                 signals.append(notesig)
@@ -507,7 +547,7 @@ class Semantic:
 
         return signals
 
-    def notename_to_signal(self, tree):
+    def collect_notename(self, tree):
         name = ""
         for i in tree.children:
             if 'Token' in str(type(i)):
@@ -519,7 +559,7 @@ class Semantic:
 
         return name
 
-    def inlinedynmaic_to_signal(self, tree):
+    def inlinedynamic_to_signal(self, tree):
         return [{'type':'dynamic', 'volume':str(tree.children[0])}]
 
     def chord_to_signal(self, tree):
@@ -531,7 +571,7 @@ class Semantic:
         for i in tree.children:
             # only children of a chord are notenames
             if i.data == 'notename':
-                notes.append(self.notename_to_signal(i))
+                notes.append(self.collect_notename(i))
             else:
                 print('invalid chord child')
 
@@ -545,7 +585,7 @@ class Semantic:
 
         for i in tree.children:
             if i.data == 'notename':
-                self.notename_to_signal(i)
+                self.collect_notename(i)
             elif i.data == 'chord':
                 self.chord_to_signal(i)
             else:
