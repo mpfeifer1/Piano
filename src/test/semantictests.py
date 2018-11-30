@@ -1,9 +1,12 @@
 import unittest
-from testhelper import TestHelp
-TestHelp().chwd()
-from semanticanalyzer import Semantic
 from lark import Tree
 from lark import lexer
+
+from testhelper import TestHelp
+TestHelp().chwd()
+
+import exceptions
+from semanticanalyzer import Semantic
 
 Token = lexer.Token
 
@@ -16,35 +19,42 @@ class TestSemantics(unittest.TestCase):
 
     def test_validDivision(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertTrue(self.semantic.is_valid_division(division), 'Valid Division found invalid')
+        flag = True
+        res = True
+        try:
+            res = self.semantic.is_valid_division(division)
+        except:
+            flag = False
+        self.assertTrue(res, 'Valid Division found invalid')
+        self.assertTrue(flag, 'Valid Division threw exception')
 
     def test_invalidDivisionNoDivision(self):
         division = [Tree('number', [])]
-        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid division, no division found ')
+        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNoNumberOnLeft(self):
         division = Tree('division', [Tree('division', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid division, no number on left')
+        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNoNumberOnRight(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('division', [Token('__ANON_1', '4')])])
-        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid division, no number on right')
+        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionNumerator(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '-1')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid numerator')
+        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
 
     def test_invalidDivisionDenominator(self):
         division = Tree('division', [Tree('number', [Token('__ANON_0', '1')]), Tree('number', [Token('__ANON_1', '5')])])
-        self.assertFalse(self.semantic.is_valid_division(division), 'Invalid denominator')
+        self.assertRaises(DivisionError, self.semantic.is_valid_division, division)
 
     def test_validNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'),  Tree('number', [Token('__ANON_1', '4')])])
-        self.assertTrue(self.semantic.is_valid_notename(notename), 'Valid notename found invalid')
+        self.assertRaises(SemanticError, self.semantic.is_valid_notename, notename)
 
     def test_validNoteNameAccidental(self):
         notename = Tree('notename', [Token('__ANON_0', 'C'), Tree('accidental', [Token('__ANON_1', '#')]), Tree('number', [Token('__ANON_1', '4')])])
-        self.assertTrue(self.semantic.is_valid_notename(notename), 'Valid notename found invalid')
+        self.assertRaises(self.semantic.is_valid_notename, notename)
 
     def test_invalidNoteName(self):
         notename = Tree('notename', [Token('__ANON_0', 'H'),  Tree('number', [Token('__ANON_1', '4')])])
