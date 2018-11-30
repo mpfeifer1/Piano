@@ -8,21 +8,27 @@ Compose {
     dynamic(mf)
 
     Measure {
-        //chord check
-        //trumpet {1/4 tuplet(B4 G4);   }
         //trumpet {1/4 tuplet( (B4 D5) G4  ); 1/2 (B4 D5); 1/4 tuplet( (B4 D5) G4  ); }
+        trumpet {1/8 B4; 1/8 G4; 1/2 B4; 1/8 B4; 1/8 G4;}
+        trumpet {1/8 D5; 1/8 --; 1/2 D5; 1/8 D5;}
         trombone { 1/4 D3; 1/4 D3; 1/4 D3; 1/4 D3; }
     }
     Measure {
         //trumpet{ 1/4 tuplet( (B4 D5) G4  ); 1/2 (B4 D5); 1/4 tuplet( (B4 D5) G4  ); }
+        trumpet {1/8 B4; 1/8 G4; 1/2 B4; 1/8 B4; 1/8 G4;}
+        trumpet {1/8 D5; 1/8 --; 1/2 D5; 1/8 D5;}
         trombone { 1/4 B2; 1/4 B2; 1/4 B2; 1/4 B2; }
     }
     Measure {
-        trumpet {1/4 tuplet( (B4 E5) A4  ); 1/2 (B4 E5); 1/4 tuplet( (B4 E5) B4  ); }
+        //trumpet {1/4 tuplet( (B4 E5) A4  ); 1/2 (B4 E5); 1/4 tuplet( (B4 E5) B4  ); }
+        trumpet {1/8 B4; 1/8 A4; 1/2 B4; 1/8 B4; 1/8 B4;}
+        trumpet {1/8 E5; 1/8 --; 1/2 E5; 1/8 E5;}
         trombone {1/4 E3; 1/4 E3; 1/4 E3; 1/4 E3;}
     }
     Measure {
-        trumpet {1/4 (C5 E5); 1/4 (C5 E5); 1/8 C5; 1/8 B4; 1/8 A4; 1/8 B4;}
+        //trumpet {1/4 (C5 E5); 1/4 (C5 E5); 1/8 C5; 1/8 B4; 1/8 A4; 1/8 B4;}
+        trumpet {1/4 C5; 1/4 C5; 1/8 C5; 1/8 B4; 1/8 A4; 1/8 B4;}
+        trumpet {1/4 E5; 1/4 E5;}
         trombone {1/2 C3; 1/2 C3;}
     }
     Measure {
