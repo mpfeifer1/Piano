@@ -126,7 +126,7 @@ class Semantic:
 
     def get_dynamic_signal(self, tree):
         signal = {"type":"dynamic"}
-        signal["volume"] = tree.children[0].children[0]
+        signal["volume"] = tree.children[0].children[0].value
         return [signal]
 
     def get_tempo_signal(self, tree):
