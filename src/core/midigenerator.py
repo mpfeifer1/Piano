@@ -115,8 +115,7 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(msg)
         self.midify_measure({})
 
-        self.song.save('piano.mid')
-
+        return self.song
 
     def midify_measure(self, signal):
         if self.first_measure:
