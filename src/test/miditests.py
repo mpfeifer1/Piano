@@ -20,9 +20,9 @@ class TestGeneration(unittest.TestCase):
         self.assertRaises(exceptions.SignalError, self.generator.validate, signals)
 
     def test_validateProperSignal(self):
-        signals = [{"type":"measure"}]
+        signals = [{"type":"measure", 'start':True}]
         self.assertTrue(self.generator.validate(signals), 'Valid signal list found invalid')
-        signals = [{"type":"note", "notename":"C4", "length_denom":1, "length_num":1}]
+        signals = [{"type":"note", "note_name":"C4", "length_denom":1, "length_num":1}]
         self.assertTrue(self.generator.validate(signals), 'Valid signal list found invalid')
 
     def test_validateWrongNumberFields(self):
@@ -34,7 +34,6 @@ class TestGeneration(unittest.TestCase):
         signals = [{"type":"dynamic", "BADFIELD":"data"}]
         self.assertRaises(exceptions.SignalError, self.generator.validate, signals)
         pass
-
 if __name__ == '__main__':
     unittest.main()
 
