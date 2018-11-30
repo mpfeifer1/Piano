@@ -1,12 +1,14 @@
 import sys
 sys.path.append(r'core')
 from instrumentToNumber import instrumentToNumber
+import exceptions
 import lark
 from lark import lexer
 
 Token = lexer.Token
 
 class Semantic:
+
     # Take in the tree from the user
     def __init__(self, tree):
         # Save the tree the user passed in
@@ -40,8 +42,8 @@ class Semantic:
         # to each measure
 
         # Check that the tree is valid
-        if not self.is_valid_tree(self.tree):
-            self.throw()
+        #if not self.is_valid_tree(self.tree):
+        #    raise exceptions.SemanticError('Invalid parse tree.')
 
         # Split up the tree into a list of commands
         commands = self.split_into_commands(self.tree)
@@ -60,6 +62,7 @@ class Semantic:
                 signals += self.process_compose(command[1])
         return signals
 
+
     # Return a list of signals with all the default settings
     def get_default_signals(self):
         tempo_sig = {"type":"tempo",
@@ -77,6 +80,7 @@ class Semantic:
 
         return signals
 
+
     # Take in a list of trees with composeitems at their root
     # return a list of signals
     def process_compose(self, trees):
@@ -88,6 +92,7 @@ class Semantic:
             signals += self.process_composeitems(tree)
 
         return signals
+
 
     # Take in a list of trees with a single composeitem
     # return a list of signals
@@ -102,21 +107,29 @@ class Semantic:
         if tree.data == 'tempo':
             if self.is_valid_tempo(tree):
                 signals += self.get_tempo_signal(tree)
+            else:
+                raise exceptions.TempoError('Invalid Tempo structure.')
 
         # Timesig
         if tree.data == 'timesig':
             if self.is_valid_timesig(tree):
                 signals += self.get_timesig_signal(tree)
+            else:
+                raise exceptions.TimesigError('Invalid Timesig structure.')
 
         # Dynamic
         if tree.data == 'dynamic':
             if self.is_valid_dynamic(tree):
                 signals += self.get_dynamic_signal(tree)
+            else:
+                raise exceptions.DynamicError('Invalid Dynamic Structure.')
 
         # Measure
         if tree.data == 'measure':
             if self.is_valid_measure(tree):
                 signals += self.measure_to_signal(tree)
+            else:
+                raise exceptions.MeasureError('Invalid Measure Structure')
 
         # Repeat
         if tree.data == 'repeat':
@@ -124,8 +137,11 @@ class Semantic:
                 repeatedsignals = self.process_composeitems(tree)
                 signals += repeatedsignals
                 signals += repeatedsignals
+            else:
+                raise exceptions.RepeatError('Invalid Repeat Structure.')
 
         return signals
+
 
     def get_dynamic_signal(self, tree):
         signal = {"type":"dynamic"}
@@ -153,10 +169,10 @@ class Semantic:
                 commands.append(['assignment'])
                 commands[-1].append(i.children[0])
             # If it's a rhs, there must already be a command, attach this to it
-            if i.data == 'rhs':
+            elif i.data == 'rhs':
                 commands[-1].append(i.children[0])
             # Otherwise, if it's a compose, add this to the list of commands
-            if i.data == 'compose':
+            elif i.data == 'compose':
                 commands.append(['compose'])
                 commands[-1].append(i.children)
 
@@ -164,62 +180,71 @@ class Semantic:
 
     # TODO order these checks in a better order
 
+
     # Check that the data has a start symbol
     def is_valid_tree(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if tree.data != 'start':
             return False
+
         for i in range(len(tree.children[:-1])):
             if tree.children[i].data == 'id':
                 if tree.children[i+1].data != 'rhs':
-                    return False
+                    raise exceptions.ValidationError('Assignment right-hand side not found.')
             if tree.children[i].data == 'rhs':
                 if tree.children[i-1].data != 'id':
-                    return False
+                    raise exceptions.ValidationError('Assignment identifier not found.')
         if tree.children[-1].data != 'compose':
-            return False
+            raise exceptions.SemanticError('Compose statement not found.')
         return True
+
 
     def is_valid_dynamic(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
         if tree.data != 'dynamic':
             return False
+
         item = tree.children[0].data
         if item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
             if d not in self.valid_levels:
-                return False
+                raise exceptions.DynamicError('Incorrect inline dynamic.')
         elif item == 'id':
             return Semantic.is_valid_identifier(self, tree)
         else:
-            return False
+            raise exceptions.SemanticError('Inline dynamic or identifier expected, not given.')
 
         return True
 
+
     def is_valid_inlinedynamic(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
         if tree.data != 'inlinedynamic':
             return False
 
         d = tree.children[0].lower()
         if d not in self.valid_levels:
-            return False
+            raise exceptions.DynamicError('Incorrect inline dynamic.')
 
         return True
 
+
     def is_valid_note(self, tree):
         if not type(tree) is self.treetype:
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
+        if tree.data != 'noteitem':
             return False
 
         if len(tree.children[0].children) != 2:
-            return False
+            raise exceptions.SemanticError('2 children expected, ' + len(tree.children[0].children) + ' given.')
 
         if tree.children[0].children[0].data != 'division':
-            return False
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, division expected.')
         else:
             validNoteGrammar = ['notename', 'chord', 'tuple', 'id', 'REST']
             child = tree.children[0].children[1]
@@ -231,14 +256,14 @@ class Semantic:
             else:
                 n = child.type
             if n not in validNoteGrammar:
-                return False
+                raise exceptions.SemanticError('Improper note grammar.')
 
             if n == 'REST':
                 if child != '--':
-                    print('rest is broken')
-                    return False
+                    raise exceptions.SemanticError('Incorrect Rest.')
 
         return True
+
 
     # check that the measure is valid
     def is_valid_repeat(self, tree):
@@ -288,39 +313,40 @@ class Semantic:
     # check that all the numbers are powers of 2 and nonzero
     def is_valid_division(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'division':
             return False
 
         if not tree.children[0].data == 'number':
-            return False
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, number expected.')
 
         if not tree.children[1].data == 'number':
-            return False
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, number expected.')
 
         if not len(tree.children) == 2:
-            return False
+            raise exceptions.SemanticError('2 children expected, ' + len(tree.children[0].children) + ' given.')
 
         if not int(tree.children[0].children[0].value) > 0:
-            return False
+            raise exceptions.SemanticError('Positive/nonzero value needed for division numerator.')
 
         denom = int(tree.children[1].children[0].value)
         validDenoms = [1, 2, 4, 8, 16, 32, 64, 128]
         if denom not in validDenoms:
-            return False
+            raise exceptions.DivisionError('Division denominator must be power of 2.')
 
         return True
 
+
     def is_valid_noteitem(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'noteitem':
             return False
 
         if not len(tree.children) == 1:
-            return False
+            raise exceptions.SemanticError('1 child expected, ' + len(tree.children[0].children) + ' given.')
 
         item = tree.children[0].data
         if item == 'note':
@@ -330,51 +356,53 @@ class Semantic:
         elif item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
             if d not in self.valid_levels:
-                return False
+                raise exceptions.DynamicError('Incorrect inline dynamic.')
         else:
-            return False
+            raise exceptions.SemanticError('Note, inline dynamic, or identifier expected, not given.')
 
         return True
 
+
     def is_valid_notename(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'notename':
             return False
 
         if not (len(tree.children) == 3 or len(tree.children) == 2):
-            return False
+            raise exceptions.SemanticError('2 or 3 children expected, ' + len(tree.children[0].children) + ' given.')
 
         n = tree.children[0]
         n.upper()
         validNoteLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
         if n not in validNoteLetters:
-            return False
+            raise exceptions.NoteError('Invalid note letter.')
 
         if len(tree.children) == 3:
             #Has accidental
             if tree.children[1].data != 'accidental':
-                return False
+                raise exceptions.NoteError('Accidental expected, not given.')
             if tree.children[2].data != 'number':
-                return False
+                raise exceptions.NoteError('Octave number expected, not given')
 
             acc = tree.children[1].children[0].value
             if acc != ('#' or 'b'):
-                return False
+                raise exceptions.NoteError('Incorrect accidental symbol given, \'b\' or \'#\' expected.')
             octave = int(tree.children[2].children[0].value)
             if 9 > octave < 0:
-                return False
+                raise exceptions.NoteError('Invalid note octave.')
 
         elif len(tree.children) == 2:
             #No accidental
             if tree.children[1].data != 'number':
-                return False
+                raise exceptions.NoteError('Octave number expected, not given')
             octave = int(tree.children[1].children[0].value)
             if 9 > octave < 0:
-                return False
+                raise exceptions.NoteError('Invalid note octave.')
         else:
             #Invalid length
+            raise exceptions.NoteError('Invalid note syntax')
             return False
 
         return True
@@ -383,29 +411,34 @@ class Semantic:
     # check the name exists in our program
     def is_valid_identifier(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
+
         if not tree.data == 'id':
             return False
+
         theID = tree.children[0]
         length = len(theID)
+
         if length < 2:
-            return False
+            raise exceptions.SemanticError('At least 2 children expected, ' + len(tree.children[0].children) + ' given.')
+
         if theID[0] != '$':
-            return False
+            raise exceptions.SemanticError('Identifier must begin with \'$\'')
+
         if not theID[1].isalpha():
-            return False
+            raise exceptions.SemanticError('Identifier first non-$ must be alpha-non-numeric.')
 
         for i in range(2, length):
             idChar = theID[i]
             if not(idChar.isalnum() or idChar == '_' or idChar == '-'):
-                return False
+                raise exceptions.SemanticError('Identifier may only contain alphanumeric, _, and -.')
 
         return True
 
 
     def is_valid_measure(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if not tree.data == 'measure':
             return False
@@ -414,31 +447,33 @@ class Semantic:
             isInstr = self.is_valid_instrumentation(subtree)
             isId = self.is_valid_identifier(subtree)
             if (not isInstr) and (not isId):
-                return False
+                raise exceptions.MeasureError('Instrument or identifier required.')
 
         return True
 
+
     def is_valid_instrumentation(self, tree):
         if not type(tree) is self.treetype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
 
         if tree.data != 'instrumentation':
             return False
 
         if len(tree.children) < 1:
-            return False
+            raise exceptions.SemanticError('At least 1 child expected, ' + len(tree.children[0].children) + ' given.')
 
         child = tree.children
         if type(child[0]) != self.tokentype:
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + str(type(child[0])) + ' is not ' + str(self.tokentype) + '.')
         if child[0].type != 'INSTRUMENT':
-            return False
+            raise exceptions.ValidationError('Type mismatch: ' + child[0].type + ' is not INSTRUMENT.')
 
         for x in child[1:]:
             if not self.is_valid_noteitem(x):
-                return False
+                raise exceptions.SemanticError('Invalid Noteitem.')
 
         return True
+
 
     # sets a variable in our memory to its tree
     def set_variable(self, lhs, rhs):
@@ -450,16 +485,15 @@ class Semantic:
 
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
-        if not type(tree) is self.treetype:
-            return False
+        #if not type(tree) is self.treetype:
+        #    return False
+        raise exceptions.NotImplementedException('Oops! This hasn\'t been implemented yet!')
 
-        pass
 
     # Takes in a measure, builds a list of signals
     def measure_to_signal(self, tree):
         if tree.data != 'measure':
-            print('error: not a measure')
-            return False
+            raise exceptions.SemanticError(tree.data + ' given where a measure is expected.')
 
         signals = []
         signals.append({'type':'measure', 'start':True})
@@ -472,10 +506,10 @@ class Semantic:
 
         return signals
 
+
     def instrumentation_to_signal(self, tree):
         if tree.data != 'instrumentation':
-            print('error: not an instrumentation')
-            return False
+            raise exceptions.SemanticError(tree.data + ' given where instrumentation is expected.')
 
         signals = []
         name = tree.children[0]
@@ -486,13 +520,14 @@ class Semantic:
             for i in tree.children[1:]:
                 signals += self.noteitem_to_signal(i)
         else:
-            print('invalid instrument')
+            raise exceptions.SignalConversionError('Invalid instrument given.')
 
         return signals
 
+
     def noteitem_to_signal(self,tree):
         if tree.data != 'noteitem':
-            print('error: invalid noteitem')
+            raise exceptions.SemanticError(tree.data + ' given where noteitem is expected.')
 
         signals = []
 
@@ -503,13 +538,14 @@ class Semantic:
             elif i.data == 'inlinedynamic':
                 signals += (self.inlinedynamic_to_signal(i))
             else:
-                print('invalid noteitem child')
+                raise exceptions.SignalConversionError('Invalid noteitem given.')
 
         return signals
 
+
     def note_to_signal(self, tree):
         if tree.data != 'note':
-            print('error: not a note!')
+            raise exceptions.SemanticError(tree.data + ' given where note is expected.')
 
         signals = []
         # this function loops through the note's children and fills
@@ -543,7 +579,7 @@ class Semantic:
             elif i.data == "tuple":
                 signals += self.tuple_to_signal(i)
             else:
-                print("invalid note child")
+                raise exceptions.SignalConversionError('Invalid note given.')
 
         return signals
 
@@ -555,16 +591,17 @@ class Semantic:
             elif 'Tree' in str(type(i)): #it's a token
                 name+=i.children[0]
             else:
-                print('invalid notename child')
+                raise exceptions.SignalConversionError('Invalid notename given.')
 
         return name
 
     def inlinedynamic_to_signal(self, tree):
         return [{'type':'dynamic', 'volume':str(tree.children[0])}]
 
+
     def chord_to_signal(self, tree):
         if tree.data != 'chord':
-            print('error! not a chord')
+            raise exceptions.SemanticError(tree.data + ' given where chord is expected.')
 
         notes = []
 
@@ -573,13 +610,15 @@ class Semantic:
             if i.data == 'notename':
                 notes.append(self.collect_notename(i))
             else:
-                print('invalid chord child')
+                raise exceptions.SignalConversionError('Invalid chord contents.')
 
         return notes
 
+
     def tuple_to_signal(self, tree):
         if tree.data != 'tuple':
-            print('error: not a tuple')
+            raise exceptions.SemanticError(tree.data + ' given where tuple is expected.')
+
         # put dummy data in a tuple signal because we don't like them much
         return [{'type':'tuple', 'length_num':0, 'length_denom':0, 'notes':[]}]
 
@@ -589,9 +628,20 @@ class Semantic:
             elif i.data == 'chord':
                 self.chord_to_signal(i)
             else:
-                print('invalid tuple child')
+                raise exceptions.SignalConversionError('Invalid tuple contents.')
 
 
-    def throw(self):
-        # TODO find a way to throw an exception here
-        pass
+    # given a tree that represents a dynamic, set the new volume
+    def apply_dynamic(self, tree):
+        raise exceptions.NotImplementedException('Oops! This hasn\'t been implemented yet!')
+
+
+    # given a tree that represents a tempo, set that new tempo
+    def apply_tempo(self, tree):
+        raise exceptions.NotImplementedException('Oops! This hasn\'t been implemented yet!')
+
+
+    # given a tree that represents a time signature, set the timesig
+    def apply_timesig(self, tree):
+        raise exceptions.NotImplementedException('Oops! This hasn\'t been implemented yet!')
+
