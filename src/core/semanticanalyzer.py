@@ -174,7 +174,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if tree.data != 'start':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, start expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, start expected.')
         for i in range(len(tree.children[:-1])):
             if tree.children[i].data == 'id':
                 if tree.children[i+1].data != 'rhs':
@@ -191,7 +191,7 @@ class Semantic:
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
         if tree.data != 'dynamic':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, dynamic expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, dynamic expected.')
         item = tree.children[0].data
         if item == 'inlinedynamic':
             d = tree.children[0].children[0].lower()
@@ -209,7 +209,7 @@ class Semantic:
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
         if tree.data != 'inlinedynamic':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, inlinedynamic expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, inlinedynamic expected.')
 
         d = tree.children[0].lower()
         if d not in self.valid_levels:
@@ -226,7 +226,7 @@ class Semantic:
             raise exceptions.SemanticError('2 children expected, ' + len(tree.children[0].children) + ' given.')
 
         if tree.children[0].children[0].data != 'division':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, division expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, division expected.')
         else:
             validNoteGrammar = ['notename', 'chord', 'tuple', 'id', 'REST']
             child = tree.children[0].children[1]
@@ -267,13 +267,13 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if not tree.data == 'division':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, division expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, division expected.')
 
         if not tree.children[0].data == 'number':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, number expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, number expected.')
 
         if not tree.children[1].data == 'number':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, number expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, number expected.')
 
         if not len(tree.children) == 2:
             raise exceptions.SemanticError('2 children expected, ' + len(tree.children[0].children) + ' given.')
@@ -294,7 +294,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if not tree.data == 'noteitem':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, noteitem expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, noteitem expected.')
 
         if not len(tree.children) == 1:
             raise exceptions.SemanticError('1 child expected, ' + len(tree.children[0].children) + ' given.')
@@ -319,7 +319,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if not tree.data == 'notename':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, notename expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, notename expected.')
 
         if not (len(tree.children) == 3 or len(tree.children) == 2):
             raise exceptions.SemanticError('2 or 3 children expected, ' + len(tree.children[0].children) + ' given.')
@@ -365,7 +365,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if not tree.data == 'id':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, notename expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, notename expected.')
 
         theID = tree.children[0]
         length = len(theID)
@@ -392,7 +392,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if not tree.data == 'measure':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, measure expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, measure expected.')
 
         for subtree in tree.children:
             isInstr = self.is_valid_instrumentation(subtree)
@@ -408,7 +408,7 @@ class Semantic:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + self.treetype + '.')
 
         if tree.data != 'instrumentation':
-            raise exceptions.ValidationError('Tree prefix incorrect: ' + tree.data + ' given, instrumentation expected.')
+            raise exceptions.ValidationError('Tree prefix incorrect: ' + str(tree.data) + ' given, instrumentation expected.')
 
         if len(tree.children) < 1:
             raise exceptions.SemanticError('At least 1 child expected, ' + len(tree.children[0].children) + ' given.')
