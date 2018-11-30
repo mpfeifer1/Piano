@@ -450,7 +450,7 @@ class Semantic:
             if i.data == 'note':
                 signals += (self.note_to_signal(i))
             elif i.data == 'inlinedynamic':
-                signals += (self.inlinedynmaic_to_signal(i))
+                signals += (self.inlinedynamic_to_signal(i))
             else:
                 print('invalid noteitem child')
 
@@ -480,7 +480,7 @@ class Semantic:
                 num = i.children[0].children[0]
                 den = i.children[1].children[0]
             elif i.data == 'notename':
-                notesig['note_name'] = self.notename_to_signal(i)
+                notesig['note_name'] = self.collect_notename(i)
                 notesig['length_num'] = int(num)
                 notesig['length_denom'] = int(den)
                 signals.append(notesig)
@@ -496,7 +496,7 @@ class Semantic:
 
         return signals
 
-    def notename_to_signal(self, tree):
+    def collect_notename(self, tree):
         name = ""
         for i in tree.children:
             if 'Token' in str(type(i)):
@@ -508,7 +508,7 @@ class Semantic:
 
         return name
 
-    def inlinedynmaic_to_signal(self, tree):
+    def inlinedynamic_to_signal(self, tree):
         return [{'type':'dynamic', 'volume':str(tree.children[0])}]
 
     def chord_to_signal(self, tree):
@@ -520,7 +520,7 @@ class Semantic:
         for i in tree.children:
             # only children of a chord are notenames
             if i.data == 'notename':
-                notes.append(self.notename_to_signal(i))
+                notes.append(self.collect_notename(i))
             else:
                 print('invalid chord child')
 
@@ -534,7 +534,7 @@ class Semantic:
 
         for i in tree.children:
             if i.data == 'notename':
-                self.notename_to_signal(i)
+                self.collect_notename(i)
             elif i.data == 'chord':
                 self.chord_to_signal(i)
             else:

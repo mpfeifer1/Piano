@@ -1,6 +1,6 @@
 import os
 
-tests = {'semantictests.py', 'grammartests.py', 'miditests.py'}
+tests = {'semantictests.py', 'grammartests.py', 'miditests.py', 'signalgentests.py'}
 
 code = 0
 for test in tests:
