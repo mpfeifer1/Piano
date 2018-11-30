@@ -17,10 +17,8 @@ class MidiGenerator:
         self.max_track = -1
         self.current_track = -1
         self.track_time = []
-        self.chord_track = 0
         self.first_instrument = True
         self.current_channel = 0
-        self.first_measure = True
 
     # Returns a dictionary from each signal type to a list
     # of all the extra fields that type requires
@@ -116,7 +114,6 @@ class MidiGenerator:
 
     def midify_measure(self, signal):
         if signal['start']:
-            print("MEASURE START")
             self.current_track = 0
             self.current_channel = 0
             self.first_instrument = True
@@ -127,7 +124,6 @@ class MidiGenerator:
                     self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
                     self.track_time[i] = self.measure_start_time
         else:
-            print("MEASURE END")
             self.measure_start_time += self.ticks_per_beat * self.timesig[0]
 
     def midify_timesig(self, signal):
