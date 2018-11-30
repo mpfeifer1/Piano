@@ -99,6 +99,26 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(on)
                 self.song.tracks[self.current_track].append(off)
                 self.track_time[self.current_track] += off.time
+            elif signal['type'] == 'chord':
+
+                self.resolve_errors(0)
+                initialTrack = self.current_track
+                for i in range(len(signal['notes'])):
+                    note = signal['notes'][i]
+                    newSignal = {'type': 'note', 'note_name': note, 'length_num':signal['length_num'], 'length_denom' : signal['length_denom']}
+                    on, off = self.midify_note(newSignal)
+                    self.song.tracks[self.current_track].append(on)
+                    self.song.tracks[self.current_track].append(off)
+                    self.track_time[self.current_track] += off.time
+                    if i == len(signal['notes'])-1:
+                        break
+                    if self.current_track == self.max_track:
+                        self.add_track()
+                    else:
+                        self.current_track += 1
+                self.current_track = initialTrack
+                self.resolve_errors(0)
+
             elif signal['type'] == 'dynamic':
                 self.midify_dynamic(signal)
             elif signal['type'] == 'timesig':
@@ -107,19 +127,28 @@ class MidiGenerator:
                 msg = self.midify_tempo(signal)
                 self.song.tracks[self.current_track].append(msg)
 
+        self.resolve_errors(0)
         return self.song
+
+    def resolve_errors(self, time):
+        for i in range(len(self.song.tracks)):
+            if time < self.track_time[i]:
+                time = self.track_time[i]
+
+        for i in range(len(self.song.tracks)):
+            if self.track_time[i] < time:
+                time_diff = time - self.track_time[i]
+                self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
+                self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
+                self.track_time[i] = time
+
 
     def midify_measure(self, signal):
         if signal['start']:
             self.current_track = 0
             self.current_channel = 0
             self.first_instrument = True
-            for i in range(len(self.song.tracks)):
-                if self.track_time[i] < self.measure_start_time:
-                    time_diff = self.measure_start_time - self.track_time[i]
-                    self.song.tracks[i].append(Message("note_on", note=0, channel=self.current_channel, velocity=0, time=0))
-                    self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
-                    self.track_time[i] = self.measure_start_time
+            self.resolve_errors(self.measure_start_time)
         else:
             self.measure_start_time += self.ticks_per_beat * self.timesig[0]
 
