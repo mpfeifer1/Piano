@@ -2,12 +2,14 @@
 
 # Import system libraries
 from lark import Lark
+from lark import exceptions as larkexcept
 from argparse import ArgumentParser
 
 # Import Piano libraries
 from core import grammar
 from core import semanticanalyzer as semantic
 from core import midigenerator
+from core import exceptions
 from core import flags
 
 # Get input flags
@@ -34,5 +36,20 @@ try:
     midi_name = inputflags['midi_file']
 
     midifile.save(midi_name)
+
+#except larkexcept.LarkError as le:
+#    print('Encountered error during syntax analysis and tokenizing:')
+#    print(le)
+#except exceptions.SemanticError as se:
+#    print('Encountered error during semantic analysis:')
+#    print(se)
+#except exceptions.MidiError as me:
+#    print('Encountered error during midi generation:')
+#    print(me)
+#except exceptions.PianoException as pe:
+#    print('Unknown Piano error ocurred during compilation:')
+#    print(pe)
+
 except Exception as e:
+    print('Unknown error ocurred during compilation:')
     print(e)

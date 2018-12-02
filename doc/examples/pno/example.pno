@@ -1,0 +1,7 @@
+Compose {
+    Measure {
+        acousticgrandpiano {
+            1/4 Bb5;
+        }
+    }
+}

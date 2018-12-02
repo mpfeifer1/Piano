@@ -1,0 +1,219 @@
+This is the techinical handoff guide for the Piano project. It describes the
+project and pno compilation progress in various levels of detail. The goal of
+this document is to aid anyone starting work on the Piano project by getting
+them familiar with the program.
+
+Times of understanding are as follows:
+-Starting out
+-5 mins
+-1 hour
+-1 Day
+
+
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+~~~~~~~~~~~~
+Starting Out
+~~~~~~~~~~~~
+
+The following is the file structure for the project:
+
+/Piano
+
+    /util  # Contains install scripts and other utilities.
+        install-dependencies.bash
+        install-hooks.bash
+        pre-commit.bash
+        run-tests.bash
+
+    /doc   # Contains the documentation and examples for the Piano language
+
+        /examples
+
+            /pno   # Contains sample .pno files that can be compiled by the Piano program
+
+            /midi  # Contains sample .mid or .midi files
+        signal_specification.txt
+        technicalHandoff.txt
+
+    /src   # Contains all source code and tests for the Piano program, and the Piano executable
+        piano.py   # The Piano executable
+
+        /core      # Contains the source code for Piano
+
+        /test      # Contains all the unit tests for Piano
+
+
+~~~~~~~~~
+5 Minutes
+~~~~~~~~~
+
+Instaling dependencies:
+    To install the necessary dependencies, simply run ./util/install-dependencies.bash
+    If you are doing development on the project, be sure to run ./util/installhooks.bash
+
+Running Piano:
+    The Piano executable must be run within the /Piano/src directory.
+    The Piano executable has 2 parameters, one required and one optional:
+    
+        -p <filename>       The -p flag is used to specify the .pno file to be compiled
+
+        -o <filename>       The optional -o flag is used to specify the name of the output file.
+                            Defaults to "song.pno".
+
+    An example run would be as follows:
+        ./piano -p ../doc/examples/pno/simple.pno -o helloworld.midi
+
+    After compilation, a file called 'helloworld.midi' will appear in the current directory.
+
+Running tests:
+    Piano tests can be run in two ways. Either run ./util/run-tests.bash or python3 src/test/runtests.py
+
+    The results of the tests will be printed to the screen.
+
+
+
+~~~~~~
+1 Hour
+~~~~~~
+
+In order to understand how the compilation progress works, one must first understand the grammar.
+The grammar itself is located in Piano/src/core/grammar.py
+The grammar is written in a form of EBNF used by Lark Parser. The reference guide for Lark grammar
+syntax can be found at https://lark-parser.readthedocs.io/en/latest/grammar/.
+
+To make better sense of the grammar, sample .pno files are located in Piano/doc/examples/pno.
+In-depth coverage for the syntactic structures can be found in the Piano Language Tutorial and
+Piano Reference Manual.
+
+
+Through the Lark parser, a pno file is tokenized and put into a Lark Tree with some nodes as Lark lexer.Tokens.
+
+An example of the tree structure is as follows:
+
+    * Example .pno:
+        Compose {
+            Measure {
+                acousticgrandpiano {
+                    1/4 Bb5;
+                }
+            }
+        }
+    
+    * Example Lark Tree (Brace yourself, it's a doozy):
+
+        Tree(
+            start, 
+            [Tree(
+                compose, 
+                [Tree(
+                    composeitems, 
+                    [Tree(
+                        measure, 
+                        [Tree(
+                            instrumentation, 
+                            [Token(
+                                INSTRUMENT, 
+                                'acousticgrandpiano'
+                            ), 
+                            Tree(
+                                noteitem, 
+                                [Tree(
+                                    note, 
+                                    [Tree(
+                                        division, 
+                                        [Tree(
+                                            number, 
+                                            [Token(
+                                                __ANON_3, 
+                                                '1'
+                                            )]
+                                        ), 
+                                        Tree(
+                                            number, 
+                                            [Token(
+                                                __ANON_3, 
+                                                '4'
+                                            )]
+                                        )]
+                                    ), 
+                                    Tree(
+                                        notename, 
+                                        [Token(
+                                            __ANON_1, 
+                                            'B'
+                                        ), 
+                                        Tree(
+                                            accidental, 
+                                            [Token(
+                                                __ANON_0, 
+                                                'b'
+                                            )]
+                                        ), 
+                                        Tree(
+                                            number, 
+                                            [Token(
+                                                __ANON_3, 
+                                                '5'
+                                            )]
+                                        )]
+                                    )]
+                                )]
+                            )]
+                        )]
+                    )]
+                )]
+            )]
+        )
+    
+    * An easier to read example is displayed if we print tree.pretty():
+       
+        start
+            compose
+                composeitems
+                measure
+                    instrumentation
+                    acousticgrandpiano
+                    noteitem
+                        note
+                        division
+                            number	1
+                            number	4
+                        notename
+                            B
+                            accidental	b
+                            number	5
+   
+    * The important things to note from the above example are the following things:
+        - Some "leaf nodes" are not Trees but rather Tokens. An example of that is:
+
+            Tree(
+                number,       # This example shows the subtree for a number token 
+                [Token(
+                    __ANON_3, # This is an anonymous token name. This doesn't matter.
+                    '4'       # This is the actual data that matters.
+                )]
+            )]
+            
+            # This example is the subtree describing the '4' in the '1/4 Bb5;' line.
+
+        - Another thing to note is that not all Token names are junk, such as the following example: 
+
+            [Token(
+                INSTRUMENT,             # This token name implies the data is a syntactic literal caled 'INSTRUMENT'.
+                'acousticgrandpiano'
+            ), 
+            The reason this happens is due to 'acousticgrandpiano' being a pre-defined string in the language grammar:
+                 INSTRUMENT:   "acousticgrandpiano"i
+                    | "brightacousticpiano"i
+                    | "electricgrandpiano"i
+                    ...etc.
+        
+    * Once the input is tokenized and put in the Tree, each Subtree is validated in semanticanalysis.py. The tree is
+        checked in such a way that a Tree is valid only if all of its subtrees are valid, all the way down to the
+        data contained in each Token.
+        In other words, if a token representing the octave number is given a value outside the range of 1-8, an 
+        exception is thrown and compilation fails. This is true for any Tree containing a subtree that doesn't belong,
+        or has an unexpected number of subtrees, or has a token containing invalid or out of range data. 
+
+
