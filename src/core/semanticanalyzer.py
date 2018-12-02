@@ -631,15 +631,17 @@ class Semantic:
                 for item in tupleItems:
                     print(item)
                     if item['type'] == 'note':
-                        notesig['note_name'] = item['value']
-                        notesig['length_num'] = int(num)
-                        notesig['length_denom'] = newDen
-                        signals.append(notesig)
+                        tnotesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}
+                        tnotesig['note_name'] = item['value']
+                        tnotesig['length_num'] = int(num)
+                        tnotesig['length_denom'] = newDen
+                        signals.append(tnotesig)
                     elif item['type'] == 'chord':
-                        chordsig['notes'] = item['value']
-                        chordsig['length_num'] = int(num)
-                        chordsig['length_denom'] = newDen
-                        signals.append(chordsig)
+                        tchordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
+                        tchordsig['notes'] = item['value']
+                        tchordsig['length_num'] = int(num)
+                        tchordsig['length_denom'] = newDen
+                        signals.append(tchordsig)
             else:
                 raise exceptions.SignalConversionError('Invalid note given.')
 
