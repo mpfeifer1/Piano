@@ -3,11 +3,11 @@ project and pno compilation progress in various levels of detail. The goal of
 this document is to aid anyone starting work on the Piano project by getting
 them familiar with the program.
 
-Times of understanding are as follows:
+What you should understand:
 -Starting out
 -5 mins
 -1 hour
--1 Day
+-1+ Days
 
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -48,9 +48,11 @@ The following is the file structure for the project:
 5 Minutes
 ~~~~~~~~~
 
-Instaling dependencies:
+Installing dependencies:
     To install the necessary dependencies, simply run ./util/install-dependencies.bash
     If you are doing development on the project, be sure to run ./util/installhooks.bash
+
+    All necessary dependencies are listed in Piano/util/install-dependencies.bash
 
 Running Piano:
     The Piano executable must be run within the /Piano/src directory.
@@ -216,4 +218,21 @@ An example of the tree structure is as follows:
         exception is thrown and compilation fails. This is true for any Tree containing a subtree that doesn't belong,
         or has an unexpected number of subtrees, or has a token containing invalid or out of range data. 
 
+        - The way data is accessed in Trees and Tokens is different. Trees are accessed with Tree.data to get the name, and Tree.children returns a list of Subtrees.
+            Token.name gets the name (think 'INSTRUMENTATION' or '__ANON__0') and Token.value gets the token value.
 
+
+~~~~~~~
+1+ Days
+~~~~~~~
+
+Once the Semantic analysis ensure the Tree is valid, it is then compiled into an intermediate form we call
+"Signal Form", which is to midi formatting what Assembly is to Machine Code. 
+
+A description of the signal form can be found in Piano/doc/signal_specification.txt
+
+// Description of how the Tree is converted into signals, in detail.
+
+// Description of how signals are converted to midi format, in detail. Link to documentation for Mido.
+
+// Description of exceptions and how tests handle the exceptions
