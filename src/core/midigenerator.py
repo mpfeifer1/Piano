@@ -83,7 +83,6 @@ class MidiGenerator:
 
 
         for signal in self.signals:
-            print('signal: ', signal)
             if signal['type'] == 'measure':
                 self.midify_measure(signal)
             elif signal['type'] == 'instrument':
