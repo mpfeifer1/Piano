@@ -253,7 +253,7 @@ class Semantic:
         if type(tree.children[1]) == self.tokentype and tree.children[1].type == 'REST':
             return True
 
-        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]):
+        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]) and not self.is_valid_tuple(tree.children[1]):
             raise exceptions.SemanticError("Invalid notename or chord")
 
         return True
@@ -629,6 +629,7 @@ class Semantic:
                 itemCount = len(tupleItems)
                 newDen = int(den) * itemCount
                 for item in tupleItems:
+                    print(item)
                     if item['type'] == 'note':
                         notesig['note_name'] = item['value']
                         notesig['length_num'] = int(num)
