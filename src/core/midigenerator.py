@@ -22,7 +22,6 @@ class MidiGenerator:
             self.track_time.append(0)
 
         self.current_track = 0
-        self.current_channel = 0
 
     # Returns a dictionary from each signal type to a list
     # of all the extra fields that type requires
@@ -100,6 +99,7 @@ class MidiGenerator:
                 self.song.tracks[self.current_track].append(off)
                 self.track_time[self.current_track] += off.time
             elif signal['type'] == 'chord':
+                self.resolve_errors(0)
                 initialTrack = self.current_track
                 for i in range(len(signal['notes'])):
                     note = signal['notes'][i]
@@ -109,7 +109,6 @@ class MidiGenerator:
                     self.song.tracks[self.current_track].append(off)
                     self.track_time[self.current_track] += off.time
                     self.current_track += 1
-                    self.current_channel += 1
                 self.current_track = initialTrack
 
             elif signal['type'] == 'dynamic':
@@ -132,8 +131,8 @@ class MidiGenerator:
         for i in range(len(self.track_time)):
             if self.track_time[i] < time:
                 time_diff = time - self.track_time[i]
-                self.song.tracks[i].append(Message("note_on",  note=0, channel=self.current_channel, velocity=0, time=0))
-                self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_channel, velocity=0, time=time_diff))
+                self.song.tracks[i].append(Message("note_on",  note=0, channel=self.current_track, velocity=0, time=0))
+                self.song.tracks[i].append(Message("note_off", note=0, channel=self.current_track, velocity=0, time=time_diff))
                 self.track_time[i] = time
 
 
@@ -141,7 +140,6 @@ class MidiGenerator:
         print('measure')
         if signal['start']:
             self.current_track = 0
-            self.current_channel = 0
             self.resolve_errors(self.measure_start_time)
         else:
             self.measure_start_time += self.ticks_per_beat * self.timesig[0]
@@ -168,9 +166,8 @@ class MidiGenerator:
         instrumentNumber = instrumentToNumber[signal['name']]
 
         self.current_track += 1
-        self.current_channel += 1
 
-        return Message('program_change', channel=self.current_channel, program=instrumentNumber, time=0)
+        return Message('program_change', channel=self.current_track, program=instrumentNumber, time=0)
 
 
     def midify_tempo(self, signal):
@@ -192,7 +189,7 @@ class MidiGenerator:
         noteNumber = noteToNumber[signal['note_name']]
         length = int(self.ticks_per_beat * self.timesig[0] * signal['length_num'] / signal['length_denom'])
         length = int(self.ticks_per_beat * self.timesig[1] * signal['length_num'] / signal['length_denom'])
-        return Message('note_on', note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_channel, velocity=self.dynamic, time=length)
+        return Message('note_on', note=noteNumber, channel=self.current_track, velocity=self.dynamic, time=0), Message('note_off',note=noteNumber, channel=self.current_track, velocity=self.dynamic, time=length)
 
 
     def midify_rest(self, signal):
@@ -203,5 +200,5 @@ class MidiGenerator:
 
         length = int(self.ticks_per_beat * self.timesig[0] * signal['length_num'] / signal['length_denom'])
         length = int(self.ticks_per_beat * self.timesig[1] * signal['length_num'] / signal['length_denom'])
-        return Message('note_on', note=0, channel=self.current_channel, velocity=self.dynamic, time=0), Message('note_off',note=0, channel=self.current_channel, velocity=self.dynamic, time=length)
+        return Message('note_on', note=0, channel=self.current_track, velocity=self.dynamic, time=0), Message('note_off',note=0, channel=self.current_track, velocity=self.dynamic, time=length)
 
