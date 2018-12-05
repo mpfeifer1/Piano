@@ -41,7 +41,6 @@ class MidiGenerator:
 
     # Check that the list of signals passed in is valid
     def validate(self, signals):
-        print('validate')
         # Grab valid types
         types = self.get_type_fields()
 
@@ -76,7 +75,6 @@ class MidiGenerator:
 
     # Take the list of signals, and build a midi file
     def generate(self):
-        print('generate')
         # If the signals passed in aren't valid, return an error
         if not self.validate(self.signals):
             return False
@@ -123,7 +121,6 @@ class MidiGenerator:
         return self.song
 
     def resolve_errors(self, time):
-        print('resolve')
         for i in range(len(self.track_time)):
             if time < self.track_time[i]:
                 time = self.track_time[i]
@@ -137,7 +134,6 @@ class MidiGenerator:
 
 
     def midify_measure(self, signal):
-        print('measure')
         if signal['start']:
             self.current_track = 0
             self.resolve_errors(self.measure_start_time)
@@ -146,7 +142,6 @@ class MidiGenerator:
             self.resolve_errors(self.measure_start_time)
 
     def midify_timesig(self, signal):
-        print('timesig')
         if signal['type'] != 'timesig':
             print('Error: invalid timesig signal')
 
@@ -154,7 +149,6 @@ class MidiGenerator:
 
 
     def midify_dynamic(self, signal):
-        print('dynamic')
         if signal['type'] != 'dynamic':
             print('Error: invalid dynamic signal')
 
@@ -162,7 +156,6 @@ class MidiGenerator:
 
 
     def midify_instrument(self, signal):
-        print('instrument')
         instrumentNumber = instrumentToNumber[signal['name']]
 
         self.current_track += 1
@@ -171,7 +164,6 @@ class MidiGenerator:
 
 
     def midify_tempo(self, signal):
-        print('tempo')
         if(signal['type'] != 'tempo'):
             print('Error when midifying tempo')
             return ''
@@ -181,7 +173,6 @@ class MidiGenerator:
 
 
     def midify_note(self, signal):
-        print('note')
         if(signal['type'] != 'note'):
             print('Error when midifying note')
             return '', ''
@@ -193,7 +184,6 @@ class MidiGenerator:
 
 
     def midify_rest(self, signal):
-        print('rest')
         if(signal['type'] != 'rest'):
             print('Error when midifying rest')
             return '', ''
