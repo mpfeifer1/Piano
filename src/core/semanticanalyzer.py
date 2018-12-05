@@ -132,9 +132,14 @@ class Semantic:
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
-                repeatedsignals = self.process_composeitems(tree)
+                newtree = tree.children[0]
+                print("Calling with ", newtree)
+
+                repeatedsignals = self.process_composeitems(newtree)
                 signals += repeatedsignals
                 signals += repeatedsignals
+
+                print("Repeated signals: ", repeatedsignals)
             else:
                 raise exceptions.RepeatError('Invalid Repeat Structure.')
 
