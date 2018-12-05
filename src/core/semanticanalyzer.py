@@ -132,14 +132,9 @@ class Semantic:
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
-                newtree = tree.children[0]
-                print("Calling with ", newtree)
-
                 repeatedsignals = self.process_composeitems(newtree)
                 signals += repeatedsignals
                 signals += repeatedsignals
-
-                print("Repeated signals: ", repeatedsignals)
             else:
                 raise exceptions.RepeatError('Invalid Repeat Structure.')
 
@@ -634,7 +629,6 @@ class Semantic:
                 itemCount = len(tupleItems)
                 newDen = int(den) * itemCount
                 for item in tupleItems:
-                    print(item)
                     if item['type'] == 'note':
                         tnotesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}
                         tnotesig['note_name'] = item['value']
