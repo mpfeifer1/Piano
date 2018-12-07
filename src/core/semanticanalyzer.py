@@ -132,7 +132,7 @@ class Semantic:
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
-                repeatedsignals = self.process_composeitems(tree)
+                repeatedsignals = self.process_composeitems(newtree)
                 signals += repeatedsignals
                 signals += repeatedsignals
             else:
@@ -253,7 +253,7 @@ class Semantic:
         if type(tree.children[1]) == self.tokentype and tree.children[1].type == 'REST':
             return True
 
-        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]):
+        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]) and not self.is_valid_tuple(tree.children[1]):
             raise exceptions.SemanticError("Invalid notename or chord")
 
         return True
@@ -630,15 +630,17 @@ class Semantic:
                 newDen = int(den) * itemCount
                 for item in tupleItems:
                     if item['type'] == 'note':
-                        notesig['note_name'] = item['value']
-                        notesig['length_num'] = int(num)
-                        notesig['length_denom'] = newDen
-                        signals.append(notesig)
+                        tnotesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}
+                        tnotesig['note_name'] = item['value']
+                        tnotesig['length_num'] = int(num)
+                        tnotesig['length_denom'] = newDen
+                        signals.append(tnotesig)
                     elif item['type'] == 'chord':
-                        chordsig['notes'] = item['value']
-                        chordsig['length_num'] = int(num)
-                        chordsig['length_denom'] = newDen
-                        signals.append(chordsig)
+                        tchordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
+                        tchordsig['notes'] = item['value']
+                        tchordsig['length_num'] = int(num)
+                        tchordsig['length_denom'] = newDen
+                        signals.append(tchordsig)
             else:
                 raise exceptions.SignalConversionError('Invalid note given.')
 
