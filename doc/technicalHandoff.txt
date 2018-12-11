@@ -3,18 +3,19 @@ project and pno compilation progress in various levels of detail. The goal of
 this document is to aid anyone starting work on the Piano project by getting
 them familiar with the program.
 
-What you should understand:
--Starting out
--5 mins
--1 hour
--1+ Days
-
+- File Structure
+- Setup
+- Compilation
+    - Parsing & Tokenizing
+- Signal Generation
+- Midi Generation
+    - Midi Format & Mido
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
-~~~~~~~~~~~~
-Starting Out
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~
+File Structure
+~~~~~~~~~~~~~~
 
 The following is the file structure for the project:
 
@@ -44,9 +45,9 @@ The following is the file structure for the project:
         /test      # Contains all the unit tests for Piano
 
 
-~~~~~~~~~
-5 Minutes
-~~~~~~~~~
+~~~~~
+Setup
+~~~~~
 
 Installing dependencies:
     To install the necessary dependencies, simply run ./util/install-dependencies.bash
@@ -56,12 +57,18 @@ Installing dependencies:
 
 Running Piano:
     The Piano executable must be run within the /Piano/src directory.
-    The Piano executable has 2 parameters, one required and one optional:
+    The Piano executable has 4 options/flags, one of which is required, the rest are optional:
     
-        -p <filename>       The -p flag is used to specify the .pno file to be compiled
+        -p <filename>       The -p flag is used to specify the .pno file to be compiled.
 
         -o <filename>       The optional -o flag is used to specify the name of the output file.
                             Defaults to "song.pno".
+        
+        -t                  Creates a file "tree.txt" in which the Lark tree for the .pno file
+                            is dumped.
+
+        -s                  Creates a file "signal.sig" in which the signals for the .pno file 
+                            are dumped.
 
     An example run would be as follows:
         ./piano -p ../doc/examples/pno/simple.pno -o helloworld.midi
@@ -75,9 +82,9 @@ Running tests:
 
 
 
-~~~~~~
-1 Hour
-~~~~~~
+~~~~~~~~~~~
+Compilation
+~~~~~~~~~~~
 
 In order to understand how the compilation progress works, one must first understand the grammar.
 The grammar itself is located in Piano/src/core/grammar.py
@@ -88,12 +95,15 @@ To make better sense of the grammar, sample .pno files are located in Piano/doc/
 In-depth coverage for the syntactic structures can be found in the Piano Language Tutorial and
 Piano Reference Manual.
 
+********************
+Parsing & Tokenizing
+********************
 
 Through the Lark parser, a pno file is tokenized and put into a Lark Tree with some nodes as Lark lexer.Tokens.
 
 An example of the tree structure is as follows:
 
-    * Example .pno:
+    * Example.pno file:
         Compose {
             Measure {
                 acousticgrandpiano {
@@ -218,21 +228,74 @@ An example of the tree structure is as follows:
         exception is thrown and compilation fails. This is true for any Tree containing a subtree that doesn't belong,
         or has an unexpected number of subtrees, or has a token containing invalid or out of range data. 
 
-        - The way data is accessed in Trees and Tokens is different. Trees are accessed with Tree.data to get the name, and Tree.children returns a list of Subtrees.
-            Token.name gets the name (think 'INSTRUMENTATION' or '__ANON__0') and Token.value gets the token value.
+        - The way data is accessed in Trees and Tokens is different. Trees are accessed with Tree.data to get the 
+            name, and Tree.children returns a list of Subtrees. Token.name gets the name (think 'INSTRUMENTATION' 
+            or '__ANON__0') and Token.value gets the token's value.
 
 
-~~~~~~~
-1+ Days
-~~~~~~~
+~~~~~~~~~~~~~~~~~
+Signal Generation
+~~~~~~~~~~~~~~~~~
 
 Once the Semantic analysis ensure the Tree is valid, it is then compiled into an intermediate form we call
-"Signal Form", which is to midi formatting what Assembly is to Machine Code. 
+"Signal Form", which is to midi formatting what Assembly is to Machine Code.
 
-A description of the signal form can be found in Piano/doc/signal_specification.txt
+Signals, at their core, tell you when a note should start, and how long the note should last for. We pass 
+signals around as a list of dictionaries. Each dictionary in the list represents one signal. Each signal 
+contains a type, which are all listed in the signal specification document. Different types imply that 
+each dictionary may contain different value fields depending on the type. 
 
-// Description of how the Tree is converted into signals, in detail.
+A more in-depth description of the signal form can be found in Piano/doc/signal_specification.txt
 
-// Description of how signals are converted to midi format, in detail. Link to documentation for Mido.
+When converting to signals, the compiler performs a depth-first search on the validated Tree. Similar to
+the validation step, each structure in the language has a "to_signal" function to match its "is_valid" function.
+Each "to_signal" function processes through their respective Subtrees and returns a list of their representative
+signals. The subtrees (and ergo the signals) are created in chronological order,
+which we get for free due to the nature of the grammar and how it's parsed.
+Some "to_signal" functions call lower "to_signal" functions in the case of nested dependencies. For example,
+the measure "to_signal" function will call the instrumentation "to_signal" function.
 
-// Description of exceptions and how tests handle the exceptions
+In the case of a measure, first a "measure start" signal is given, followed by a list of signals generated by
+subcalls to "to_signal" functions, which are then followed by a "measure end" signal to finish off the measure.
+This functionality allows our language to be extremely modular, as signal generation for a given structure is not
+dependent on lower structures, but rather only relies on its own beginning and ending signal. Every structure's
+signals in-between are completely independent.
+
+~~~~~~~~~~~~~~~
+Midi Generation
+~~~~~~~~~~~~~~~
+
+Once the signals are created, they can be output to a .sig file, but generally the list is passed to the Midi
+generator. The Piano compiler uses the Mido library to create midi files. Mido takes in data in a format that is
+very similar to our Signal format.
+
+Each Mido note takes in a note, the instrument that plays the note, the volume of the note, and the length of time
+since the end of the previous note on the track. 
+
+During Midi Generation, each signal in the list of signals has a validation checker, similar to the trees during
+semantic analysis. Also similarly to semantic analysis, each signal has a "midify" function that turns the signal
+into a valid midi format.
+
+***********
+Midi Format
+***********
+
+Each midi file is composed (pun intended) of tracks and channels. One could think of a midi file as a bunch of
+"messages" each with a different attributes and values, similar to the Piano signal format. In fact, a midi file
+is made up of tracks, which can be thought of as specialized Python list objects, as the Mido MidiTrack object
+can be treated as a list.
+
+So a very simplified version of Midi structure looks as follows:
+MidiFile --has--> Tracks
+Track --has--> Messages
+Messages --have--> Types, Attributes, Channels
+
+Within each Track, there is a Time attribute, which is a delta time measured in ticks. The overall time in Midi
+files is measured in ticks as well as beats. 
+--!The timing of when each note begins is measured in the number of ticks since the previous note ended!--
+
+For more information on how Midi files work and how Mido is used, visit:
+https://mido.readthedocs.io/en/latest/midi_files.html
+
+Tracks are added manually one at a time, for an example see the add_track function in Piano/src/core/midigenerator.py.
+

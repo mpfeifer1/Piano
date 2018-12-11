@@ -1,3 +1,7 @@
+'''
+This file contains all of the exceptions used by Piano. All of them are
+bare bones, as they are used mostly for clarification on what went wrong.
+'''
 class PianoException(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args, **kwargs)
