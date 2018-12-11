@@ -1,3 +1,7 @@
+'''
+This file contains all of the semantic analysis for the compiler. All of the
+steps between (Tokenization - Signal Generation] happen in this file.
+'''
 import sys
 sys.path.append(r'core')
 from instrumentToNumber import instrumentToNumber
@@ -715,6 +719,11 @@ class Semantic:
 
         return notes
 
+    '''
+    **********************
+    TODO: Implement these
+    **********************
+    '''
 
     # given a tree that represents a dynamic, set the new volume
     def apply_dynamic(self, tree):

@@ -1,3 +1,7 @@
+'''
+This file takes the list of signals and generates the midi file.
+'''
+
 from mido import Message, MidiFile, MidiTrack, MetaMessage
 import mido
 import exceptions
