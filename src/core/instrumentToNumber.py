@@ -1,3 +1,5 @@
+# Dictionary converting instrument name string to the corresponding MIDI
+# instrument number.
 instrumentToNumber = {
     "acousticgrandpiano":1,
     "brightacousticpiano":2,

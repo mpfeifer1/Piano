@@ -2,12 +2,14 @@
 
 # Import system libraries
 from lark import Lark
+from lark import exceptions as larkexcept
 from argparse import ArgumentParser
 
 # Import Piano libraries
 from core import grammar
 from core import semanticanalyzer as semantic
 from core import midigenerator
+from core import exceptions
 from core import flags
 
 # Get input flags
@@ -44,5 +46,7 @@ try:
     midi_name = inputflags['midi_file']
 
     midifile.save(midi_name)
+
 except Exception as e:
+    print('Unknown error ocurred during compilation:')
     print(e)

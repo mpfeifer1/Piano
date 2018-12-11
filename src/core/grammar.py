@@ -1,3 +1,6 @@
+'''
+This is where the grammar is defined.
+'''
 def getgrammar():
     return r'''
         start: (id "=" rhs)* compose

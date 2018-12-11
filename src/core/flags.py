@@ -1,3 +1,7 @@
+'''
+This file handles the flags and command line arguments.
+'''
+
 from argparse import ArgumentParser
 import argparse
 import sys

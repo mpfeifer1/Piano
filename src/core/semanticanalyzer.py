@@ -1,3 +1,7 @@
+'''
+This file contains all of the semantic analysis for the compiler. All of the
+steps between (Tokenization - Signal Generation] happen in this file.
+'''
 import sys
 sys.path.append(r'core')
 from instrumentToNumber import instrumentToNumber
@@ -61,6 +65,22 @@ class Semantic:
                 newsig = self.process_compose(command[1])
                 signals += self.process_compose(command[1])
         return signals
+
+
+    def collect_notename(self, tree):
+        if not self.is_valid_notename:
+            print("invalid notename")
+
+        name = ""
+        for i in tree.children:
+            if 'Token' in str(type(i)):
+                name += str(i)
+            elif 'Tree' in str(type(i)): #it's a token
+                name+=i.children[0]
+            else:
+                raise exceptions.SignalConversionError('Invalid notename given.')
+
+        return name
 
 
     # Return a list of signals with all the default settings
@@ -182,7 +202,16 @@ class Semantic:
     # TODO order these checks in a better order
 
 
-    # Check that the data has a start symbol
+    # sets a variable in our memory to its tree
+    def set_variable(self, lhs, rhs):
+        self.variables[lhs.value] = rhs
+
+    '''
+    **************************
+    Tree validator functions
+    **************************
+    '''
+
     def is_valid_tree(self, tree):
         if not type(tree) is self.treetype:
             raise exceptions.ValidationError('Type mismatch: ' + str(type(tree)) + ' is not ' + str(self.treetype) + '.')
@@ -527,14 +556,16 @@ class Semantic:
         return True
 
 
-    # sets a variable in our memory to its tree
-    def set_variable(self, lhs, rhs):
-        self.variables[lhs.value] = rhs
-
     # Check if it has a 'start', and one compose
     def is_valid_program(self, tree):
         if not type(tree) is self.treetype:
             raise exceptions.SemanticError("Not a tree")
+
+    '''
+    **************************
+    Signal Generator Functions
+    **************************
+    '''
 
     # Takes in a measure, builds a list of signals
     def measure_to_signal(self, tree):
@@ -646,20 +677,6 @@ class Semantic:
 
         return signals
 
-    def collect_notename(self, tree):
-        if not self.is_valid_notename:
-            print("invalid notename")
-
-        name = ""
-        for i in tree.children:
-            if 'Token' in str(type(i)):
-                name += str(i)
-            elif 'Tree' in str(type(i)): #it's a token
-                name+=i.children[0]
-            else:
-                raise exceptions.SignalConversionError('Invalid notename given.')
-
-        return name
 
     def inlinedynamic_to_signal(self, tree):
         if not self.is_valid_inlinedynamic:
@@ -702,6 +719,11 @@ class Semantic:
 
         return notes
 
+    '''
+    **********************
+    TODO: Implement these
+    **********************
+    '''
 
     # given a tree that represents a dynamic, set the new volume
     def apply_dynamic(self, tree):
