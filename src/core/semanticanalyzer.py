@@ -439,7 +439,7 @@ class Semantic:
                 raise exceptions.NoteError('Octave number expected, not given')
 
             acc = tree.children[1].children[0].value
-            if acc != ('#' or 'b'):
+            if acc != '#' and acc != 'b':
                 raise exceptions.NoteError('Incorrect accidental symbol given, \'b\' or \'#\' expected.')
             octave = int(tree.children[2].children[0].value)
             if 9 > octave < 0:
