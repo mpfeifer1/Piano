@@ -47,19 +47,6 @@ try:
 
     midifile.save(midi_name)
 
-#except larkexcept.LarkError as le:
-#    print('Encountered error during syntax analysis and tokenizing:')
-#    print(le)
-#except exceptions.SemanticError as se:
-#    print('Encountered error during semantic analysis:')
-#    print(se)
-#except exceptions.MidiError as me:
-#    print('Encountered error during midi generation:')
-#    print(me)
-#except exceptions.PianoException as pe:
-#    print('Unknown Piano error ocurred during compilation:')
-#    print(pe)
-
 except Exception as e:
     print('Unknown error ocurred during compilation:')
     print(e)
