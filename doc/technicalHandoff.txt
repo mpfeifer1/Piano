@@ -1,8 +1,10 @@
 This is the techinical handoff guide for the Piano project. It describes the
 project and pno compilation progress in various levels of detail. The goal of
-this document is to aid anyone starting work on the Piano project by getting
+this document is to aid anyone continuing work on the Piano project by getting
 them familiar with the program.
 
+Table of contents:
+- Project Backlog
 - File Structure
 - Setup
 - Compilation
@@ -12,6 +14,47 @@ them familiar with the program.
     - Midi Format & Mido
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+
+~~~~~~~~~~~~~~~
+Project Backlog
+~~~~~~~~~~~~~~~
+
+MVP Features:
+    - semanticAnalyzer has several utility functions unimplemented towards
+        the bottom of the file.
+    - implement rests in tuples (might need slight addition to grammar 
+        as well)
+    - Fully test chords, tuples, multiple instrumentations in a measure.
+    - Double check coding standards.
+    - ***WAY MORE UNIT TESTS! FOR GOD'S SAKE WE DIDN'T REALIZE 
+        FLATS DIDN'T WORK UNTIL THE PROJECT WAS ALMOST DUE!!!***
+        (flats are already fixed, by the way.)
+    - Throw consistent errors.
+    - IMPLEMENT VARIABLES.
+    - Expand .gitignore (.pno, .mid, .midi, .sig, tree.txt (specifically tree.txt, not just .txt))
+    - Modularize MIDI generation.
+
+Known Bugs:
+    - Chords are funky
+    - Tuples are funky
+    - Tempo is really slow when playing MIDI through VLC.
+        Might just be a VLC problem.
+    - Variables only work for instrument names and measures, nothing else.
+        (see: IMPLEMENT VARIABLES.)
+ 
+Future Features:
+    - Figure out how to package as single executable rather than cloning
+        the repository for distribution.
+    - Add accents to notes.
+    - Add first/second/.../n endings to repeats.
+    - Repeat endings of variable length.
+    - Add repeat start/end in middle of measure.
+    - Pre-defined macro functions, like de/crescendo, grand pause, fermata, etc.
+    - User defined macros?
+    - Preprocessing/importing macros?
+    - Add another compilation targed (other than MIDI), in general make
+        the whole compiler more modular.
+   
 
 ~~~~~~~~~~~~~~
 File Structure
