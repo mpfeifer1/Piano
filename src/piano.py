@@ -23,12 +23,22 @@ try:
     parser = Lark(grammar.getgrammar(), parser='lalr', lexer="contextual")
     tree = parser.parse(data)
 
-    # Debugging print statements
-    print(tree.pretty())
+    # Create a text file of the grammar tree if the -t flag is set
+    if inputflags['tree_file']:
+        out_tree = open('tree.txt', 'w')
+        out_tree.write(tree.pretty())
+        out_tree.close()
 
     # Convert the parse tree into a list of sound signals
     analyzer = semantic.Semantic(tree)
     signals = analyzer.analyze()
+
+    # Create a text file of the signals if the -s flag is set
+    if inputflags['signal_file']:
+        out_sig = open('signal.sig', 'w')
+        pretty_sig = '\n'.join(str(i) for i in signals)
+        out_sig.write(pretty_sig)
+        out_sig.close()
 
     # Pass the sound signals to Mido, and build a MIDI file
     generator = midigenerator.MidiGenerator(signals)

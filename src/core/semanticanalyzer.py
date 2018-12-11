@@ -148,7 +148,7 @@ class Semantic:
         # Repeat
         if tree.data == 'repeat':
             if self.is_valid_repeat(tree):
-                repeatedsignals = self.process_composeitems(tree)
+                repeatedsignals = self.process_composeitems(newtree)
                 signals += repeatedsignals
                 signals += repeatedsignals
             else:
@@ -278,7 +278,7 @@ class Semantic:
         if type(tree.children[1]) == self.tokentype and tree.children[1].type == 'REST':
             return True
 
-        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]):
+        if not self.is_valid_notename(tree.children[1]) and not self.is_valid_chord(tree.children[1]) and not self.is_valid_tuple(tree.children[1]):
             raise exceptions.SemanticError("Invalid notename or chord")
 
         return True
@@ -652,7 +652,22 @@ class Semantic:
                 chordsig['length_denom'] = int(den)
                 signals.append(chordsig)
             elif i.data == "tuple":
-                signals += self.tuple_to_signal(i)
+                tupleItems = self.tuple_to_signal(i)
+                itemCount = len(tupleItems)
+                newDen = int(den) * itemCount
+                for item in tupleItems:
+                    if item['type'] == 'note':
+                        tnotesig = {'type': 'note', 'note_name':'', 'length_num':0, 'length_denom':0}
+                        tnotesig['note_name'] = item['value']
+                        tnotesig['length_num'] = int(num)
+                        tnotesig['length_denom'] = newDen
+                        signals.append(tnotesig)
+                    elif item['type'] == 'chord':
+                        tchordsig = {'type': 'chord', 'notes':[], 'length_num':0, 'length_denom':0}
+                        tchordsig['notes'] = item['value']
+                        tchordsig['length_num'] = int(num)
+                        tchordsig['length_denom'] = newDen
+                        signals.append(tchordsig)
             else:
                 raise exceptions.SignalConversionError('Invalid note given.')
 
@@ -687,15 +702,18 @@ class Semantic:
             raise exceptions.SemanticError(tree.data + ' given where tuple is expected.')
 
         # put dummy data in a tuple signal because we don't like them much
-        return [{'type':'tuple', 'length_num':0, 'length_denom':0, 'notes':[]}]
+
+        notes = []
 
         for i in tree.children:
             if i.data == 'notename':
-                self.collect_notename(i)
+                notes.append({'type' : 'note', 'value' : self.collect_notename(i)})
             elif i.data == 'chord':
-                self.chord_to_signal(i)
+                notes.append({'type' : 'chord', 'value' : self.chord_to_signal(i)})
             else:
                 raise exceptions.SignalConversionError('Invalid tuple contents.')
+
+        return notes
 
 
     # given a tree that represents a dynamic, set the new volume

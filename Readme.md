@@ -13,7 +13,7 @@ script to install python, pip, and dependencies.
 This is the current way of running a file and will be updated in the future as the project progresses.  
 The *piano.py* file is located under the src directory.
 
-    $ ./piano.py -p example.pno -m example.midi
+    $ ./piano.py -p example.pno -o example.midi
 
 ### Running Tests
 The Continuous Integration (CI) hook is set up by running the following.

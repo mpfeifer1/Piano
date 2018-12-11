@@ -1,0 +1,15 @@
+Compose {
+    timesig(6/8)
+    tempo(138)
+    dynamic(p)
+
+    // Pick-up notes
+    Measure {
+        acousticgrandpiano {3/8 --; 1/8 D5; 1/8 Bb5; 1/8 C5;}
+        acousticgrandpiano {3/8 --; 1/8 Bb5; 1/8 G4; 1/8 A5;} 
+    }
+    Measure {
+        acousticgrandpiano {3/16 D5; 1/16 Eb5; 1/8 D5; 1/8 D5; 1/8 C5; 1/8 Bb5;}
+        acousticgrandpiano {3/16 Bb5; 1/16 C5; 1/8 Bb5; 1/8 Bb5; 1/8 A5; 1/8 G4;}
+    } 
+}
